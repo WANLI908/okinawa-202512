@@ -232,4 +232,297 @@
         function toggleDevMode() {
             if(!currentSimulatedDate) {
                 currentSimulatedDate = "2025-12-27 11:30";
-                alert("模擬模式：設定時間為 12/27 11:3
+                alert("模擬模式：設定時間為 12/27 11:30 (古宇利島)");
+            } else {
+                currentSimulatedDate = null;
+                alert("已關閉模擬模式");
+            }
+            renderHome();
+        }
+
+        // --- 渲染首頁 (依角色分流) ---
+        function renderHome() {
+            const container = document.getElementById('app');
+            // 這裡簡化邏輯，若沒模擬日期，預設顯示第一天行程，若有模擬則顯示當下
+            const now = currentSimulatedDate ? new Date(currentSimulatedDate) : new Date("2025-12-26 08:00");
+            const dateStr = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+            
+            const todayData = tripData.find(d => d.date === dateStr) || tripData[0];
+            
+            document.getElementById('header-date').innerText = currentSimulatedDate ? "旅途中 - 模擬模式" : "行前準備中";
+
+            let html = `
+                <div class="flex justify-between items-end mb-4 px-2">
+                    <div>
+                        <h2 class="text-2xl font-bold text-orange-600">${todayData.day}</h2>
+                        <span class="text-sm text-gray-500">${todayData.date}</span>
+                    </div>
+                    <div class="text-right">
+                         ${currentRole === 'driver' ? '<div class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">🚗 注意右駕</div>' : ''}
+                         ${currentRole === 'admin' ? '<div class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">📝 掌握時間</div>' : ''}
+                    </div>
+                </div>
+                <div class="space-y-6">
+            `;
+
+            todayData.events.forEach(event => {
+                // 根據角色決定顯示重點
+                let roleContent = '';
+                
+                // 1. 妹妹 (駕駛)：MapCode 特大，導航按鈕
+                if (currentRole === 'driver') {
+                    roleContent = `
+                        <div class="bg-gray-100 p-3 rounded-lg mt-3 flex justify-between items-center border border-gray-200">
+                            <div>
+                                <div class="text-xs text-gray-500">MapCode</div>
+                                <div class="text-xl font-mono font-bold text-gray-800 tracking-wider">${event.mapCode || '無'}</div>
+                            </div>
+                            <button onclick="copyText('${event.mapCode}')" class="bg-white px-3 py-1 rounded shadow text-sm font-bold text-orange-500">複製</button>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩" target="_blank" class="block w-full text-center bg-blue-500 text-white font-bold py-3 rounded-xl mt-3 shadow hover:bg-blue-600">
+                            <i class="fa-solid fa-location-arrow mr-2"></i> Google 導航
+                        </a>
+                    `;
+                }
+                
+                // 2. 爸爸 (副駕)：停車資訊，周邊狀況
+                else if (currentRole === 'copilot') {
+                    roleContent = `
+                        <div class="mt-3 space-y-2">
+                            <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                <h4 class="font-bold text-blue-800 text-sm mb-1"><i class="fa-solid fa-square-parking mr-1"></i> 停車資訊</h4>
+                                <p class="text-sm text-gray-700">${event.parking?.info || '無特別標示，請協助尋找'}</p>
+                                ${event.parking?.nearby ? `<p class="text-xs text-gray-500 mt-1">💡 備案：${event.parking.nearby}</p>` : ''}
+                            </div>
+                             <div class="bg-gray-100 p-2 rounded flex justify-between items-center">
+                                <span class="text-xs text-gray-500">MapCode: ${event.mapCode}</span>
+                                <button onclick="copyText('${event.mapCode}')" class="text-xs bg-white px-2 py-1 rounded">複製</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 3. 媽媽 (遊客)：照片，星星，必吃
+                else if (currentRole === 'tourist') {
+                    roleContent = `
+                        <div class="mt-3">
+                            ${event.imgUrl ? `<div class="w-full h-32 bg-gray-200 rounded-lg mb-3 bg-cover bg-center" style="background-image: url('${event.imgUrl}')"></div>` : ''}
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-yellow-500 text-sm"><i class="fa-solid fa-star"></i> ${event.rating || 4.5}</span>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩" target="_blank" class="text-xs text-blue-500 underline">查看 Google 評論 (${event.reviewCount}+)</a>
+                            </div>
+                            <p class="text-sm text-gray-600 leading-relaxed mb-3">${event.guide}</p>
+                            ${event.menu ? `
+                                <div class="bg-orange-50 p-3 rounded-lg border border-orange-100">
+                                    <div class="text-xs text-orange-400 font-bold mb-2">推薦必吃 (點擊看大字)</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${event.menu.map(m => `<button onclick="showDishBig('${m.n}', '${m.j}')" class="bg-white px-2 py-1 rounded text-sm shadow-sm text-gray-700">${m.n}</button>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+                
+                // 4. 我 (主揪)：筆記，決策，預約
+                else if (currentRole === 'admin') {
+                    roleContent = `
+                        <div class="mt-3 space-y-2">
+                            ${event.reservation ? `<div class="bg-red-50 text-red-600 px-3 py-2 rounded font-bold text-sm border border-red-100"><i class="fa-solid fa-circle-exclamation mr-1"></i> ${event.reservation}</div>` : ''}
+                            
+                            <div class="bg-yellow-50 p-3 rounded-lg text-sm text-gray-700 border border-yellow-100">
+                                <div class="font-bold text-yellow-800 mb-1"><i class="fa-solid fa-clipboard-check mr-1"></i> 重點筆記</div>
+                                ${event.adminNote || '無特別筆記'}
+                            </div>
+
+                            ${event.decision ? `
+                                <div class="bg-gray-100 p-3 rounded-lg text-sm text-gray-600 border border-gray-200">
+                                    <div class="font-bold text-gray-500 mb-1"><i class="fa-solid fa-scale-balanced mr-1"></i> 決策備案</div>
+                                    ${event.decision}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
+                // 共同卡片外框
+                html += `
+                    <div class="card p-5 relative">
+                        <div class="flex items-start gap-4">
+                            <div class="font-bold text-xl text-gray-700 min-w-[50px] pt-1">${event.time}</div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-bold text-lg text-gray-800">${event.title}</h3>
+                                    <span class="text-xs px-2 py-1 rounded-full ${event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : 'tag-trans'}">
+                                        ${event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : '交通'}
+                                    </span>
+                                </div>
+                                <!-- 插入角色專屬內容 -->
+                                ${roleContent}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // --- 購物清單功能 ---
+        function getShoppingList() {
+            const stored = localStorage.getItem('okinawa_shopping');
+            return stored ? JSON.parse(stored) : defaultShopping;
+        }
+
+        function saveShoppingList(list) {
+            localStorage.setItem('okinawa_shopping', JSON.stringify(list));
+            renderShopping();
+        }
+
+        function renderShopping() {
+            const list = getShoppingList();
+            const container = document.getElementById('app');
+            let html = `
+                <div class="card p-5 mb-4 bg-gradient-to-r from-pink-50 to-orange-50">
+                    <h2 class="text-xl font-bold text-gray-800 mb-3"><i class="fa-solid fa-bag-shopping text-pink-500 mr-2"></i>待買清單</h2>
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <input id="shop-store" placeholder="商店" class="p-2 rounded border text-sm">
+                        <input id="shop-item" placeholder="品名" class="p-2 rounded border text-sm col-span-2">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <input id="shop-price" type="number" placeholder="日幣" class="p-2 rounded border text-sm">
+                        <input id="shop-qty" type="number" placeholder="數量" value="1" class="p-2 rounded border text-sm">
+                        <select id="shop-pay" class="p-2 rounded border text-sm text-gray-500">
+                            <option value="現金">現金</option>
+                            <option value="信用卡">信用卡</option>
+                        </select>
+                    </div>
+                    <button onclick="addShopItem()" class="w-full bg-pink-400 text-white font-bold py-2 rounded shadow hover:bg-pink-500">新增</button>
+                </div>
+                
+                <div class="space-y-3">
+            `;
+
+            list.forEach((item, idx) => {
+                const twd = Math.round(item.priceJp * item.qty * JPY_RATE);
+                html += `
+                    <div class="card p-4 flex items-center justify-between ${item.done ? 'bg-gray-50 opacity-60' : ''}">
+                        <div class="flex items-center gap-3 flex-1">
+                            <input type="checkbox" onchange="toggleShopItem(${idx})" class="w-6 h-6 accent-pink-500 rounded" ${item.done ? 'checked' : ''} ${item.done ? 'disabled' : ''}>
+                            <div>
+                                <div class="font-bold text-gray-800 ${item.done ? 'line-through' : ''}">${item.item} <span class="text-xs text-gray-500 bg-gray-200 px-1 rounded ml-1">x${item.qty}</span></div>
+                                <div class="text-xs text-gray-500"><i class="fa-solid fa-store mr-1"></i>${item.store} | ${item.pay}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-orange-600">¥${(item.priceJp * item.qty).toLocaleString()}</div>
+                            <div class="text-xs text-gray-400">≈ NT$${twd}</div>
+                        </div>
+                         ${!item.done ? `<button onclick="deleteShopItem(${idx})" class="ml-3 text-gray-300 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>
+                `;
+            });
+            
+            html += `</div><p class="text-center text-xs text-gray-400 mt-4">勾選後自動加入記帳</p>`;
+            container.innerHTML = html;
+        }
+
+        function addShopItem() {
+            const store = document.getElementById('shop-store').value;
+            const item = document.getElementById('shop-item').value;
+            const priceJp = document.getElementById('shop-price').value;
+            const qty = document.getElementById('shop-qty').value;
+            const pay = document.getElementById('shop-pay').value;
+            
+            if(!item || !priceJp) return alert("請輸入品名和價格");
+            
+            const list = getShoppingList();
+            list.push({ id: Date.now(), store, item, priceJp, qty, pay, done: false });
+            saveShoppingList(list);
+        }
+
+        function deleteShopItem(index) {
+            const list = getShoppingList();
+            list.splice(index, 1);
+            saveShoppingList(list);
+        }
+
+        function toggleShopItem(index) {
+            const list = getShoppingList();
+            const item = list[index];
+            
+            if (confirm(`確定買了「${item.item}」嗎？\n系統將自動記一筆帳：¥${item.priceJp * item.qty}`)) {
+                item.done = true;
+                saveShoppingList(list);
+                
+                // 自動記帳
+                const expenses = JSON.parse(localStorage.getItem('okinawa_expenses')) || [];
+                expenses.unshift({
+                    item: `[購] ${item.item} x${item.qty}`,
+                    amount: item.priceJp * item.qty,
+                    date: new Date().toLocaleDateString()
+                });
+                localStorage.setItem('okinawa_expenses', JSON.stringify(expenses));
+                alert("已加入支出紀錄！");
+            } else {
+                // 取消勾選 (需重繪 UI)
+                renderShopping(); 
+            }
+        }
+
+        // --- 其他通用功能 ---
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active', 'text-orange-500'));
+            document.getElementById(`btn-${tab}`).classList.add('active', 'text-orange-500');
+
+            if (tab === 'home') renderHome();
+            if (tab === 'shopping') renderShopping();
+            if (tab === 'budget') renderBudget();
+            if (tab === 'info') renderInfo(); // 需保留之前寫的 renderInfo
+            
+            window.scrollTo(0, 0);
+        }
+
+        // 沿用之前的 renderBudget (略修)
+        function renderBudget() {
+            const container = document.getElementById('app');
+            const savedExpenses = JSON.parse(localStorage.getItem('okinawa_expenses')) || [];
+            const total = savedExpenses.reduce((sum, curr) => sum + parseInt(curr.amount), 0);
+            
+            container.innerHTML = `
+                <div class="card p-6 mb-4 bg-orange-50 border-orange-200 text-center">
+                    <div class="text-gray-500 text-sm mb-1">總支出 (含購物)</div>
+                    <div class="text-4xl font-bold text-orange-600">¥${total.toLocaleString()}</div>
+                    <div class="text-xs text-gray-400 mt-2">約 TWD ${(total * JPY_RATE).toLocaleString()}</div>
+                </div>
+                <div class="space-y-2">
+                    ${savedExpenses.map((ex, idx) => `
+                        <div class="bg-white p-3 rounded-lg flex justify-between border-b border-gray-100">
+                            <div><div class="font-bold text-gray-700">${ex.item}</div><div class="text-xs text-gray-400">${ex.date}</div></div>
+                            <div class="flex items-center gap-3"><span class="font-bold text-orange-600">¥${ex.amount}</span></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // 沿用之前的 info (簡化版)
+        function renderInfo() {
+            document.getElementById('app').innerHTML = `<div class="card p-5"><h2 class="text-xl font-bold">航班與住宿</h2><p class="mt-2 text-gray-600">請參考行程表或 Excel 附件。</p></div>`;
+        }
+
+        function showDishBig(cn, jp) {
+            document.getElementById('modal-cn').innerText = cn;
+            document.getElementById('modal-jp').innerText = jp;
+            document.getElementById('dish-modal').classList.add('open');
+        }
+        function closeModal() { document.getElementById('dish-modal').classList.remove('open'); }
+        function copyText(text) { navigator.clipboard.writeText(text).then(() => alert("已複製: " + text)); }
+
+        // 啟動
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
