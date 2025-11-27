@@ -3,387 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 沖繩獅薩之旅 🌺</title>
-    <!-- 引入 Tailwind CSS -->
+    <title>2025 沖繩全家福 🌺</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 Google Fonts (可愛圓體) -->
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome 圖標 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body {
-            font-family: 'M PLUS Rounded 1c', sans-serif;
-            background-color: #FFF8E1; /* 奶油黃 */
-            -webkit-tap-highlight-color: transparent;
-        }
-        .shisa-header {
-            background: linear-gradient(135deg, #FFAB91 0%, #FFCC80 100%);
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
-        }
-        .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 2px solid #FFE0B2;
-            transition: transform 0.1s;
-        }
-        .card:active {
-            transform: scale(0.98);
-        }
-        .tag-eat { background-color: #FFECB3; color: #E65100; }
-        .tag-spot { background-color: #B2EBF2; color: #006064; }
-        .tag-trans { background-color: #E1BEE7; color: #4A148C; }
-        .tag-hotel { background-color: #DCEDC8; color: #33691E; }
+        body { font-family: 'M PLUS Rounded 1c', sans-serif; background-color: #FFF8E1; -webkit-tap-highlight-color: transparent; }
+        .shisa-header { background: linear-gradient(135deg, #FFAB91 0%, #FFCC80 100%); border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3); }
+        .card { background: white; border-radius: 20px; border: 2px solid #FFE0B2; transition: all 0.3s; overflow: hidden; }
+        .card.active { border-color: #FF7043; box-shadow: 0 8px 20px rgba(255, 112, 67, 0.2); transform: scale(1.01); }
         
-        /* 底部導航欄 */
-        .bottom-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #FFE0B2;
-        }
-        .nav-item.active {
-            color: #FF7043;
-        }
-        .nav-item {
-            color: #90A4AE;
-        }
+        /* 標籤顏色 */
+        .tag-eat { background: #FFECB3; color: #E65100; }
+        .tag-spot { background: #B2EBF2; color: #006064; }
+        .tag-trans { background: #E1BEE7; color: #4A148C; }
+        .tag-hotel { background: #DCEDC8; color: #33691E; }
+        
+        /* 底部導航 */
+        .bottom-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-top: 1px solid #FFE0B2; }
+        .nav-item.active { color: #FF7043; transform: translateY(-2px); }
+        .nav-item { color: #90A4AE; transition: all 0.2s; }
+        
+        /* 角色頭像選單 */
+        .role-btn { transition: transform 0.2s; }
+        .role-btn:active { transform: scale(0.95); }
+        .role-selected { ring: 4px solid #FF7043; background: #FFF3E0; }
 
-        /* 關鍵字高亮 */
-        .highlight-red { color: #D32F2F; font-weight: bold; background: #FFEBEE; padding: 0 4px; border-radius: 4px; }
-        .highlight-blue { color: #1976D2; font-weight: bold; }
-        
-        /* 隱藏滾動條但保持功能 */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        /* 彈窗 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        .modal-content { background: white; padding: 2rem; border-radius: 20px; width: 85%; max-height: 80vh; overflow-y: auto; text-align: center; animation: popIn 0.3s ease-out; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-    <!-- 頂部標題區 -->
-    <div class="shisa-header sticky top-0 z-50 p-6 flex justify-between items-center text-white">
+    <!-- 頂部標題 -->
+    <div class="shisa-header sticky top-0 z-50 p-4 flex justify-between items-center text-white">
         <div>
-            <h1 class="text-2xl font-bold">沖繩獅薩之旅 🌺</h1>
-            <p class="text-sm opacity-90">Dec 25 - Dec 29, 2025</p>
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                沖繩全家福 
+                <span id="current-role-badge" onclick="clearRole()" class="text-xs bg-white/20 px-2 py-1 rounded cursor-pointer hover:bg-white/40">切換身份</span>
+            </h1>
+            <p id="header-date" class="text-xs opacity-90 mt-1">準備出發！</p>
         </div>
-        <div class="text-4xl">🦁</div>
+        <div class="text-3xl" onclick="toggleDevMode()">🦁</div>
+    </div>
+
+    <!-- 身份選擇頁面 (Overlay) -->
+    <div id="role-selector" class="fixed inset-0 bg-[#FFF8E1] z-[60] flex flex-col items-center justify-center p-6 space-y-8 hidden">
+        <div class="text-center">
+            <h2 class="text-3xl font-bold text-orange-600 mb-2">你是誰？</h2>
+            <p class="text-gray-500">選擇身份以提供最適合你的資訊</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
+            <button onclick="selectRole('driver')" class="role-btn bg-white p-6 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2">
+                <div class="text-4xl">🚗</div>
+                <div class="font-bold text-gray-700">妹妹 (駕駛)</div>
+                <div class="text-xs text-gray-400">MapCode、交通</div>
+            </button>
+            <button onclick="selectRole('copilot')" class="role-btn bg-white p-6 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2">
+                <div class="text-4xl">🗺️</div>
+                <div class="font-bold text-gray-700">爸爸 (副駕)</div>
+                <div class="text-xs text-gray-400">停車場、導航輔助</div>
+            </button>
+            <button onclick="selectRole('tourist')" class="role-btn bg-white p-6 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2">
+                <div class="text-4xl">📸</div>
+                <div class="font-bold text-gray-700">媽媽 (遊客)</div>
+                <div class="text-xs text-gray-400">美食、美照、評價</div>
+            </button>
+            <button onclick="selectRole('admin')" class="role-btn bg-white p-6 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2">
+                <div class="text-4xl">📝</div>
+                <div class="font-bold text-gray-700">我 (主揪)</div>
+                <div class="text-xs text-gray-400">預約、時間掌控</div>
+            </button>
+        </div>
     </div>
 
     <!-- 主要內容區 -->
-    <div id="app" class="p-4 space-y-6">
-        <!-- 內容由 JS 動態生成 -->
+    <div id="app" class="p-4 space-y-6"></div>
+
+    <!-- 菜單放大彈窗 -->
+    <div id="dish-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="text-gray-500 text-sm mb-2">請指給店員看</div>
+            <h2 id="modal-jp" class="text-3xl font-bold text-gray-900 mb-2 leading-relaxed"></h2>
+            <p id="modal-cn" class="text-lg text-orange-600 font-medium mb-4"></p>
+            <div id="modal-img" class="w-full h-48 bg-gray-200 rounded-lg mb-4 bg-cover bg-center"></div>
+            <button onclick="closeModal()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-bold w-full">關閉</button>
+        </div>
     </div>
 
     <!-- 底部導航 -->
-    <div class="bottom-nav fixed bottom-0 w-full flex justify-around p-3 z-50 pb-6">
-        <button onclick="switchTab('itinerary')" id="btn-itinerary" class="nav-item active flex flex-col items-center">
-            <i class="fa-solid fa-map-location-dot text-xl mb-1"></i>
-            <span class="text-xs font-bold">行程</span>
+    <div class="bottom-nav fixed bottom-0 w-full flex justify-around p-2 z-50 pb-6">
+        <button onclick="switchTab('home')" id="btn-home" class="nav-item active flex flex-col items-center w-1/4">
+            <i class="fa-solid fa-house text-lg mb-1"></i>
+            <span class="text-[10px] font-bold">行程</span>
         </button>
-        <button onclick="switchTab('info')" id="btn-info" class="nav-item flex flex-col items-center">
-            <i class="fa-solid fa-suitcase text-xl mb-1"></i>
-            <span class="text-xs font-bold">資訊</span>
+        <button onclick="switchTab('shopping')" id="btn-shopping" class="nav-item flex flex-col items-center w-1/4">
+            <i class="fa-solid fa-bag-shopping text-lg mb-1"></i>
+            <span class="text-[10px] font-bold">必買</span>
         </button>
-        <button onclick="switchTab('budget')" id="btn-budget" class="nav-item flex flex-col items-center">
-            <i class="fa-solid fa-wallet text-xl mb-1"></i>
-            <span class="text-xs font-bold">記帳</span>
+        <button onclick="switchTab('budget')" id="btn-budget" class="nav-item flex flex-col items-center w-1/4">
+            <i class="fa-solid fa-wallet text-lg mb-1"></i>
+            <span class="text-[10px] font-bold">記帳</span>
+        </button>
+        <button onclick="switchTab('info')" id="btn-info" class="nav-item flex flex-col items-center w-1/4">
+            <i class="fa-solid fa-suitcase text-lg mb-1"></i>
+            <span class="text-[10px] font-bold">資訊</span>
         </button>
     </div>
 
     <script>
-        // --- 1. 資料庫 (將 Excel 轉換為 JSON) ---
+        // --- 全域變數 ---
+        let currentRole = localStorage.getItem('user_role'); // driver, copilot, tourist, admin
+        let currentSimulatedDate = null;
+        const JPY_RATE = 0.22;
+
+        // --- 資料庫 (擴充版) ---
         const tripData = [
             {
-                date: "12/25", day: "週四", weather: "☁️ 20°C", location: "台北 ✈️ 那霸",
+                date: "2025/12/26", day: "週五",
                 events: [
-                    { time: "14:50", title: "Uber 出發北車", type: "trans", note: "車程30分" },
-                    { time: "15:30", title: "機捷往桃園機場 T1", type: "trans", note: "直達車 15:30-16:06 / 15:45-16:21" },
-                    { time: "16:30", title: "抵達機場 & Check-in", type: "trans", note: "樂桃 MM930 (18:20起飛)。買東西吃(飲料不可出境)" },
-                    { time: "20:50", title: "抵達那霸機場", type: "trans", note: "領行李、入境" },
-                    { time: "21:30", title: "單軌列車往美榮橋", type: "trans", note: "美榮橋站 (約14分)" },
-                    { time: "22:00", title: "東橫INN CHECK IN", type: "hotel", note: "Toyoko Inn Okinawa Naha Kokusai-dori Miebashi-eki" },
-                    { time: "22:30", title: "晚餐：蝦湯拉麵 / 琉球中華 蛙吽", type: "eat", note: "蛙吽已訂位 (11/24預約)" },
-                    { time: "23:00", title: "便利商店採買", type: "eat", note: "買 SIM 卡、水" }
+                    { 
+                        time: "08:00", title: "OTS 租車", type: "trans", 
+                        mapCode: "232 543 502*66",
+                        parking: { info: "現場有專用還車區", nearby: "旁邊有加油站" },
+                        rating: 4.8, reviewCount: 2500,
+                        imgUrl: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=500", // 示意圖
+                        guide: "記得先檢查車身刮痕並拍照。右駕口訣：靠左開，雨刷在左，方向燈在右。",
+                        adminNote: "取車單號在 Email，記得出示駕照+譯本。預計 9:30 出發。",
+                        decision: "如果人太多，爸爸先帶媽媽去旁邊便利商店買咖啡。"
+                    },
+                    { 
+                        time: "11:00", title: "港川外人居住宅", type: "spot", 
+                        mapCode: "33 341 063*55",
+                        parking: { info: "店鋪前僅1-2格", nearby: "建議停外面付費停車場 (300円/hr)" },
+                        rating: 4.4, reviewCount: 1800,
+                        imgUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=500",
+                        guide: "前美軍宿舍改建的文青聚落，每間房子顏色都不同，超好拍！必買 O'Hacorte 水果塔。",
+                        adminNote: "停留 1 小時，12:00 必須離開前往普天滿宮。",
+                        decision: "如果沒車位，直接導航去附近的「コインパーキング」。"
+                    },
+                    { 
+                        time: "14:30", title: "壽司市場 泡瀨店", type: "eat", 
+                        mapCode: "33 531 366*44",
+                        parking: { info: "店前有免費大停車場", nearby: "" },
+                        rating: 4.2, reviewCount: 900,
+                        imgUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500",
+                        reservation: "只能現場排",
+                        guide: "美國村附近的迴轉壽司，CP值很高，推薦炙燒系列。",
+                        menu: [{n:"炙燒鮭魚", j:"炙りサーモン"}, {n:"鮪魚大腹", j:"大トロ"}],
+                        adminNote: "記得出示手機裡的「免費味噌湯」截圖。",
+                        decision: "如果要排超過 30 分鐘，改去旁邊吃 A&W 漢堡。"
+                    }
                 ]
             },
             {
-                date: "12/26", day: "週五", weather: "☀️ 21°C", location: "中部自駕",
+                date: "2025/12/27", day: "週六",
                 events: [
-                    { time: "06:00", title: "起床 & 早餐", type: "eat", note: "東橫INN早餐 (06:30-09:00)" },
-                    { time: "08:00", title: "前往 OTS 租車", type: "trans", note: "搭計程車或單軌至機場站。租車預約代號確認" },
-                    { time: "10:30", title: "Once a Week Coffee Stand", type: "eat", note: "必吃肉桂捲，停留10分鐘" },
-                    { time: "11:00", title: "港川外人居住宅", type: "spot", note: "拍照逛街，停留1小時" },
-                    { time: "12:30", title: "普天滿宮", type: "spot", note: "參拜，停留1小時20分" },
-                    { time: "14:30", title: "午餐：壽司市場 泡瀨店", type: "eat", note: "只能電話預約，有免費味噌湯卷" },
-                    { time: "16:00", title: "泡瀨漁港 / AEON Mall", type: "spot", note: "視時間決定去哪" },
-                    { time: "18:00", title: "晚餐：阿古豬鍋", type: "eat", note: "北谷ダイニング ちゃぁぶ～" },
-                    { time: "19:40", title: "住宿：美濱日落度假飯店", type: "hotel", note: "Sunset Resort Mihama (可停車)" },
-                    { time: "20:10", title: "美國村逛逛", type: "spot", note: "盡量早點逛，店家21:00關" }
-                ]
-            },
-            {
-                date: "12/27", day: "週六", weather: "⛅ 22°C", location: "北部海景",
-                events: [
-                    { time: "06:00", title: "起床", type: "trans", note: "早餐外面買車上吃" },
-                    { time: "07:30", title: "出發往北部", type: "trans", note: "車程約45分鐘" },
-                    { time: "08:30", title: "許田休息站", type: "spot", note: "買水族館門票、吃小吃" },
-                    { time: "09:45", title: "Panchori-na 麵包店", type: "eat", note: "可愛麵包店，停留30分" },
-                    { time: "10:45", title: "古宇利島", type: "spot", note: "停留90分" },
-                    { time: "11:00", title: "午餐：古宇利島 蝦蝦飯", type: "eat", note: "必吃美食 Kouri Shrimp" },
-                    { time: "13:20", title: "美麗海水族館", type: "spot", note: "停留3小時，看鯨鯊" },
-                    { time: "17:00", title: "晚餐：燒肉 Oba-no-ie", type: "eat", note: "車程50分，需訂位" },
-                    { time: "20:00", title: "美國村煙火", type: "spot", note: "觀賞點：北谷日落步道或海灘大階梯" }
-                ]
-            },
-            {
-                date: "12/28", day: "週日", weather: "☀️ 23°C", location: "南部巡禮",
-                events: [
-                    { time: "06:00", title: "起床 & 退房", type: "hotel", note: "11:00前退房" },
-                    { time: "08:00", title: "A&W 漢堡 / 達摩寺", type: "eat", note: "早餐選擇" },
-                    { time: "09:30", title: "瀨長島", type: "spot", note: "希臘風情，看飛機，停留90分" },
-                    { time: "11:30", title: "午餐：沖繩麵 / 義大利麵", type: "eat", note: "Okinawa Soba Yagiya 或 THE SLOW" },
-                    { time: "12:30", title: "Shinmei Coffee", type: "eat", note: "黑糖拿鐵、黑糖冰淇淋" },
-                    { time: "14:00", title: "玉泉洞 & 王國村", type: "spot", note: "鐘乳石洞、太鼓表演 (買票)" },
-                    { time: "17:00", title: "奧武島 (貓島)", type: "spot", note: "看貓咪、吃天婦羅" },
-                    { time: "18:00", title: "住宿 CHECK IN", type: "hotel", note: "東橫INN 那霸旭橋 (有飲料暢飲)" },
-                    { time: "19:00", title: "晚餐：鳥貴族", type: "eat", note: "Torikizoku 串燒" },
-                    { time: "21:00", title: "AEON 超市 / 國際通", type: "spot", note: "買半價品、貓條、伴手禮" }
-                ]
-            },
-            {
-                date: "12/29", day: "週一", weather: "✈️ 返程", location: "那霸 ✈️ 台北",
-                events: [
-                    { time: "07:00", title: "起床 & 早餐", type: "eat", note: "飯店早餐，10:00前退房" },
-                    { time: "10:30", title: "國際通 / Outlet", type: "spot", note: "最後補貨 Ashibinaa Outlet" },
-                    { time: "13:30", title: "還車", type: "trans", note: "OTS 還車，搭接駁車去機場" },
-                    { time: "14:00", title: "抵達機場 & Check-in", type: "trans", note: "亞航 FD231 (16:55起飛)" },
-                    { time: "14:30", title: "機場午餐", type: "eat", note: "空港食堂、沖繩飯糰" },
-                    { time: "16:55", title: "起飛", type: "trans", note: "Bye Bye Okinawa" },
-                    { time: "17:30", title: "抵達桃園機場", type: "trans", note: "回家囉" }
+                    { 
+                        time: "11:00", title: "古宇利島 蝦蝦飯", type: "eat", 
+                        mapCode: "485 692 167*55",
+                        parking: { info: "專用停車場 (免費)", nearby: "P1滿了請往上開到P2" },
+                        rating: 4.3, reviewCount: 3200,
+                        imgUrl: "https://images.unsplash.com/photo-1625937759422-bb2ba795ae06?w=500",
+                        guide: "沖繩網紅名店！二樓座位區可以看到古宇利大橋海景。",
+                        menu: [{n:"原味大蒜蝦飯", j:"オリジナルガーリックシュリンプ"}, {n:"辣味大蒜蝦飯", j:"スパイシーガーリックシュリンプ"}],
+                        adminNote: "這邊人多，我先去點餐，妹妹去停車。",
+                        decision: "若下大雨，改外帶在車上吃。"
+                    },
+                    { 
+                        time: "13:20", title: "美麗海水族館", type: "spot", 
+                        mapCode: "553 075 797*77",
+                        parking: { info: "P7立體停車場 (最近)", nearby: "P7滿了請停P6" },
+                        rating: 4.7, reviewCount: 45000,
+                        imgUrl: "https://images.unsplash.com/photo-1544551763-46a8723ba3f9?w=500",
+                        guide: "必看：15:00 / 17:00 的鯨鯊餵食秀。記得去戶外的海龜館和海牛館（免費）。",
+                        adminNote: "門票已在許田買好。16:30 集合去吃燒肉。",
+                        decision: "如果不看海豚秀，可以多逛一下紀念品店。"
+                    }
                 ]
             }
         ];
 
-        const infoData = {
-            flights: [
-                { leg: "去程", code: "MM930 (樂桃)", time: "18:20 TPE -> 20:50 OKA", terminal: "桃機 T1 / 那霸 Int" },
-                { leg: "回程", code: "FD231 (亞航)", time: "16:55 OKA -> 17:30 TPE", terminal: "那霸 Int / 桃機 T1" }
-            ],
-            hotels: [
-                { date: "12/25, 28", name: "東橫INN", note: "美榮橋 / 旭橋 (記得帶會員卡)" },
-                { date: "12/26-27", name: "美濱日落度假飯店", note: "Sunset Resort Mihama (美國村)" }
-            ],
-            todos: [
-                { done: false, text: "租車預約 (12/26-29)" },
-                { done: false, text: "駕照重辦 + 日文譯本 (12/10前)" },
-                { done: false, text: "不便險 & 旅平險 (12/17前)" },
-                { done: false, text: "購買 SIM 卡 (4張)" },
-                { done: false, text: "預約餐廳 (蛙吽、壽司市場)" },
-                { done: false, text: "準備行李 (24吋 x2)" }
-            ]
-        };
+        // 預設待買清單
+        const defaultShopping = [
+            { id: 1, store: "藥妝店", item: "EVE止痛藥", priceJp: 980, qty: 2, pay: "信用卡", done: false },
+            { id: 2, store: "超市", item: "日清炸雞粉", priceJp: 120, qty: 5, pay: "現金", done: false },
+            { id: 3, store: "機場", item: "雪鹽餅乾", priceJp: 1000, qty: 3, pay: "西瓜卡", done: false }
+        ];
 
-        // --- 2. 核心功能函式 ---
+        // --- 核心邏輯 ---
 
-        function renderItinerary() {
-            const container = document.getElementById('app');
-            let html = '';
-
-            tripData.forEach((day, index) => {
-                html += `
-                    <div class="mb-8">
-                        <div class="flex items-center justify-between mb-3 px-2">
-                            <h2 class="text-xl font-bold text-orange-600">
-                                <span class="bg-orange-100 px-2 py-1 rounded-lg mr-2">${day.date}</span>
-                                ${day.day}
-                            </h2>
-                            <div class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold">
-                                ${day.weather}
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                `;
-
-                day.events.forEach(event => {
-                    const tagClass = event.type === 'eat' ? 'tag-eat' : 
-                                     event.type === 'spot' ? 'tag-spot' : 
-                                     event.type === 'hotel' ? 'tag-hotel' : 'tag-trans';
-                    
-                    const icon = event.type === 'eat' ? 'fa-utensils' : 
-                                 event.type === 'spot' ? 'fa-camera' : 
-                                 event.type === 'hotel' ? 'fa-bed' : 'fa-car';
-
-                    // 處理文字高亮
-                    let noteHtml = event.note
-                        .replace(/(必吃|預約|訂位|門票|記得|CHECK IN)/g, '<span class="highlight-red">$1</span>')
-                        .replace(/(MM930|FD231)/g, '<span class="highlight-blue">$1</span>');
-
-                    // Google Maps 連結生成
-                    const mapQuery = encodeURIComponent(event.title + " 沖繩");
-                    const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-
-                    html += `
-                        <div class="card p-4 flex gap-4" onclick="window.open('${mapLink}', '_blank')">
-                            <div class="flex flex-col items-center justify-start pt-1 min-w-[50px]">
-                                <span class="text-lg font-bold text-gray-700">${event.time}</span>
-                                <div class="h-full w-0.5 bg-gray-200 my-1 rounded"></div>
-                            </div>
-                            <div class="flex-1 pb-1">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="font-bold text-lg text-gray-800 leading-tight">${event.title}</h3>
-                                    <span class="${tagClass} text-xs px-2 py-1 rounded-full whitespace-nowrap ml-2">
-                                        <i class="fa-solid ${icon} mr-1"></i>
-                                    </span>
-                                </div>
-                                <p class="text-gray-500 text-sm mt-2 leading-relaxed">${noteHtml}</p>
-                                <div class="mt-3 flex justify-end">
-                                    <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-1 px-3 rounded-full transition">
-                                        <i class="fa-solid fa-location-arrow mr-1"></i> 導航
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                html += `</div></div>`;
-            });
-            container.innerHTML = html;
+        function init() {
+            if (!currentRole) {
+                document.getElementById('role-selector').classList.remove('hidden');
+                document.getElementById('role-selector').classList.add('flex');
+            } else {
+                updateRoleUI();
+                renderHome();
+            }
         }
 
-        function renderInfo() {
-            const container = document.getElementById('app');
-            let html = `<div class="space-y-6">`;
-
-            // 航班卡片
-            html += `<div class="card p-5 bg-blue-50 border-blue-200">
-                <h3 class="text-xl font-bold text-blue-800 mb-3"><i class="fa-solid fa-plane-up mr-2"></i>航班資訊</h3>
-                ${infoData.flights.map(f => `
-                    <div class="mb-3 border-b border-blue-100 pb-2 last:border-0">
-                        <div class="font-bold text-blue-900">${f.leg} - ${f.code}</div>
-                        <div class="text-sm text-gray-600">${f.time}</div>
-                        <div class="text-xs text-gray-500 bg-white inline-block px-2 py-1 rounded mt-1">${f.terminal}</div>
-                    </div>
-                `).join('')}
-            </div>`;
-
-            // 待辦事項
-            html += `<div class="card p-5 bg-yellow-50 border-yellow-200">
-                <h3 class="text-xl font-bold text-yellow-800 mb-3"><i class="fa-solid fa-clipboard-check mr-2"></i>準備清單</h3>
-                <ul class="space-y-2">
-                    ${infoData.todos.map((todo, idx) => `
-                        <li class="flex items-center">
-                            <input type="checkbox" id="todo-${idx}" class="w-5 h-5 text-orange-500 rounded focus:ring-orange-400" ${todo.done ? 'checked' : ''}>
-                            <label for="todo-${idx}" class="ml-3 text-gray-700 font-medium ${todo.done ? 'line-through opacity-50' : ''}">${todo.text}</label>
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>`;
-
-             // 緊急聯絡
-             html += `<div class="card p-5 bg-red-50 border-red-200">
-                <h3 class="text-xl font-bold text-red-800 mb-3"><i class="fa-solid fa-phone mr-2"></i>緊急聯絡</h3>
-                <p class="text-sm text-gray-700">警察局: 110 / 消防局: 119</p>
-                <p class="text-sm text-gray-700 mt-1">外交部旅外救助: +81-80-1009-7179</p>
-            </div>`;
-
-            html += `</div>`;
-            container.innerHTML = html;
+        function selectRole(role) {
+            currentRole = role;
+            localStorage.setItem('user_role', role);
+            document.getElementById('role-selector').classList.add('hidden');
+            document.getElementById('role-selector').classList.remove('flex');
+            updateRoleUI();
+            renderHome();
         }
 
-        function renderBudget() {
-            const container = document.getElementById('app');
-            // 這裡簡單實作一個記帳介面（使用 localStorage 儲存）
-            const savedExpenses = JSON.parse(localStorage.getItem('okinawa_expenses')) || [];
-            
-            let expenseListHtml = savedExpenses.map((ex, idx) => `
-                <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                    <div>
-                        <div class="font-bold text-gray-700">${ex.item}</div>
-                        <div class="text-xs text-gray-400">${ex.date}</div>
-                    </div>
-                    <div class="font-bold text-orange-600">¥${ex.amount}</div>
-                    <button onclick="deleteExpense(${idx})" class="text-red-300 ml-3"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            `).join('');
-
-            const total = savedExpenses.reduce((sum, curr) => sum + parseInt(curr.amount), 0);
-
-            container.innerHTML = `
-                <div class="card p-6 mb-4 bg-orange-50 border-orange-200 text-center">
-                    <div class="text-gray-500 text-sm mb-1">目前總支出</div>
-                    <div class="text-4xl font-bold text-orange-600">¥${total.toLocaleString()}</div>
-                    <div class="text-xs text-gray-400 mt-2">約 TWD ${(total * 0.22).toLocaleString()}</div>
-                </div>
-
-                <div class="card p-5 mb-6">
-                    <h3 class="font-bold text-gray-700 mb-3">新增支出</h3>
-                    <div class="flex gap-2 mb-2">
-                        <input type="text" id="ex-item" placeholder="項目 (如: 晚餐)" class="flex-1 p-2 border rounded-lg bg-gray-50">
-                        <input type="number" id="ex-amount" placeholder="日幣" class="w-24 p-2 border rounded-lg bg-gray-50">
-                    </div>
-                    <button onclick="addExpense()" class="w-full bg-orange-400 text-white font-bold py-2 rounded-lg hover:bg-orange-500 transition">
-                        <i class="fa-solid fa-plus mr-1"></i> 記一筆
-                    </button>
-                </div>
-
-                <div class="card p-5">
-                    <h3 class="font-bold text-gray-700 mb-3">支出紀錄</h3>
-                    ${savedExpenses.length ? expenseListHtml : '<div class="text-center text-gray-400 py-4">還沒有紀錄喔～</div>'}
-                </div>
-            `;
+        function clearRole() {
+            localStorage.removeItem('user_role');
+            currentRole = null;
+            location.reload();
         }
 
-        // --- 3. 互動邏輯 ---
-
-        function switchTab(tab) {
-            // 更新按鈕樣式
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active', 'text-orange-500'));
-            document.getElementById(`btn-${tab}`).classList.add('active', 'text-orange-500');
-
-            // 渲染內容
-            if (tab === 'itinerary') renderItinerary();
-            if (tab === 'info') renderInfo();
-            if (tab === 'budget') renderBudget();
-            
-            window.scrollTo(0, 0);
+        function updateRoleUI() {
+            // 根據角色更新標題旁的 Badge
+            const badge = document.getElementById('current-role-badge');
+            const map = { 'driver': '🚗 妹妹', 'copilot': '🗺️ 爸爸', 'tourist': '📸 媽媽', 'admin': '📝 我' };
+            badge.innerText = `目前：${map[currentRole]} (換)`;
         }
 
-        // 記帳功能
-        function addExpense() {
-            const item = document.getElementById('ex-item').value;
-            const amount = document.getElementById('ex-amount').value;
-            if(!item || !amount) return alert('請輸入項目和金額');
-
-            const expenses = JSON.parse(localStorage.getItem('okinawa_expenses')) || [];
-            expenses.unshift({
-                item,
-                amount,
-                date: new Date().toLocaleDateString()
-            });
-            localStorage.setItem('okinawa_expenses', JSON.stringify(expenses));
-            renderBudget();
-        }
-
-        function deleteExpense(index) {
-            const expenses = JSON.parse(localStorage.getItem('okinawa_expenses')) || [];
-            expenses.splice(index, 1);
-            localStorage.setItem('okinawa_expenses', JSON.stringify(expenses));
-            renderBudget();
-        }
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            renderItinerary();
-        });
-
-    </script>
-</body>
-</html>
+        function toggleDevMode() {
+            if(!currentSimulatedDate) {
+                currentSimulatedDate = "2025-12-27 11:30";
+                alert("模擬模式：設定時間為 12/27 11:3
