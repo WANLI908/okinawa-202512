@@ -3,36 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 沖繩 🌺</title>
+    <title>2025 沖繩全家福 (購物優化版) 🌺</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         body { font-family: 'M PLUS Rounded 1c', sans-serif; background-color: #FFF8E1; -webkit-tap-highlight-color: transparent; }
+        
+        /* UI Components */
         .shisa-header { background: linear-gradient(135deg, #FFAB91 0%, #FFCC80 100%); border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3); }
         .card { background: white; border-radius: 20px; border: 2px solid #FFE0B2; transition: all 0.3s; overflow: hidden; position: relative; z-index: 10; }
         .card:active { transform: scale(0.98); }
         .card-active { border-color: #FF7043; box-shadow: 0 8px 20px rgba(255, 112, 67, 0.2); transform: scale(1.01); }
+        
+        /* Tags */
         .tag-eat { background: #FFECB3; color: #E65100; } .tag-spot { background: #B2EBF2; color: #006064; } .tag-trans { background: #E1BEE7; color: #4A148C; } .tag-hotel { background: #DCEDC8; color: #33691E; } .tag-prep { background: #F3E5F5; color: #7B1FA2; }
+        
+        /* Navigation & FAB */
         .bottom-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #FFE0B2; }
         .nav-item.active { color: #FF7043; transform: translateY(-2px); }
         .nav-item { color: #90A4AE; transition: all 0.2s; }
         .fab-btn { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background-color: #4CAF50; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 40; transition: transform 0.2s; }
         .fab-btn:active { transform: scale(0.9); }
+
+        /* Scroll & Animation */
         .date-scroll, .weather-scroll { overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; }
         .date-scroll::-webkit-scrollbar, .weather-scroll::-webkit-scrollbar { display: none; }
         .date-tab.active { background: #FF7043; color: white; border-color: #FF7043; }
+        .snap-x-mandatory { scroll-snap-type: x mandatory; }
+        .snap-center { scroll-snap-align: center; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
         .details-content { display: none; animation: slideDown 0.3s ease-out; }
         .details-content.show { display: block; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .detail-modal-overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
-        .detail-modal-overlay.open, .modal-overlay.open { display: flex; }
-        .detail-sheet, .modal-sheet { background: #fff; width: 100%; border-radius: 24px 24px 0 0; padding: 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
-        .modal-sheet { padding: 20px; max-height: 90vh; overflow-y: auto; padding-bottom: 40px; display: block; }
-        .detail-modal-overlay.open .detail-sheet, .modal-overlay.open .modal-sheet { transform: translateY(0); }
+        
+        /* Modals */
+        .modal-overlay, .detail-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
+        .detail-modal-overlay { z-index: 200; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); }
+        .modal-overlay.open, .detail-modal-overlay.open { display: flex; }
+        .modal-sheet { background: white; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; animation: slideUp 0.3s ease-out; max-height: 90vh; overflow-y: auto; padding-bottom: 40px; }
+        .detail-sheet { background: #fff; width: 100%; height: 85vh; border-radius: 24px 24px 0 0; padding: 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
+        .detail-modal-overlay.open .detail-sheet { transform: translateY(0); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        /* Elements */
         .detail-header-img { width: 100%; height: 250px; object-fit: cover; }
         .detail-body { padding: 24px; overflow-y: auto; padding-bottom: 100px; }
         .detail-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 100px; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
@@ -46,12 +68,116 @@
         .sync-offline { background-color: #ccc; }
         .qty-btn { width: 40px; height: 40px; background: #f3f4f6; border-radius: 8px; font-weight: bold; color: #4b5563; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .qty-btn:active { background: #e5e7eb; }
-        .shop-img-box { width: 60px; height: 60px; border-radius: 10px; overflow: hidden; background: #f9fafb; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #e5e7eb; }
+        .shop-img-box { width: 90px; height: 90px; border-radius: 4px; overflow: hidden; background: #6b7280; /* 深灰色預設背景 */display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #e5e7eb; position: relative;/* 新增：滑鼠移上去變成放大鏡 */cursor: zoom-in; transition: transform 0.1s; }
+        /* 點擊時的小動畫 */
+        .shop-img-box:active { transform: scale(0.95); }
+        /* 如果沒有圖片 (只有灰色背景)，把滑鼠變回預設，避免誤會 */
+        .shop-img-box.no-image { cursor: default;background: #6b7280; }
+        .shop-img-box.no-image:active { transform: none; }
         .shop-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .snap-x-mandatory { scroll-snap-type: x mandatory; }
-        .snap-center { scroll-snap-align: center; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        /* 保持上次設定的輸入框寬度 */
+        .jp-price-input-clean { border: 1px solid #d1d5db; border-radius: 6px; padding: 2px 4px; width: 70px; font-size: 15px; text-align: center; color: #374151; background: white; outline: none; transition: all 0.2s; }
+        .jp-price-input-clean:focus { border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1); }
         .highlight-time { font-family: 'Courier New', monospace; font-weight: bold; color: #d97706; background: #fef3c7; padding: 2px 6px; border-radius: 4px; }
+        .jp-price-input { width: 80px; padding: 4px; border: 1px solid #e5e7eb; border-radius: 4px; font-weight: bold; color: #ea580c; text-align: right; background: white; }
+        /* 新增：置頂容器樣式 */
+.sticky-filters {
+    position: sticky;
+    top: 72px; /* 配合 Header 高度 (約 70~80px)，固定在它下方 */
+    z-index: 40;
+    
+    /* 背景色與 body 一致，加一點透明度與模糊 */
+    background-color: rgba(255, 248, 225, 0.95); 
+    backdrop-filter: blur(5px);
+    
+    /* 上下各留 20px，左右補回內距 */
+    padding: 20px 16px; 
+    
+    /* 關鍵：使用負邊界抵消原本 #app 的 padding，讓背景滿版 */
+    margin-left: -16px; 
+    margin-right: -16px;
+    
+    /* 輕微陰影讓層次分明 */
+    box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+/* 修改：移除原本的 margin，統一由外層 sticky-filters 控制間距 */
+.filter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0; /* 改為 0 */
+    gap: 8px;
+}
+
+/* 保持之前的樣式 */
+.filter-select {
+    background: white;
+    border: 1px solid #fed7aa;
+    color: #4b5563;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    outline: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 14px;
+    padding-right: 28px;
+    appearance: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.rate-badge {
+    font-size: 12px;
+    color: #ea580c;
+    background: #fff7ed;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px dashed #fdba74;
+    font-weight: bold;
+    white-space: nowrap;
+}
+/* --- 記帳功能新增樣式 START --- */
+.split-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 8px;
+}
+.member-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    background: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+}
+.member-check.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+    font-weight: bold;
+}
+.chart-container {
+    position: relative; 
+    height: 250px; 
+    width: 100%;
+    margin-bottom: 20px;
+}
+.person-card {
+    background: white;
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
     </style>
 </head>
 <body class="pb-28">
@@ -60,7 +186,7 @@
     <div class="shisa-header sticky top-0 z-50 p-4 flex justify-between items-center text-white">
         <div>
             <h1 class="text-xl font-bold flex items-center gap-2">
-                沖繩 <span id="sync-indicator" class="sync-status sync-offline" title="連線狀態"></span>
+                沖繩全家福 <span id="sync-indicator" class="sync-status sync-offline" title="連線狀態"></span>
                 <span id="current-role-badge" onclick="clearRole()" class="text-xs bg-white/20 px-2 py-1 rounded cursor-pointer hover:bg-white/40">切換</span>
             </h1>
             <p id="header-desc" class="text-xs opacity-90 mt-1">12/25 - 12/29</p>
@@ -87,11 +213,44 @@
     <div id="modal-pdf" class="modal-overlay" style="z-index: 1000;" onclick="closePdfModal()"><div class="pdf-sheet" onclick="event.stopPropagation()"><button onclick="closePdfModal()" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button><div id="pdf-content"></div></div></div>
 
     <!-- Shopping Modal -->
-    <div id="modal-shopping" class="modal-overlay" onclick="closeModal('modal-shopping')"><div class="modal-sheet space-y-4" onclick="event.stopPropagation()"><div class="flex justify-between items-center"><h3 class="text-xl font-bold text-gray-700">新增必買 & 比價</h3><button onclick="closeModal('modal-shopping')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><input id="in-shop-img" placeholder="圖片連結 URL (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm"><div class="grid grid-cols-3 gap-2"><select id="in-shop-cat" class="p-3 bg-white rounded-xl border border-orange-200 font-bold text-gray-700"><option value="藥妝">💊 藥妝</option><option value="零食">🍪 零食</option><option value="電器">🔌 電器</option><option value="衣物">👕 衣物</option><option value="雜貨">🎁 雜貨</option></select><input id="in-shop-store" placeholder="商店 (如: 大國)" class="col-span-2 p-3 bg-gray-50 rounded-xl border border-gray-200"></div><input id="in-shop-item" placeholder="品名 (如: 合利他命)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200"><div class="grid grid-cols-2 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100"><div><label class="text-xs text-gray-500 font-bold">🇹🇼 台灣售價</label><input id="in-shop-tw" type="number" placeholder="NT$" class="w-full p-2 bg-white rounded border border-blue-200 mt-1"></div><div><label class="text-xs text-gray-500 font-bold">🇯🇵 日本售價</label><input id="in-shop-jp" type="number" placeholder="¥" class="w-full p-2 bg-white rounded border border-blue-200 mt-1"></div><div class="col-span-2 text-center text-xs text-blue-500 pt-1">輸入日本價格自動計算匯率 (0.218)</div></div><button onclick="addShopItem()" class="w-full bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">加入清單</button></div></div>
+    <div id="modal-shopping" class="modal-overlay" onclick="closeModal('modal-shopping')">
+        <div class="modal-sheet space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-700" id="shop-modal-title">新增必買 & 比價</h3>
+                <button onclick="closeModal('modal-shopping')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <input type="hidden" id="in-shop-key">
+            <input id="in-shop-img" placeholder="圖片連結 URL 或 檔名 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm">
+            <div class="grid grid-cols-3 gap-2">
+                <select id="in-shop-cat" class="p-3 bg-white rounded-xl border border-orange-200 font-bold text-gray-700"><option value="藥妝">💊 藥妝</option><option value="零食">🍪 零食</option><option value="電器">🔌 電器</option><option value="衣物">👕 衣物</option><option value="雜貨">🎁 雜貨</option></select>
+                <input id="in-shop-store" placeholder="商店 (如: 大國)" class="col-span-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
+            </div>
+            <input id="in-shop-item" placeholder="品名 (如: 合利他命)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200">
+            <div class="grid grid-cols-2 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
+                <div><label class="text-xs text-gray-500 font-bold">🇹🇼 台灣售價</label><input id="in-shop-tw" type="number" placeholder="NT$" class="w-full p-2 bg-white rounded border border-blue-200 mt-1"></div>
+                <div><label class="text-xs text-gray-500 font-bold">🇯🇵 日本售價</label><input id="in-shop-jp" type="number" placeholder="¥" class="w-full p-2 bg-white rounded border border-blue-200 mt-1"></div>
+                <div class="col-span-2 text-center text-xs text-blue-500 pt-1">輸入日本價格自動計算匯率 (0.218)</div>
+            </div>
+            <button onclick="saveShopItem()" class="w-full bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">儲存</button>
+        </div>
+    </div>
     
     <!-- Budget Modal -->
-    <div id="modal-budget" class="modal-overlay" onclick="closeModal('modal-budget')"><div class="modal-sheet space-y-4" onclick="event.stopPropagation()"><div class="flex justify-between items-center"><h3 class="text-xl font-bold text-gray-700">記一筆支出</h3><button onclick="closeModal('modal-budget')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="bg-gray-50 p-2 rounded-xl border border-gray-200"><label class="text-xs text-gray-500 font-bold ml-1">日期與時間</label><input id="in-ex-time" type="datetime-local" class="w-full bg-transparent font-bold text-gray-700 outline-none mt-1"></div><select id="in-ex-category" class="w-full p-3 bg-white rounded-xl border border-orange-200 text-gray-700 font-bold"><option value="食物">🍔 食物</option><option value="購物">🛍️ 購物</option><option value="交通">🚗 交通</option><option value="門票">🎫 門票</option><option value="其他">💸 其他</option></select><input id="in-ex-store" placeholder="商店/餐廳 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200"><input id="in-ex-item" placeholder="品名/內容" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200"><div class="grid grid-cols-2 gap-3"><input id="in-ex-price" type="number" placeholder="日幣單價" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200"><div class="flex items-center gap-2"><button class="qty-btn" onclick="adjustQty(-1)">-</button><input id="in-ex-qty" type="number" value="1" class="w-full p-3 text-center bg-gray-50 rounded-xl border border-gray-200" readonly><button class="qty-btn" onclick="adjustQty(1)">+</button></div></div><select id="in-ex-pay" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700"><option value="現金">💵 現金</option><option value="信用卡">💳 信用卡</option><option value="Suica/IC卡">🐧 Suica / IC卡</option></select><div class="bg-orange-50 p-4 rounded-xl text-center border border-orange-100"><div class="text-sm text-gray-500 mb-1">總金額 (單價 x 數量)</div><div class="text-2xl font-bold text-orange-600">¥<span id="calc-total">0</span></div><div class="text-sm font-bold text-blue-500 mt-1">≈ NT$<span id="calc-twd">0</span></div></div><button onclick="addExpense()" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">儲存紀錄</button></div></div>
+    <div id="modal-budget" class="modal-overlay" onclick="closeModal('modal-budget')">
+        <div class="modal-sheet space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center"><h3 class="text-xl font-bold text-gray-700">記一筆支出</h3><button onclick="closeModal('modal-budget')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+            <div class="bg-gray-50 p-2 rounded-xl border border-gray-200"><label class="text-xs text-gray-500 font-bold ml-1">日期與時間</label><input id="in-ex-time" type="datetime-local" class="w-full bg-transparent font-bold text-gray-700 outline-none mt-1"></div>
+            <select id="in-ex-category" class="w-full p-3 bg-white rounded-xl border border-orange-200 text-gray-700 font-bold"><option value="食物">🍔 食物</option><option value="購物">🛍️ 購物</option><option value="交通">🚗 交通</option><option value="門票">🎫 門票</option><option value="其他">💸 其他</option></select>
+            <input id="in-ex-store" placeholder="商店/餐廳 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200">
+            <input id="in-ex-item" placeholder="品名/內容" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200">
+            <div class="grid grid-cols-2 gap-3"><input id="in-ex-price" type="number" placeholder="日幣單價" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200"><div class="flex items-center gap-2"><button class="qty-btn" onclick="adjustQty(-1)">-</button><input id="in-ex-qty" type="number" value="1" class="w-full p-3 text-center bg-gray-50 rounded-xl border border-gray-200" readonly><button class="qty-btn" onclick="adjustQty(1)">+</button></div></div>
+            <select id="in-ex-pay" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700"><option value="現金">💵 現金</option><option value="信用卡">💳 信用卡</option><option value="Suica/IC卡">🐧 Suica / IC卡</option></select>
+            <div class="bg-orange-50 p-4 rounded-xl text-center border border-orange-100"><div class="text-sm text-gray-500 mb-1">總金額 (單價 x 數量)</div><div class="text-2xl font-bold text-orange-600">¥<span id="calc-total">0</span></div><div class="text-sm font-bold text-blue-500 mt-1">≈ NT$<span id="calc-twd">0</span></div></div>
+            <button onclick="addExpense()" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">儲存紀錄</button>
+        </div>
+    </div>
 
+    <!-- Translation Modal -->
     <div id="trans-modal" class="fixed inset-0 bg-black/80 z-[110] hidden flex-col items-center justify-center p-6" onclick="closeTranslation()"><div class="bg-white rounded-2xl p-6 w-full max-w-sm text-center space-y-4" onclick="event.stopPropagation()"><h3 class="font-bold text-xl text-orange-600 border-b pb-2">🇯🇵 幫我說日文</h3><div class="grid grid-cols-2 gap-3"><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">結帳</div><div class="font-bold text-lg">お会計 (Okai-kei)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">謝謝</div><div class="font-bold text-lg">ありがとう (Arigatou)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">廁所</div><div class="font-bold text-lg">トイレ (Toire)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">水</div><div class="font-bold text-lg">お水 (Omizu)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left col-span-2"><div class="text-xs text-gray-400">不好意思 / 請問</div><div class="font-bold text-lg">すみません (Sumimasen)</div></div></div><button onclick="closeTranslation()" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-full font-bold w-full mt-2">關閉</button></div></div>
 
     <!-- Navigation -->
@@ -111,20 +270,27 @@
     </div>
 
     <script>
-        // ==========================================
-        // 🔥 請將你的 Firebase Config 貼在這裡 🔥
-        // ==========================================
+        // --- 新增篩選狀態變數 ---
+let currentCategoryFilter = 'all';
+let currentStoreFilter = 'all';
+
+// --- 新增篩選更新函式 ---
+function updateFilter(type, value) {
+    if (type === 'category') currentCategoryFilter = value;
+    if (type === 'store') currentStoreFilter = value;
+    renderShopping(); // 重新渲染畫面
+}
+        
         const firebaseConfig = {
             apiKey: "AIzaSyDLahJlYtLuCYrZBgiSYl7FqfOICJkJBd0",
-  authDomain: "okinawa-202512.firebaseapp.com",
-  databaseURL: "https://okinawa-202512-default-rtdb.firebaseio.com",
-  projectId: "okinawa-202512",
-  storageBucket: "okinawa-202512.firebasestorage.app",
-  messagingSenderId: "932908173572",
-  appId: "1:932908173572:web:bad7f92fd5e8e57948e851",
-  measurementId: "G-HE116G25W0"
+            authDomain: "okinawa-202512.firebaseapp.com",
+            databaseURL: "https://okinawa-202512-default-rtdb.firebaseio.com",
+            projectId: "okinawa-202512",
+            storageBucket: "okinawa-202512.firebasestorage.app",
+            messagingSenderId: "932908173572",
+            appId: "1:932908173572:web:bad7f92fd5e8e57948e851",
+            measurementId: "G-HE116G25W0"
         };
-        // ==========================================
 
         let db = null;
         try {
@@ -148,7 +314,7 @@
             { id: 't1', text: "牙刷、牙膏、牙線", category: "盥洗", done: false }, { id: 't2', text: "洗沐護髮、洗面乳", category: "盥洗", done: false }, { id: 't3', text: "髮油、梳子、鯊魚夾", category: "盥洗", done: false }, { id: 't4', text: "毛巾、浴巾", category: "盥洗", done: false }, { id: 't5', text: "化妝品、保養品", category: "盥洗", done: false }, { id: 't6', text: "隱形眼鏡、水盒", category: "盥洗", done: false },
             { id: 'c1', text: "外出衣服 (5天)", category: "衣物", done: false }, { id: 'c2', text: "內衣褲、襪子", category: "衣物", done: false }, { id: 'c3', text: "睡衣、拖鞋", category: "衣物", done: false }, { id: 'c4', text: "外套、帽子、墨鏡", category: "衣物", done: false }, { id: 'e1', text: "充電器、線、行充", category: "電子", done: false }, { id: 'e2', text: "導航手機架", category: "電子", done: false }, { id: 'o1', text: "隨身包、環保袋", category: "雜項", done: false }, { id: 'o2', text: "雨傘、水壺", category: "雜項", done: false }, { id: 'o3', text: "防蚊液、防曬", category: "雜項", done: false }, { id: 'o4', text: "個人藥品", category: "雜項", done: false }, { id: 'o5', text: "貓條", category: "雜項", done: false }
         ];
-        const SHOPPING_KEY = 'okinawa_shop_local_v3'; // 使用新 key 確保載入新預設值
+        const SHOPPING_KEY = 'okinawa_shop_local_v6'; 
         const defaultShoppingList = [
             { id: 's1', category: '雜貨', store: '那霸機場/單軌', item: 'OKIKA 交通卡', priceJp: 2000, priceTw: 440, done: false },
             { id: 's2', category: '電器', store: '便利商店/超市', item: '拍立得 (Instant Camera)', priceJp: 15000, priceTw: 3300, done: false },
@@ -161,7 +327,7 @@
             { id: 's9', category: '雜貨', store: '波上宮', item: '開運御守', priceJp: 800, priceTw: 175, done: false },
             { id: 's10', category: '雜貨', store: '北谷 GIGO', item: '扭蛋', priceJp: 500, priceTw: 110, done: false }
         ];
-        const EXPENSE_KEY = 'okinawa_expenses_local';
+        const EXPENSE_KEY = 'okinawa_expenses_local_v2';
         const okinawaEvents = [
             { title: "東南植物樂園 燈光秀", date: "10/25 - 5/25", loc: "沖繩市", img: "https://www.okinawastory.jp/feature/illumination/images/spot01_img01.jpg", link: "https://www.google.com/maps/search/Southeast+Botanical+Gardens" },
             { title: "糸滿和平燈飾", date: "12/13 - 1/03", loc: "糸滿市", img: "https://www.okinawastory.jp/feature/illumination/images/spot04_img01.jpg", link: "https://www.google.com/maps/search/Itoman+Peaceful+Illumination" },
@@ -176,7 +342,7 @@
                 events: [
                     { time: "14:50", title: "Uber 出發北車", type: "trans", guide: "護照、手機、錢包帶了嗎？", appLink: { url: "https://m.uber.com/ul", text: "開啟 Uber", icon: "fa-brands fa-uber" }, travel: { mode: 'train', time: '40分' } },
                     { time: "15:20", title: "機捷往機場 (直達車)", type: "trans", guide: "A1 台北車站 -> A13 第一航廈", frequency: "約 15 分鐘一班", timetableUrl: "https://www.tymetro.com.tw/tymetro-new/tw/_pages/travel-guide/timetable.php" },
-                    { time: "16:30", title: "機場 Check-in", type: "trans", title_detail: "樂桃 MM930", bookingInfo: { code: "1616324336315022", note: "Trip.com 訂單", extra: "T1 | 20kg 託運 / 7kg 手提 | 登機門: 現場確認", pdfContent: "航班：MM930\n起飛：18:20 (T1)\n抵達：20:50 (D)\n\n乘客：\n1. Chen Szu Yu\n2. Chen Ru Xuan\n3. Chen Chien Liang\n4. Hsu Mei Ling\n\n行李：\n託運 20kg x 4\n手提 7kg x 4" }, guide: "18:20 起飛 -> 20:50 抵達 (D)。" },
+                    { time: "16:30", title: "機場 Check-in", type: "trans", title_detail: "樂桃 MM930", bookingInfo: { code: "1616324336315022", note: "Trip.com 訂單", extra: "T1 | 20kg 託運 / 7kg 手提 | 登機門: 現場確認", pdfContent: "航班：MM930\n起飛：18:20 (T1)\n抵達：20:50 (D)\n\n乘客：\n1. Chen Szu Yu\n2. Chen Ru Xuan\n3. Chen Chien Liang\n4. Hsu Mei Ling\n\n行李：\n託運 20kg x 4\n手提 7kg x 4", voucherImg: "flight_go.jpg" }, guide: "18:20 起飛 -> 20:50 抵達 (D)。" },
                     { time: "21:30", title: "單軌列車往市區", type: "trans", guide: "那霸機場站 -> 美榮橋站。", frequency: "約 10-12 分鐘一班", timetableUrl: "https://www.yui-rail.co.jp/tc/timetable/", travel: { mode: 'walk', time: '5分' } },
                     { time: "22:00", title: "東橫INN 美榮橋", type: "hotel", mapCode: "33 157 154*55", bookingInfo: { code: "會員卡 Check-in", note: "現場付款" } },
                     { time: "22:30", title: "晚餐選擇 (左右滑動)", type: "choice", choices: [ { title: "蝦湯拉麵 Chanya", type: "eat", guide: "濃郁蝦湯頭，營業至深夜。", mapCode: "33 157 435*30", link: "https://maps.app.goo.gl/Chanya", detailInfo: { desc: "濃郁鮮甜的蝦湯拉麵。", tags: ["拉麵","宵夜"], menu:[{n:"蝦湯拉麵",p:"¥980"}] } }, { title: "琉球中華 蛙吽", type: "eat", guide: "創意中華料理，有訂位。", mapCode: "33 157 288*22", link: "https://maps.app.goo.gl/Waon", detailInfo: { desc: "時尚的創意中華料理。", tags: ["中華","訂位"], menu:[{n:"紅油抄手",p:"¥680"},{n:"擔擔麵",p:"¥880"}] } } ] }
@@ -192,8 +358,8 @@
                     { time: "12:30", title: "普天滿宮", type: "spot", mapCode: "33 438 616*33", guide: "宜野灣市的能量景點，有鐘乳石洞穴。", travel: { mode: 'drive', time: '30分' } },
                     { time: "14:30", title: "午餐：壽司市場 泡瀨店", type: "eat", mapCode: "33 531 366*44", detailInfo: { desc: "人氣迴轉壽司，CP值高。", tags: ["壽司", "平價"], menu: [{n:"炙燒鮭魚", p:"¥100"}, {n:"鮪魚大腹", p:"¥300"}] }, travel: { mode: 'drive', time: '15分' } },
                     { time: "15:50", title: "泡瀨漁港 / AEON Mall", type: "spot", guide: "視時間決定：想吃海膽焗烤去漁港，想逛街去 AEON Rycom。", travel: { mode: 'drive', time: '20分' } },
-                    { time: "18:00", title: "晚餐：阿古豬鍋", type: "eat", title_detail: "Chatan Dining Chaabu", mapCode: "33 526 212*25", bookingInfo: { code: "3JYNWGHFKM", note: "Tabelog 預約", pdfContent: "預約號：3JYNWGHFKM\n時間：12/26 18:00\n人數：4位\n\n*系統費 ¥1,760 已付" }, detailInfo: { desc: "位於北谷的阿古豬涮涮鍋名店。", tags: ["阿古豬", "涮涮鍋"], menu: [{n:"阿古豬涮涮鍋", p:"¥3,500"}] }, travel: { mode: 'walk', time: '5分' } },
-                    { time: "19:40", title: "美濱日落度假飯店", type: "hotel", title_detail: "Sunset Resort Mihama", mapCode: "33 525 205*74", bookingInfo: { code: "1616323760441360", note: "PIN: 1047", extra: "已付 ¥9,424", pdfContent: "訂單號：1616323760441360\nPIN碼：1047\n入住：12/26 - 12/28 (2晚)\n房型：標準雙床房 x1" } },
+                    { time: "18:00", title: "晚餐：阿古豬鍋", type: "eat", title_detail: "Chatan Dining Chaabu", mapCode: "33 526 212*25", bookingInfo: { code: "3JYNWGHFKM", note: "Tabelog 預約", pdfContent: "預約號：3JYNWGHFKM\n時間：12/26 18:00\n人數：4位\n\n*系統費 ¥1,760 已付", voucherImg: "dinner_day2.jpg" }, detailInfo: { desc: "位於北谷的阿古豬涮涮鍋名店。", tags: ["阿古豬", "涮涮鍋"], menu: [{n:"阿古豬涮涮鍋", p:"¥3,500"}] }, travel: { mode: 'walk', time: '5分' } },
+                    { time: "19:40", title: "美濱日落度假飯店", type: "hotel", title_detail: "Sunset Resort Mihama", mapCode: "33 525 205*74", bookingInfo: { code: "1616323760441360", note: "PIN: 1047", extra: "已付 ¥9,424", pdfContent: "訂單號：1616323760441360\nPIN碼：1047\n入住：12/26 - 12/28 (2晚)\n房型：標準雙床房 x1", voucherImg: "hotel_mihama.jpg" } },
                     { time: "20:10", title: "美國村逛逛", type: "spot", mapCode: "33 526 450*63", guide: "可以去大國藥妝補貨，摩天輪拍照。" }
                 ]
             },
@@ -205,7 +371,7 @@
                     { time: "09:45", title: "Panchori-na 麵包店", type: "eat", guide: "可愛麵包店，停留 30 分鐘。", travel: { mode: 'drive', time: '30分' } },
                     { time: "11:00", title: "午餐：蝦蝦飯", type: "eat", mapCode: "485 692 167*55", detailInfo: { desc: "古宇利島必吃！建議先找座位。", tags: ["海景", "蝦飯"], menu: [{n:"原味大蒜蝦飯", p:"¥1,400"}] }, travel: { mode: 'drive', time: '40分' } },
                     { time: "13:20", title: "美麗海水族館", type: "spot", mapCode: "553 075 797*77", detailInfo: { desc: "亞洲最大水族館之一，黑潮之海必看。", tags: ["鯨鯊", "海豚秀"], highlights: ["黑潮之海", "戶外海豚劇場"] }, travel: { mode: 'drive', time: '50分' } },
-                    { time: "17:00", title: "晚餐：Obaa no Ya 燒肉", type: "eat", title_detail: "Obaa no Ya (名護燒肉)", mapCode: "206 598 371*14", bookingInfo: { code: "2QZLY2AV4K", note: "Tabelog 預約", pdfContent: "預約號：2QZLY2AV4K\n時間：12/27 17:00\n人數：4位\n\n*當天取消收費 ¥3000/人" }, detailInfo: { desc: "名護人氣燒肉，炭火燒烤風味絕佳。", tags: ["燒肉", "和牛"], menu: [{n:"特上牛五花", p:"¥1,800"}] }, travel: { mode: 'drive', time: '40分' } },
+                    { time: "17:00", title: "晚餐：Obaa no Ya 燒肉", type: "eat", title_detail: "Obaa no Ya (名護燒肉)", mapCode: "206 598 371*14", bookingInfo: { code: "2QZLY2AV4K", note: "Tabelog 預約", pdfContent: "預約號：2QZLY2AV4K\n時間：12/27 17:00\n人數：4位\n\n*當天取消收費 ¥3000/人", voucherImg: "dinner_day3.jpg" }, detailInfo: { desc: "名護人氣燒肉，炭火燒烤風味絕佳。", tags: ["燒肉", "和牛"], menu: [{n:"特上牛五花", p:"¥1,800"}] }, travel: { mode: 'drive', time: '40分' } },
                     { time: "20:00", title: "美國村煙火", type: "spot", guide: "週六限定！觀賞點：北谷日落步道。" }
                 ]
             },
@@ -219,7 +385,7 @@
                     { time: "12:30", title: "Shinmei Coffee", type: "eat", guide: "古民家咖啡，推薦黑糖拿鐵。", travel: { mode: 'drive', time: '20分' } },
                     { time: "14:00", title: "玉泉洞 (王國村)", type: "spot", mapCode: "232 495 330*28", guide: "鐘乳石洞，出來看太鼓表演。", travel: { mode: 'drive', time: '20分' } },
                     { time: "17:00", title: "奧武島 (貓島)", type: "spot", mapCode: "232 468 336*41", guide: "必買：中本鮮魚店天婦羅。", travel: { mode: 'drive', time: '15分' } },
-                    { time: "17:30", title: "Gangala之谷 導覽", type: "spot", mapCode: "232 495 330*28", bookingInfo: { code: "0Y0BGC4I", note: "Nutmeg 預約", pdfContent: "預約號：0Y0BGC4I\n時間：12/28 17:30\n\n*請提早15分鐘集合" }, detailInfo: { desc: "太古森林導覽，集合時間 17:30。", tags: ["自然", "導覽"], highlights: ["巨大榕樹", "CAVE CAFE"] }, travel: { mode: 'drive', time: '40分' } },
+                    { time: "17:30", title: "Gangala之谷 導覽", type: "spot", mapCode: "232 495 330*28", bookingInfo: { code: "0Y0BGC4I", note: "Nutmeg 預約", pdfContent: "預約號：0Y0BGC4I\n時間：12/28 17:30\n\n*請提早15分鐘集合", voucherImg: "gangala.jpg" }, detailInfo: { desc: "太古森林導覽，集合時間 17:30。", tags: ["自然", "導覽"], highlights: ["巨大榕樹", "CAVE CAFE"] }, travel: { mode: 'drive', time: '40分' } },
                     { time: "20:00", title: "東橫INN 那霸旭橋", type: "hotel", bookingInfo: { code: "會員卡", note: "現場付款" }, mapCode: "33 126 733*12" },
                     { time: "21:00", title: "AEON 超市 / 國際通", type: "spot", guide: "買半價品、零食伴手禮。" }
                 ]
@@ -231,10 +397,21 @@
                     { time: "10:30", title: "Ashibinaa Outlet", type: "spot", mapCode: "232 544 452*22", guide: "運動品牌、GAP 都很便宜。", travel: { mode: 'drive', time: '15分' } },
                     { time: "13:30", title: "OTS 還車", type: "trans", guide: "加滿油再還車！搭接駁車去機場。", travel: { mode: 'trans', time: '20分' } },
                     { time: "14:30", title: "機場午餐", type: "eat", guide: "豬肉蛋飯糰。" },
-                    { time: "16:55", title: "回程飛機 (FD231)", type: "trans", title_detail: "泰國亞航 FD231", bookingInfo: { code: "1616324336315022", note: "Trip.com", pdfContent: "航班：FD231\n起飛：16:55 (那霸 I)\n抵達：17:35 (T1)\n\n行李：\n託運 20kg x 4\n手提 7kg x 4" }, guide: "那霸 I -> 桃機 T1。提早 2.5 小時到。" }
+                    { time: "16:55", title: "回程飛機 (FD231)", type: "trans", title_detail: "泰國亞航 FD231", bookingInfo: { code: "1616324336315022", note: "Trip.com", pdfContent: "航班：FD231\n起飛：16:55 (那霸 I)\n抵達：17:35 (T1)\n\n行李：\n託運 20kg x 4\n手提 7kg x 4", voucherImg: "flight_back.jpg" }, guide: "那霸 I -> 桃機 T1。提早 2.5 小時到。" }
                 ]
             }
         ];
+        
+        // --- 記帳成員設定 ---
+// 對應 role 的顯示名稱
+const FAMILY_MEMBERS = [
+    { id: 'driver', name: '妹妹' },
+    { id: 'copilot', name: '爸爸' },
+    { id: 'tourist', name: '媽媽' },
+    { id: 'admin', name: '我' }
+];
+
+let budgetChart = null; // 用來存儲圖表實例
 
         function init() {
             if (!currentRole) {
@@ -244,6 +421,7 @@
                 renderHome();
                 setupRealtimeListeners();
             }
+            // Auto Calc for Budget
             const exPrice = document.getElementById('in-ex-price');
             const exQty = document.getElementById('in-ex-qty');
             const calcTotal = document.getElementById('calc-total');
@@ -270,28 +448,331 @@
         function clearRole() { localStorage.removeItem('user_role'); location.reload(); }
         function setupRealtimeListeners() { if(db) { db.ref('shoppingList').on('value', () => { if(currentTab === 'shopping') renderShopping(); }); db.ref('expenses').on('value', () => { if(currentTab === 'budget') renderBudget(); }); } }
 
+        // --- Render Pages ---
+        function renderShopping() {
+    document.getElementById('header-desc').innerText = "購物清單";
+    const container = document.getElementById('app');
+    
+    // 修改：將 shopping-controls 加上 sticky-filters class，並移除 mb-2
+    let html = `
+        <button onclick="openEditShopModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
+        
+        <!-- 置頂篩選區塊 -->
+        <div id="shopping-controls" class="sticky-filters"></div>
+        
+        <div id="shopping-list-container" class="space-y-4 pb-24">
+            <div class="text-center text-gray-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
+        </div>`;
+    container.innerHTML = html;
+
+    const loadData = (data) => {
+        const listContainer = document.getElementById('shopping-list-container');
+        const controlsContainer = document.getElementById('shopping-controls');
+
+        if(!data) { 
+            // 沒資料時隱藏篩選列，避免佔位
+            controlsContainer.style.display = 'none';
+            listContainer.innerHTML = '<div class="text-center text-gray-400 mt-10">清單是空的，點擊 + 新增</div>'; 
+            return; 
+        }
+
+        // --- 資料處理與提取選項 ---
+        const allEntries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
+        
+        const categories = new Set();
+        const stores = new Set();
+        allEntries.forEach(([_, item]) => {
+            if(item.category) categories.add(item.category);
+            if(item.store) stores.add(item.store);
+        });
+
+        const catOptions = Array.from(categories).map(c => `<option value="${c}" ${currentCategoryFilter===c?'selected':''}>${c}</option>`).join('');
+        const storeOptions = Array.from(stores).map(s => `<option value="${s}" ${currentStoreFilter===s?'selected':''}>${s}</option>`).join('');
+
+        // 顯示篩選器內容
+        controlsContainer.style.display = 'block';
+        controlsContainer.innerHTML = `
+            <div class="filter-row">
+                <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                    <select class="filter-select" onchange="updateFilter('category', this.value)">
+                        <option value="all">全部種類</option>
+                        ${catOptions}
+                    </select>
+                    <select class="filter-select" onchange="updateFilter('store', this.value)">
+                        <option value="all">全部店舖</option>
+                        ${storeOptions}
+                    </select>
+                </div>
+                <div class="rate-badge">
+                    <i class="fa-solid fa-calculator mr-1"></i>匯率 ${JPY_RATE}
+                </div>
+            </div>
+        `;
+
+        // --- 執行篩選 ---
+        const filteredEntries = allEntries.filter(([_, item]) => {
+            const catMatch = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
+            const storeMatch = currentStoreFilter === 'all' || item.store === currentStoreFilter;
+            return catMatch && storeMatch;
+        });
+
+        if (filteredEntries.length === 0) {
+            listContainer.innerHTML = '<div class="text-center text-gray-400 py-8">沒有符合篩選條件的商品</div>';
+            return;
+        }
+        
+        // --- 生成列表 (邏輯保持不變) ---
+        let itemsHtml = '';
+        filteredEntries.reverse().forEach(([key, item]) => {
+            // 省錢計算
+            let savingsInfo = '';
+            let twdEstimate = 0;
+            if (item.priceJp) { 
+                twdEstimate = Math.round(parseInt(item.priceJp) * JPY_RATE); 
+                if (item.priceTw) { 
+                    const priceTw = parseInt(item.priceTw); 
+                    const diff = priceTw - twdEstimate;
+                    if (diff > 0) savingsInfo = `<span class="ml-2 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">省 $${diff}</span>`; 
+                    else if (diff < 0) savingsInfo = `<span class="ml-2 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">貴 $${Math.abs(diff)}</span>`;
+                } 
+            }
+
+            // 圖片邏輯
+            let imgSource = '';
+            if (item.imgUrl) { imgSource = item.imgUrl.startsWith('http') ? item.imgUrl : `./${item.imgUrl}`; }
+            let imgBoxContent = '';
+            let clickAction = '';
+            let boxClass = 'shop-img-box';
+            if (imgSource) {
+                imgBoxContent = `<img src="${imgSource}" onerror="this.style.display='none'">`;
+                clickAction = `onclick="openVoucherImage('${imgSource}')"`;
+            } else { boxClass += ' no-image'; }
+
+            // 卡片 HTML
+            itemsHtml += `
+                <div class="card p-4 flex gap-4 bg-white items-center ${item.done ? 'opacity-60' : ''}">
+                    <div>
+                        <input type="checkbox" onchange="toggleShopItem('${key}')" 
+                               class="w-6 h-6 accent-blue-600 border-2 border-blue-600 rounded cursor-pointer" 
+                               ${item.done ? 'checked' : ''}>
+                    </div>
+                    <div class="${boxClass}" ${clickAction}>${imgBoxContent}</div>
+                    <div class="flex-1 flex flex-col justify-between min-w-0 self-stretch">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded">${item.category || '未分類'}</span>
+                            <button onclick="deleteShopItem('${key}')" class="text-gray-800 hover:text-red-500 transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <h3 class="font-bold text-gray-800 text-lg leading-snug break-words line-clamp-2">${item.item}</h3>
+                            <div class="text-sm text-gray-500 mt-0.5">${item.store || ''}</div>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="text-gray-800 font-bold mb-2 flex items-center">
+                                台幣 : $ ${item.priceTw || '-'} ${savingsInfo}
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-600 font-bold">日幣</span>
+                                    <input type="number" placeholder="0" value="${item.priceJp || ''}" 
+                                           class="jp-price-input-clean" 
+                                           onchange="updateShopPrice('${key}', this.value)"
+                                           onclick="event.stopPropagation()">
+                                    ${twdEstimate > 0 ? `<span class="text-xs text-gray-400">(≈$${twdEstimate})</span>` : ''}
+                                </div>
+                                <button onclick="openEditShopModal('${key}')" class="text-blue-600 text-lg hover:scale-110 transition px-2">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+        
+        listContainer.innerHTML = itemsHtml;
+    };
+
+    if(db) { 
+        db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); 
+    } else { 
+        const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || defaultShoppingList; 
+        loadData(localData); 
+    }
+}
+
+        function renderBudget() {
+    document.getElementById('header-desc').innerText = "記帳本 & 分帳";
+    const container = document.getElementById('app');
+
+    // 1. 容器 HTML：新增圖表區、個人統計區
+    let html = `
+        <div class="card p-4 mb-4 bg-white">
+            <h3 class="font-bold text-gray-700 mb-2 text-center">📊 消費分類統計</h3>
+            <div class="chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4 bg-orange-50 border-orange-200">
+            <h3 class="font-bold text-gray-700 mb-3"><i class="fa-solid fa-users-viewfinder mr-2"></i>每人應付金額 (預估台幣)</h3>
+            <div id="personal-summary" class="grid grid-cols-2 gap-3">
+                <div class="text-center py-4 text-gray-400"><i class="fa-solid fa-spinner fa-spin"></i> 計算中...</div>
+            </div>
+        </div>
+
+        <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
+        <div id="expenses-list" class="space-y-3 pb-24"></div>
+    `;
+    container.innerHTML = html;
+
+    const loadData = (data) => {
+        const listContainer = document.getElementById('expenses-list');
+        const personalContainer = document.getElementById('personal-summary');
+        
+        if(!data) { 
+            personalContainer.innerHTML = '<div class="col-span-2 text-center text-gray-400 text-sm">尚無紀錄</div>';
+            listContainer.innerHTML = '<div class="text-center text-gray-400 py-4">目前沒有支出，點擊 + 記帳</div>'; 
+            return; 
+        }
+
+        let totalByCat = {};
+        let personalTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '我': 0 };
+        let itemsHtml = '';
+        const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
+
+        entries.reverse().forEach(([key, ex]) => {
+            const amount = parseInt(ex.amount);
+            // 轉換為台幣作統計 (若是日幣則 * 匯率，台幣則直接用)
+            const amountTwd = ex.currency === 'TWD' ? amount : Math.round(amount * JPY_RATE);
+            
+            // 1. 分類統計 (給圓餅圖用)
+            totalByCat[ex.category] = (totalByCat[ex.category] || 0) + amountTwd;
+
+            // 2. 分帳邏輯計算
+            if (ex.splitDetails) {
+                // 如果有詳細分帳資訊
+                ex.splitDetails.forEach(detail => {
+                    if(personalTotal[detail.name] !== undefined) {
+                        // 詳細分帳金額需換算成台幣
+                        const splitAmountTwd = ex.currency === 'TWD' ? detail.amount : Math.round(detail.amount * JPY_RATE);
+                        personalTotal[detail.name] += splitAmountTwd;
+                    }
+                });
+            } else {
+                // 舊資料相容：預設為付款人全付 (或是當作不分帳的公款?)
+                // 這裡假設舊資料算在"付款人"頭上，或者如果無付款人欄位預設為"我"
+                const payer = ex.payer || '我'; 
+                // 這裡簡單處理：如果是舊資料，直接算在付款人身上，不進行複雜拆分
+                if(personalTotal[payer] !== undefined) personalTotal[payer] += amountTwd;
+            }
+
+            // 3. 列表顯示
+            let icon = '💸'; 
+            if(ex.category === '食物') icon = '🍔'; if(ex.category === '購物') icon = '🛍️'; 
+            if(ex.category === '交通') icon = '🚗'; if(ex.category === '門票') icon = '🎫';
+            
+            // 處理金額顯示
+            const priceDisplay = ex.currency === 'TWD' 
+                ? `NT$${amount.toLocaleString()}` 
+                : `¥${amount.toLocaleString()}`;
+            const subDisplay = ex.currency === 'TWD' 
+                ? '' 
+                : `<div class="text-[10px] text-gray-400">≈ NT$${amountTwd.toLocaleString()}</div>`;
+
+            // 處理憑證圖示
+            const receiptIcon = ex.receiptUrl 
+                ? `<button onclick="openVoucherImage('${ex.receiptUrl}')" class="text-blue-500 hover:bg-blue-50 p-1 rounded"><i class="fa-solid fa-receipt"></i></button>` 
+                : '';
+
+            itemsHtml += `
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center relative overflow-hidden">
+                    <div class="w-1 bg-orange-400 absolute left-0 top-0 bottom-0"></div>
+                    <div class="flex-1 ml-2">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">${icon}</span>
+                            <span class="font-bold text-gray-700 text-sm line-clamp-1">${ex.item}</span>
+                            <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">${ex.payer || '未知'}</span>
+                        </div>
+                        <div class="text-xs text-gray-400 flex items-center gap-2">
+                            <span>${ex.fullTime ? ex.fullTime.slice(5, 16).replace('T', ' ') : ex.date}</span>
+                            <span>• ${ex.payment || '現金'}</span>
+                        </div>
+                    </div>
+                    <div class="text-right flex flex-col items-end mr-3 min-w-[70px]">
+                        <div class="font-bold text-orange-600">${priceDisplay}</div>
+                        ${subDisplay}
+                    </div>
+                    <div class="flex gap-2 pl-2 border-l border-gray-100">
+                        ${receiptIcon}
+                        <button onclick="openBudgetModal('${key}')" class="text-gray-400 hover:text-blue-500 p-1"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteExpense('${key}')" class="text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`;
+        });
+
+        // 4. 更新畫面
+        listContainer.innerHTML = itemsHtml;
+
+        // 更新個人統計卡片
+        let personalHtml = '';
+        Object.keys(personalTotal).forEach(name => {
+            personalHtml += `
+                <div class="person-card">
+                    <div class="text-xs text-gray-500 font-bold mb-1">${name}</div>
+                    <div class="text-xl font-bold text-gray-800">
+                        <span class="text-xs mr-0.5">$</span>${personalTotal[name].toLocaleString()}
+                    </div>
+                </div>`;
+        });
+        personalContainer.innerHTML = personalHtml;
+
+        // 5. 繪製圖表
+        renderChart(totalByCat);
+    };
+
+    if(db) { db.ref('expenses').once('value').then(snapshot => loadData(snapshot.val())); } 
+    else { const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; loadData(localData); }
+}
+
+// --- 圖表繪製函式 ---
+function renderChart(dataObj) {
+    const ctx = document.getElementById('expenseChart');
+    if (!ctx) return;
+    
+    // 銷毀舊圖表以防重疊
+    if (budgetChart) { budgetChart.destroy(); }
+
+    const labels = Object.keys(dataObj);
+    const data = Object.values(dataObj);
+    const colors = ['#FFAB91', '#FFCC80', '#B2EBF2', '#E1BEE7', '#DCEDC8', '#F8BBD0'];
+
+    budgetChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { font: { family: "'M PLUS Rounded 1c'" }, boxWidth: 12 } }
+            }
+        }
+    });
+}
+
         function createEventCard(event, dayIdx, evtIdx) {
             if (event.type === 'choice') {
-                return `
-                    <div class="overflow-hidden">
-                        <div class="flex items-center gap-2 mb-2 px-1"><span class="font-bold text-xl text-gray-700">${event.time}</span> <h3 class="font-bold text-lg text-gray-800">${event.title}</h3></div>
-                        <div class="flex gap-4 overflow-x-auto snap-x-mandatory hide-scrollbar pb-4 px-1">
-                            ${event.choices.map((c, cIdx) => `
-                                <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm" onclick="openDetailModal(${dayIdx}, ${evtIdx}, ${cIdx})">
-                                    <div class="flex justify-between items-start mb-2"><h4 class="font-bold text-lg text-gray-800">${c.title}</h4><span class="text-xs px-2 py-1 rounded-full tag-eat">美食</span></div>
-                                    <p class="text-sm text-gray-600 mb-3 line-clamp-2">${c.guide}</p>
-                                    <button class="w-full bg-blue-50 text-blue-600 py-2 rounded-lg text-sm font-bold">查看詳情 & 導航</button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>`;
+                return `<div class="overflow-hidden"><div class="flex items-center gap-2 mb-2 px-1"><span class="font-bold text-xl text-gray-700">${event.time}</span> <h3 class="font-bold text-lg text-gray-800">${event.title}</h3></div><div class="flex gap-4 overflow-x-auto snap-x-mandatory hide-scrollbar pb-4 px-1">${event.choices.map((c, cIdx) => `<div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm" onclick="openDetailModal(${dayIdx}, ${evtIdx}, ${cIdx})"><div class="flex justify-between items-start mb-2"><h4 class="font-bold text-lg text-gray-800">${c.title}</h4><span class="text-xs px-2 py-1 rounded-full tag-eat">美食</span></div><p class="text-sm text-gray-600 mb-3 line-clamp-2">${c.guide}</p><button class="w-full bg-blue-50 text-blue-600 py-2 rounded-lg text-sm font-bold">查看詳情 & 導航</button></div>`).join('')}</div></div>`;
             }
             if (event.type === 'prep') {
-                return `
-                    <div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center">
-                        <div><div class="font-bold text-xl text-purple-800">${event.time}</div><div class="text-sm text-purple-600 font-bold">${event.title}</div><div class="text-xs text-purple-500 mt-1">${event.guide}</div></div>
-                        <div class="text-right"><div class="text-xs text-gray-500">預計出發</div><div class="text-2xl font-bold text-purple-900">${event.departureTime.split(' ')[0]}</div><div class="text-xs text-purple-700">準時出發 🚗</div></div>
-                    </div>`;
+                return `<div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center"><div><div class="font-bold text-xl text-purple-800">${event.time}</div><div class="text-sm text-purple-600 font-bold">${event.title}</div><div class="text-xs text-purple-500 mt-1">${event.guide}</div></div><div class="text-right"><div class="text-xs text-gray-500">預計出發</div><div class="text-2xl font-bold text-purple-900">${event.departureTime.split(' ')[0]}</div><div class="text-xs text-purple-700">準時出發 🚗</div></div></div>`;
             }
             let previewContent = '';
             if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
@@ -299,41 +780,10 @@
             if (event.frequency) previewContent += `<div class="mt-2 text-xs text-blue-600 font-bold"><i class="fa-solid fa-clock"></i> ${event.frequency} <a href="${event.timetableUrl}" target="_blank" class="ml-1 underline">時刻表</a></div>`;
             let clickAction = (event.type === 'eat' || event.type === 'spot') ? `onclick="openDetailModal(${dayIdx}, ${evtIdx})"` : `onclick="toggleCard(this)"`;
             
-            return `
-                <div class="card p-5" ${clickAction}>
-                    <div class="flex items-start gap-4 pointer-events-none">
-                        <div class="font-bold text-xl text-gray-700 min-w-[50px] pt-1">${event.time}</div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-lg text-gray-800">${event.title}</h3>
-                            ${event.appLink ? `<a href="${event.appLink.url}" class="mt-2 inline-block bg-black text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}
-                            <span class="text-xs px-2 py-1 rounded-full ${event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans'} block w-fit mt-1">${event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通'}</span>
-                            ${previewContent}
-                        </div>
-                    </div>
-                    <div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">
-                        ${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}
-                        ${event.bookingInfo ? `<div class="ticket-box"><div class="text-sm opacity-70">預約憑證 / 訂單號</div><div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div><div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div>${event.bookingInfo.pdfContent ? `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證</button>` : ''}</div>` : ''}
-                        ${event.multiMaps ? `<div class="grid grid-cols-2 gap-3">${event.multiMaps.map(m => `<a href="https://www.google.com/maps/search/?api=1&query=${m.query}" target="_blank" class="bg-blue-50 text-blue-600 py-3 rounded-xl text-center font-bold shadow-sm border border-blue-100 active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> ${m.name}</a>`).join('')}</div>` : ''}
-                        ${event.mapCode ? `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center mb-2"><span class="text-sm font-bold text-gray-600">MapCode</span><div class="flex items-center gap-2"><span class="font-mono text-xl font-bold">${event.mapCode}</span><button onclick="copyText('${event.mapCode}', event)" class="text-orange-500"><i class="fa-regular fa-copy"></i></button></div></div><a href="https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩" target="_blank" class="block w-full text-center bg-blue-500 text-white font-bold py-2 rounded-lg shadow-sm"><i class="fa-solid fa-location-arrow mr-2"></i> Google 導航</a>${event.parking ? `<div class="mt-2 text-xs text-gray-500"><i class="fa-solid fa-square-parking"></i> ${event.parking.info}</div>` : ''}</div>` : ''}
-                        ${event.guide ? `<div class="text-sm text-gray-700 leading-relaxed"><i class="fa-solid fa-circle-info text-orange-400 mr-1"></i> ${event.guide}</div>` : ''}
-                        ${event.adminNote ? `<div class="text-sm text-gray-600 bg-yellow-50 p-2 rounded border border-yellow-100"><i class="fa-solid fa-pen mr-1"></i> 筆記: ${event.adminNote}</div>` : ''}
-                    </div>
-                </div>`;
+            return `<div class="card p-5" ${clickAction}><div class="flex items-start gap-4 pointer-events-none"><div class="font-bold text-xl text-gray-700 min-w-[50px] pt-1">${event.time}</div><div class="flex-1"><h3 class="font-bold text-lg text-gray-800">${event.title}</h3>${event.appLink ? `<a href="${event.appLink.url}" class="mt-2 inline-block bg-black text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}<span class="text-xs px-2 py-1 rounded-full ${event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans'} block w-fit mt-1">${event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通'}</span>${previewContent}</div></div><div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}${event.bookingInfo ? `<div class="ticket-box"><div class="text-sm opacity-70">預約憑證 / 訂單號</div><div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div><div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div>${event.bookingInfo.pdfContent ? `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證</button>` : ''}${event.bookingInfo.voucherImg ? `<button onclick="openVoucherImage('${event.bookingInfo.voucherImg}')" class="mt-2 w-full bg-red-500 text-white py-2 rounded-lg font-bold text-sm shadow-md mb-2"><i class="fa-solid fa-image mr-1"></i> 查看憑證圖片</button>` : ''}</div>` : ''}${event.multiMaps ? `<div class="grid grid-cols-2 gap-3">${event.multiMaps.map(m => `<a href="https://www.google.com/maps/search/?api=1&query=${m.query}" target="_blank" class="bg-blue-50 text-blue-600 py-3 rounded-xl text-center font-bold shadow-sm border border-blue-100 active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> ${m.name}</a>`).join('')}</div>` : ''}${event.mapCode ? `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center mb-2"><span class="text-sm font-bold text-gray-600">MapCode</span><div class="flex items-center gap-2"><span class="font-mono text-xl font-bold">${event.mapCode}</span><button onclick="copyText('${event.mapCode}', event)" class="text-orange-500"><i class="fa-regular fa-copy"></i></button></div></div><a href="https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩" target="_blank" class="block w-full text-center bg-blue-500 text-white font-bold py-2 rounded-lg shadow-sm"><i class="fa-solid fa-location-arrow mr-2"></i> Google 導航</a>${event.parking ? `<div class="mt-2 text-xs text-gray-500"><i class="fa-solid fa-square-parking"></i> ${event.parking.info}</div>` : ''}</div>` : ''}${event.guide ? `<div class="text-sm text-gray-700 leading-relaxed"><i class="fa-solid fa-circle-info text-orange-400 mr-1"></i> ${event.guide}</div>` : ''}${event.adminNote ? `<div class="text-sm text-gray-600 bg-yellow-50 p-2 rounded border border-yellow-100"><i class="fa-solid fa-pen mr-1"></i> 筆記: ${event.adminNote}</div>` : ''}</div></div>`;
         }
 
-        function getPackingListHTML() {
-            const packingList = getPackingList();
-            const doneCount = packingList.filter(i => i.done).length;
-            const totalCount = packingList.length;
-            const progressPercent = Math.round((doneCount / totalCount) * 100);
-            const itemsHtml = packingList.map(item => {
-                let badgeColor = "bg-gray-100 text-gray-500"; if(item.category === '重要') badgeColor = "bg-red-100 text-red-600 font-bold";
-                return `<div class="flex items-center gap-3 p-2 rounded hover:bg-teal-50 transition cursor-pointer border-b border-gray-50 last:border-0" onclick="togglePacking('${item.id}')"><div class="w-5 h-5 flex-shrink-0 rounded border-2 border-teal-400 flex items-center justify-center ${item.done ? 'bg-teal-400' : 'bg-white'}">${item.done ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}</div><div class="flex-1"><span class="text-[10px] px-1.5 py-0.5 rounded ${badgeColor} mr-1">${item.category}</span><span class="text-sm ${item.done ? 'text-gray-400 line-through' : 'text-gray-700 font-medium'}">${item.text}</span></div></div>`;
-            }).join('');
-            return `<div class="card p-5 mb-6 border-l-4 border-teal-500 shadow-lg bg-white"><div class="flex justify-between items-end mb-2"><h3 class="font-bold text-teal-700"><i class="fa-solid fa-list-check mr-2"></i>行李清單</h3><span class="text-xs font-bold text-teal-600">${doneCount}/${totalCount} (${progressPercent}%)</span></div><div class="w-full bg-gray-200 rounded-full h-2 mb-3"><div class="bg-teal-500 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div></div><div class="grid grid-cols-1 gap-2 max-h-[240px] overflow-y-auto pr-1">${itemsHtml}</div></div>`;
-        }
-
-        async function renderHome() {
+        function renderHome() {
             const container = document.getElementById('app');
             const now = currentSimulatedDate ? new Date(currentSimulatedDate) : new Date();
             const todayStr = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
@@ -341,16 +791,14 @@
             const displayData = tripIndex !== -1 ? tripData[tripIndex] : tripData[0];
             const displayIndex = tripIndex !== -1 ? tripIndex : 0;
             const nextEvent = displayData.events[0];
-            
+            const roleName = ({ 'driver': '妹妹 (駕駛)', 'copilot': '爸爸 (副駕)', 'tourist': '媽媽 (遊客)', 'admin': '我 (主揪)' })[currentRole] || '旅人';
             const roleIcons = { driver: '🚗', copilot: '🗺️', tourist: '📸', admin: '📝' };
             document.getElementById('header-icon').innerText = roleIcons[currentRole] || '🦁';
 
             // Packing List Logic: Only show BEFORE 12/25
             const isBeforeTrip = now < new Date("2025-12-25T00:00:00");
             let packingHtml = '';
-            if (isBeforeTrip) {
-                packingHtml = getPackingListHTML();
-            }
+            if (isBeforeTrip) { packingHtml = getPackingListHTML(); }
 
             const nextEventHtml = createEventCard(nextEvent, displayIndex, 0);
 
@@ -390,130 +838,460 @@
             const container = document.getElementById('app');
             let infoHtml = `<div class="card p-5 mb-4 border-l-4 border-red-500 bg-red-50"><h3 class="font-bold text-red-700 mb-3"><i class="fa-solid fa-triangle-exclamation"></i> 緊急聯絡</h3><div class="grid grid-cols-2 gap-3 text-sm"><a href="tel:110" class="bg-white p-2 rounded text-center shadow text-gray-700 font-bold"><i class="fa-solid fa-phone mr-1"></i> 報警 110</a><a href="tel:119" class="bg-white p-2 rounded text-center shadow text-gray-700 font-bold"><i class="fa-solid fa-truck-medical mr-1"></i> 救護 119</a><div class="col-span-2 bg-white p-2 rounded shadow text-gray-700 text-xs"><div>外交部旅外救助：+81-80-1009-7179</div></div></div></div>`;
             let vouchersHtml = `<div class="space-y-4">`;
-            let count = 0;
             tripData.forEach(day => {
                 day.events.forEach(event => {
                     if (event.bookingInfo) {
-                        count++;
                         let linkBtn = '';
                         const fullText = (event.bookingInfo.note + (event.bookingInfo.extra || '')).toLowerCase();
                         if (fullText.includes('trip.com')) linkBtn = `<a href="https://trip.com" target="_blank" class="mt-3 block w-full text-center bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm hover:bg-blue-100 transition border border-blue-100"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟 Trip.com 訂單</a>`;
                         else if (fullText.includes('nutmeg')) linkBtn = `<a href="https://ntmg.jp/" target="_blank" class="mt-3 block w-full text-center bg-green-50 text-green-600 py-2 rounded-lg font-bold text-sm hover:bg-green-100 transition border border-green-100"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟 Nutmeg 訂單</a>`;
                         else if (fullText.includes('tabelog')) linkBtn = `<a href="https://tabelog.com/" target="_blank" class="mt-3 block w-full text-center bg-yellow-50 text-yellow-600 py-2 rounded-lg font-bold text-sm hover:bg-yellow-100 transition border border-yellow-100"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟 Tabelog</a>`;
-                        vouchersHtml += `<div class="card p-5 border-l-4 border-orange-500 shadow-sm bg-white"><div class="flex justify-between items-start mb-2"><h3 class="font-bold text-lg text-gray-800">${event.title}</h3><span class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">${day.date}</span></div><div class="text-sm text-gray-600 mb-3">${event.bookingInfo.note}</div><div class="bg-gray-50 p-3 rounded border border-gray-200 dashed mb-2 relative group active:bg-orange-50 transition"><div class="text-xs text-gray-400 mb-1">訂單編號 / PIN</div><div class="text-xl font-mono font-bold text-gray-800 select-all break-all">${event.bookingInfo.code}</div><div class="absolute right-2 top-2 text-gray-300"><i class="fa-regular fa-copy"></i></div></div>${event.bookingInfo.extra ? `<div class="text-xs text-orange-600 font-bold text-right">${event.bookingInfo.extra}</div>` : ''}${event.bookingInfo.pdfContent ? `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證</button>` : ''}${linkBtn}</div>`;
+                        
+                        let imgBtn = '';
+                        if (event.bookingInfo.voucherImg) { imgBtn = `<button onclick="openVoucherImage('${event.bookingInfo.voucherImg}')" class="mt-2 w-full bg-red-500 text-white py-2 rounded-lg font-bold text-sm shadow-md mb-2"><i class="fa-solid fa-image mr-1"></i> 查看憑證圖片</button>`; }
+
+                        vouchersHtml += `
+                            <div class="card p-5 border-l-4 border-orange-500 shadow-sm bg-white">
+                                <div class="flex justify-between items-start mb-2"><h3 class="font-bold text-lg text-gray-800">${event.title}</h3><span class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">${day.date}</span></div>
+                                <div class="text-sm text-gray-600 mb-3">${event.bookingInfo.note}</div>
+                                <div class="bg-gray-50 p-3 rounded border border-gray-200 dashed mb-3 relative group active:bg-orange-50 transition"><div class="text-xs text-gray-400 mb-1">訂單編號 / PIN</div><div class="text-xl font-mono font-bold text-gray-800 select-all break-all">${event.bookingInfo.code}</div><div class="absolute right-2 top-2 text-gray-300"><i class="fa-regular fa-copy"></i></div></div>
+                                ${event.bookingInfo.extra ? `<div class="text-xs text-orange-600 font-bold text-right mb-3">${event.bookingInfo.extra}</div>` : ''}
+                                ${event.bookingInfo.pdfContent ? `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證</button>` : ''}
+                                ${imgBtn}
+                                ${linkBtn}
+                            </div>`;
                     }
                 });
             });
-            // Packing List in Vouchers
             const packingHtml = getPackingListHTML();
-            container.innerHTML = infoHtml + `<div class="text-gray-500 text-sm mb-2 px-2">預約憑證 (依時間排序)</div>` + vouchersHtml + `<div class="mt-8 text-gray-500 text-sm mb-2 px-2">隨時檢查</div>` + packingHtml + `</div>`;
+            container.innerHTML = infoHtml + `<div class="text-gray-500 text-sm mb-2 px-2">預約憑證</div>` + vouchersHtml + `<div class="mt-8 text-gray-500 text-sm mb-2 px-2">隨時檢查</div>` + packingHtml + `</div>`;
         }
 
-        function renderShopping() {
-            document.getElementById('header-desc').innerText = "購物清單 (全家同步)";
-            const container = document.getElementById('app');
-            let html = `<button onclick="openModal('modal-shopping')" class="fab-btn"><i class="fa-solid fa-plus"></i></button><div id="shopping-list-container" class="space-y-3 pb-24"><div class="text-center text-gray-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div></div>`;
-            container.innerHTML = html;
-            const loadData = (data) => {
-                const listContainer = document.getElementById('shopping-list-container');
-                if(!data) { listContainer.innerHTML = '<div class="text-center text-gray-400">目前沒有必買項目，點擊 + 新增</div>'; return; }
-                let itemsHtml = '';
-                const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
-                entries.reverse().forEach(([key, item]) => {
-                    let priceInfo = ''; if (item.priceJp) { const twdCalc = Math.round(parseInt(item.priceJp) * JPY_RATE); priceInfo = `<div class="font-bold text-orange-600">¥${parseInt(item.priceJp).toLocaleString()}</div><div class="text-xs text-gray-400">≈ $${twdCalc}</div>`; if (item.priceTw) { const priceTw = parseInt(item.priceTw); if (twdCalc < priceTw) { priceInfo += `<div class="mt-1 bg-red-100 text-red-600 text-[10px] px-1 py-0.5 rounded font-bold">🔥省 ${priceTw - twdCalc}元</div>`; } } } else { priceInfo = `<div class="text-xs text-gray-300">未輸入日幣</div>`; }
-                    let icon = '🎁'; if(item.category === '藥妝') icon = '💊'; if(item.category === '零食') icon = '🍪'; if(item.category === '電器') icon = '🔌'; if(item.category === '衣物') icon = '👕';
-                    const imgHtml = item.imgUrl ? `<img src="${item.imgUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">` : '';
-                    itemsHtml += `<div class="card p-3 flex gap-3 items-center ${item.done ? 'bg-gray-50 opacity-60' : ''}"><div class="shop-img-box">${imgHtml}<i class="${imgHtml ? 'hidden' : ''}">${icon}</i></div><div class="flex-1"><div class="flex justify-between items-start"><div><span class="text-[10px] bg-gray-100 text-gray-500 px-1 rounded mb-1 inline-block">${item.category}</span><div class="font-bold text-gray-800 leading-tight ${item.done ? 'line-through' : ''}">${item.item}</div><div class="text-xs text-gray-500"><i class="fa-solid fa-store mr-1"></i>${item.store || '未指定'}</div></div><div class="text-right flex flex-col items-end min-w-[70px]">${priceInfo}</div></div>${item.priceTw ? `<div class="text-[10px] text-gray-400 mt-1">🇹🇼 台灣賣: $${item.priceTw}</div>` : ''}</div><div class="flex flex-col gap-2 border-l pl-2 border-gray-100"><input type="checkbox" onchange="toggleShopItem('${key}')" class="w-6 h-6 accent-pink-500" ${item.done ? 'checked disabled' : ''}>${!item.done ? `<button onclick="deleteShopItem('${key}')" class="text-gray-300 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>` : ''}</div></div>`;
-                });
-                listContainer.innerHTML = itemsHtml;
-            };
-            if(db) { db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); } else { 
-                // 離線模式：若無 local storage 則載入預設，若有則載入 local
-                let localData = JSON.parse(localStorage.getItem(SHOPPING_KEY));
-                if(!localData) { localData = defaultShoppingList; localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); }
-                loadData(localData); 
-            }
+        function getPackingListHTML() {
+            const packingList = getPackingList();
+            const doneCount = packingList.filter(i => i.done).length;
+            const totalCount = packingList.length;
+            const progressPercent = Math.round((doneCount / totalCount) * 100);
+            const itemsHtml = packingList.map(item => {
+                let badgeColor = "bg-gray-100 text-gray-500"; if(item.category === '重要') badgeColor = "bg-red-100 text-red-600 font-bold";
+                return `<div class="flex items-center gap-3 p-2 rounded hover:bg-teal-50 transition cursor-pointer border-b border-gray-50 last:border-0" onclick="togglePacking('${item.id}')"><div class="w-5 h-5 flex-shrink-0 rounded border-2 border-teal-400 flex items-center justify-center ${item.done ? 'bg-teal-400' : 'bg-white'}">${item.done ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}</div><div class="flex-1"><span class="text-[10px] px-1.5 py-0.5 rounded ${badgeColor} mr-1">${item.category}</span><span class="text-sm ${item.done ? 'text-gray-400 line-through' : 'text-gray-700 font-medium'}">${item.text}</span></div></div>`;
+            }).join('');
+            return `<div class="card p-5 mb-6 border-l-4 border-teal-500 shadow-lg bg-white"><div class="flex justify-between items-end mb-2"><h3 class="font-bold text-teal-700"><i class="fa-solid fa-list-check mr-2"></i>行李清單</h3><span class="text-xs font-bold text-teal-600">${doneCount}/${totalCount} (${progressPercent}%)</span></div><div class="w-full bg-gray-200 rounded-full h-2 mb-3"><div class="bg-teal-500 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div></div><div class="grid grid-cols-1 gap-2 max-h-[240px] overflow-y-auto pr-1">${itemsHtml}</div></div>`;
         }
 
-        function renderBudget() {
-            document.getElementById('header-desc').innerText = "記帳本 (全家同步)";
-            const container = document.getElementById('app');
-            let html = `<div class="card p-4 mb-4 bg-blue-50 border-blue-200 flex justify-between items-center"><div><div class="text-xs text-blue-600 font-bold">目前預設匯率</div><div class="text-xl font-bold text-blue-800">${JPY_RATE}</div></div><a href="https://www.esunbank.com/zh-tw/personal/deposit/rate/forex/foreign-exchange-rates" target="_blank" class="bg-white text-blue-600 px-3 py-1 rounded border border-blue-200 text-xs font-bold shadow-sm active:scale-95 transition"><i class="fa-solid fa-building-columns mr-1"></i> 玉山即時匯率</a></div><div id="budget-summary" class="card p-6 mb-4 bg-orange-50 border-orange-200 text-center"><div class="text-gray-500 text-sm">載入中...</div></div><button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button><div id="expenses-list" class="space-y-2 pb-24"></div>`;
-            container.innerHTML = html;
-            const loadData = (data) => {
-                const listContainer = document.getElementById('expenses-list'); const summaryContainer = document.getElementById('budget-summary');
-                if(!data) { summaryContainer.innerHTML = `<div class="text-gray-500 text-sm">總支出</div><div class="text-4xl font-bold text-orange-600">¥0</div><div class="text-xs text-gray-400 mt-2">尚未有支出紀錄</div>`; listContainer.innerHTML = '<div class="text-center text-gray-400 py-4">目前沒有支出，點擊 + 記帳</div>'; return; }
-                let total = 0; let itemsHtml = '';
-                const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
-                entries.reverse().forEach(([key, ex]) => {
-                    const amount = parseInt(ex.amount); const qty = ex.qty || 1; total += amount; const twd = Math.round(amount * JPY_RATE);
-                    let icon = '💸'; if(ex.category === '食物') icon = '🍔'; if(ex.category === '購物') icon = '🛍️'; if(ex.category === '交通') icon = '🚗'; if(ex.category === '門票') icon = '🎫';
-                    const displayTime = ex.fullTime ? ex.fullTime.replace('T', ' ') : ex.date;
-                    itemsHtml += `<div class="bg-white p-3 rounded-lg flex justify-between items-center border-b border-gray-100"><div class="flex-1"><div class="font-bold text-gray-700"><span class="mr-1">${icon}</span> ${ex.store ? ex.store + ' - ' : ''}${ex.item} <span class="text-xs text-gray-400">x${qty}</span></div><div class="text-xs text-gray-400">${displayTime} | ${ex.payment || '現金'}</div></div><div class="text-right mr-3"><div class="font-bold text-orange-600">¥${amount.toLocaleString()}</div><div class="text-xs text-gray-500">≈ NT$${twd.toLocaleString()}</div></div><button onclick="deleteExpense('${key}')" class="text-gray-300 hover:text-red-400 p-2"><i class="fa-solid fa-trash"></i></button></div>`;
-                });
-                summaryContainer.innerHTML = `<div class="text-gray-500 text-sm">總支出</div><div class="text-4xl font-bold text-orange-600">¥${total.toLocaleString()}</div><div class="text-sm font-bold text-blue-600 mt-2 bg-blue-50 inline-block px-3 py-1 rounded-full border border-blue-100">≈ NT$${Math.round(total * JPY_RATE).toLocaleString()}</div>`;
-                listContainer.innerHTML = itemsHtml;
-            };
-            if(db) { db.ref('expenses').once('value').then(snapshot => loadData(snapshot.val())); } else { 
-                const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || [];
-                loadData(localData); 
-                document.getElementById('budget-summary').innerHTML = `<div class="text-gray-500 font-bold"><i class="fa-solid fa-link-slash"></i> 離線模式</div><div class="text-xs text-gray-400 mt-1">資料僅存在手機</div><div class="mt-3 border-t pt-2"><div class="text-gray-500 text-sm">總支出</div><div class="text-4xl font-bold text-orange-600">¥${localData.reduce((acc, cur) => acc + parseInt(cur.amount), 0).toLocaleString()}</div></div>`;
-            }
-        }
-
-        // --- Logic Functions ---
-        function openBudgetModal() { const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); document.getElementById('in-ex-time').value = now.toISOString().slice(0,16); openModal('modal-budget'); }
-        function addShopItem() { 
-            const imgUrl = document.getElementById('in-shop-img').value; const category = document.getElementById('in-shop-cat').value; const store = document.getElementById('in-shop-store').value; const item = document.getElementById('in-shop-item').value; const priceTw = document.getElementById('in-shop-tw').value; const priceJp = document.getElementById('in-shop-jp').value; if(!item) return alert("請至少輸入品名"); 
-            const newItem = { imgUrl, category, store, item, priceTw, priceJp, done: false, addedBy: currentRole, timestamp: Date.now() };
-            if(db) { db.ref('shoppingList').push(newItem); } else { const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); localData.push(newItem); localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); renderShopping(); }
-            closeModal('modal-shopping'); document.getElementById('in-shop-img').value = ''; document.getElementById('in-shop-store').value = ''; document.getElementById('in-shop-item').value = ''; document.getElementById('in-shop-tw').value = ''; document.getElementById('in-shop-jp').value = ''; 
-        }
-        function toggleShopItem(key) { 
-            if(confirm("確定購買並記帳？")) { 
-                if(db) { 
-                    db.ref('shoppingList/' + key).update({ done: true }); 
-                    db.ref('shoppingList/' + key).once('value').then(snapshot => { const item = snapshot.val(); if(item.priceJp) { db.ref('expenses').push({ category: '購物', store: item.store, item: `[購] ${item.item}`, priceJp: item.priceJp, qty: 1, amount: item.priceJp * 1, payment: '現金', date: new Date().toLocaleDateString(), timestamp: Date.now() }); alert("已自動加入記帳！"); } else { alert("已標記購買 (請記得去記帳頁補登金額)"); } }); 
+        function openEditShopModal(key = null) {
+            const modalTitle = document.getElementById('shop-modal-title');
+            const inKey = document.getElementById('in-shop-key');
+            inKey.value = key || ''; 
+            if(key) {
+                modalTitle.innerText = '編輯商品';
+                if(db) {
+                    db.ref('shoppingList/' + key).once('value').then(snapshot => { fillShopModal(snapshot.val()); });
                 } else {
                     const index = parseInt(key.split('_')[1]);
                     const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY));
-                    localData[index].done = true;
-                    localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData));
-                    
-                    const item = localData[index];
-                    if(item.priceJp) {
-                        const expenseData = { category: '購物', store: item.store, item: `[購] ${item.item}`, priceJp: item.priceJp, qty: 1, amount: item.priceJp * 1, payment: '現金', date: new Date().toLocaleDateString(), fullTime: new Date().toISOString().slice(0,16), timestamp: Date.now() };
-                        const localExpenses = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || [];
-                        localExpenses.push(expenseData);
-                        localStorage.setItem(EXPENSE_KEY, JSON.stringify(localExpenses));
-                        alert("已自動加入記帳 (離線)！");
-                    }
-                    renderShopping();
+                    fillShopModal(localData[index]);
                 }
+            } else {
+                modalTitle.innerText = '新增必買';
+                fillShopModal({});
+            }
+            openModal('modal-shopping');
+        }
+
+        function fillShopModal(item) {
+            document.getElementById('in-shop-img').value = item.imgUrl || '';
+            document.getElementById('in-shop-cat').value = item.category || '藥妝';
+            document.getElementById('in-shop-store').value = item.store || '';
+            document.getElementById('in-shop-item').value = item.item || '';
+            document.getElementById('in-shop-tw').value = item.priceTw || '';
+            document.getElementById('in-shop-jp').value = item.priceJp || ''; 
+        }
+
+        function saveShopItem() {
+            const key = document.getElementById('in-shop-key').value;
+            const newItem = {
+                imgUrl: document.getElementById('in-shop-img').value,
+                category: document.getElementById('in-shop-cat').value,
+                store: document.getElementById('in-shop-store').value,
+                item: document.getElementById('in-shop-item').value,
+                priceTw: document.getElementById('in-shop-tw').value,
+                priceJp: document.getElementById('in-shop-jp').value, 
+                done: false, addedBy: currentRole, timestamp: Date.now()
+            };
+            
+            if(!newItem.item) return alert("請至少輸入品名");
+
+            if(db) {
+                if(key) db.ref('shoppingList/' + key).update(newItem);
+                else db.ref('shoppingList').push(newItem);
+            } else {
+                const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || [];
+                if(key) {
+                    const index = parseInt(key.split('_')[1]);
+                    localData[index] = { ...localData[index], ...newItem }; 
+                } else {
+                    localData.push(newItem);
+                }
+                localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData));
+                renderShopping();
+            }
+            closeModal('modal-shopping');
+        }
+
+        function updateShopPrice(key, newPrice) {
+            if(db) {
+                db.ref('shoppingList/' + key).update({ priceJp: newPrice });
+            } else {
+                const index = parseInt(key.split('_')[1]);
+                const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY));
+                localData[index].priceJp = newPrice;
+                localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData));
+                renderShopping();
+            }
+        }
+
+        function toggleShopItem(key) { 
+            if(db) { 
+                db.ref('shoppingList/' + key).once('value').then(snapshot => {
+                    const current = snapshot.val().done;
+                    db.ref('shoppingList/' + key).update({ done: !current });
+                });
+            } else { 
+                const index = parseInt(key.split('_')[1]); 
+                const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); 
+                localData[index].done = !localData[index].done; 
+                localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); 
+                renderShopping(); 
             } 
         }
+
         function deleteShopItem(key) { 
             if(confirm("刪除此項目？")) { 
                 if(db) db.ref('shoppingList/' + key).remove(); 
                 else { 
-                    const index = parseInt(key.split('_')[1]);
-                    const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY));
-                    localData.splice(index, 1);
-                    localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData));
-                    renderShopping();
-                }
+                    const index = parseInt(key.split('_')[1]); 
+                    const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); 
+                    localData.splice(index, 1); 
+                    localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); 
+                    renderShopping(); 
+                } 
             } 
         }
+
+        function openBudgetModal(key = null) {
+    const isEdit = !!key;
+    // 取得當前時間或編輯項目的資料
+    let editData = {};
+    if (isEdit) {
+        // 從資料庫或 localStorage 撈取該筆資料
+        if(db) {
+            // 注意：這裡是異步，Firebase 需要先撈資料再開 Modal
+            // 為了簡化，這邊假設資料已在 render 時快取，或是簡單地直接重撈
+             db.ref('expenses/' + key).once('value').then(snapshot => {
+                 fillAndShowBudgetModal(key, snapshot.val());
+             });
+             return;
+        } else {
+            const index = parseInt(key.split('_')[1]);
+            const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY));
+            editData = localData[index];
+            fillAndShowBudgetModal(key, editData);
+            return;
+        }
+    }
+    
+    // 新增模式
+    const now = new Date(); 
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const defaultData = {
+        fullTime: now.toISOString().slice(0,16),
+        category: '食物',
+        payment: '現金',
+        qty: 1,
+        currency: 'JPY',
+        payer: FAMILY_MEMBERS.find(m => m.id === currentRole)?.name || '我'
+    };
+    fillAndShowBudgetModal(null, defaultData);
+}
+
+// --- 填充並顯示 Modal ---
+function fillAndShowBudgetModal(key, data) {
+    // 產生 Modal HTML (每次動態生成以確保狀態乾淨)
+    const modalSheet = document.querySelector('#modal-budget .modal-sheet');
+    
+    // 預設選中的分帳成員 (如果是編輯模式，從 data.splitDetails 還原，否則全選)
+    const splitMethod = data.splitMethod || 'equal'; // equal, amount, none
+    
+    modalSheet.innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-700">${key ? '編輯支出' : '記一筆支出'}</h3>
+            <button onclick="closeModal('modal-budget')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        
+        <input type="hidden" id="in-ex-key" value="${key || ''}">
+        
+        <!-- 時間 -->
+        <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 mb-3">
+            <label class="text-xs text-gray-500 font-bold ml-1">日期與時間</label>
+            <input id="in-ex-time" type="datetime-local" class="w-full bg-transparent font-bold text-gray-700 outline-none mt-1" value="${data.fullTime || ''}">
+        </div>
+
+        <!-- 類別與付款人 -->
+        <div class="grid grid-cols-2 gap-2 mb-3">
+            <select id="in-ex-category" class="p-3 bg-white rounded-xl border border-orange-200 text-gray-700 font-bold">
+                ${['食物','購物','交通','門票','其他'].map(c => `<option value="${c}" ${data.category===c?'selected':''}>${c}</option>`).join('')}
+            </select>
+            <select id="in-ex-payer" class="p-3 bg-white rounded-xl border border-blue-200 text-blue-800 font-bold">
+                ${FAMILY_MEMBERS.map(m => `<option value="${m.name}" ${data.payer===m.name?'selected':''}>付款: ${m.name}</option>`).join('')}
+            </select>
+        </div>
+
+        <!-- 商店與品項 -->
+        <input id="in-ex-store" placeholder="商店/餐廳 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${data.store || ''}">
+        <input id="in-ex-item" placeholder="品名/內容" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${data.item || ''}">
+
+        <!-- 金額與幣別 -->
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <div class="col-span-2 relative">
+                 <input id="in-ex-price" type="number" placeholder="單價" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 font-bold text-lg" value="${data.priceJp || ''}"> <!-- 注意: 這裡用 priceJp 欄位存原始單價 -->
+                 <span class="absolute right-3 top-3 text-gray-400 text-xs">單價</span>
+            </div>
+            <select id="in-ex-currency" class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700 font-bold">
+                <option value="JPY" ${data.currency!=='TWD'?'selected':''}>¥ JPY</option>
+                <option value="TWD" ${data.currency==='TWD'?'selected':''}>$ TWD</option>
+            </select>
+        </div>
+
+        <!-- 數量與支付方式 -->
+        <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="flex items-center gap-2">
+                <button class="qty-btn" onclick="adjustQty(-1)">-</button>
+                <input id="in-ex-qty" type="number" value="${data.qty || 1}" class="w-full p-3 text-center bg-gray-50 rounded-xl border border-gray-200" readonly>
+                <button class="qty-btn" onclick="adjustQty(1)">+</button>
+            </div>
+            <select id="in-ex-pay" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700">
+                ${['現金','信用卡','Suica/IC卡'].map(p => `<option value="${p}" ${data.payment===p?'selected':''}>${p}</option>`).join('')}
+            </select>
+        </div>
+        
+        <!-- 憑證圖片 (新增) -->
+        <div class="mb-3">
+            <input id="in-ex-receipt" placeholder="憑證圖片網址 (URL)" class="w-full p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm" value="${data.receiptUrl || ''}">
+        </div>
+
+        <!-- 分帳設定 (新增) -->
+        <div class="split-box">
+            <div class="flex justify-between items-center mb-2">
+                <label class="font-bold text-gray-700 text-sm">分帳方式</label>
+                <select id="in-ex-split-method" onchange="renderSplitOptions()" class="text-xs border p-1 rounded bg-white">
+                    <option value="equal" ${splitMethod==='equal'?'selected':''}>按人頭均分</option>
+                    <option value="amount" ${splitMethod==='amount'?'selected':''}>指定金額</option>
+                    <option value="none" ${splitMethod==='none'?'selected':''}>不分帳(個人)</option>
+                </select>
+            </div>
+            <div id="split-options-container" class="grid grid-cols-2 gap-2">
+                <!-- 動態生成 -->
+            </div>
+        </div>
+
+        <!-- 總金額顯示 -->
+        <div class="bg-orange-50 p-3 rounded-xl text-center border border-orange-100 mt-2">
+            <div class="text-sm text-gray-500 mb-1">總金額</div>
+            <div class="text-2xl font-bold text-orange-600"><span id="lbl-currency">${data.currency==='TWD'?'$':'¥'}</span><span id="calc-total">0</span></div>
+            <div id="calc-convert-hint" class="text-xs font-bold text-blue-500 mt-1 ${data.currency==='TWD'?'hidden':''}">≈ NT$<span id="calc-twd">0</span></div>
+        </div>
+
+        <button onclick="saveExpense()" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow-lg mt-4">
+            ${key ? '更新紀錄' : '儲存紀錄'}
+        </button>
+    `;
+
+    openModal('modal-budget');
+    
+    // 初始化分帳選項 UI
+    renderSplitOptions(data.splitDetails);
+    
+    // 綁定自動計算事件
+    document.getElementById('in-ex-price').addEventListener('input', updateCalc);
+    document.getElementById('in-ex-qty').addEventListener('input', updateCalc);
+    document.getElementById('in-ex-currency').addEventListener('change', (e) => {
+        document.getElementById('lbl-currency').innerText = e.target.value === 'TWD' ? '$' : '¥';
+        document.getElementById('calc-convert-hint').classList.toggle('hidden', e.target.value === 'TWD');
+        updateCalc();
+    });
+    
+    // 初次計算
+    updateCalc();
+}
+
+// --- 渲染分帳選項 UI ---
+function renderSplitOptions(savedDetails = null) {
+    const method = document.getElementById('in-ex-split-method').value;
+    const container = document.getElementById('split-options-container');
+    const totalAmount = (parseInt(document.getElementById('in-ex-price').value) || 0) * (parseInt(document.getElementById('in-ex-qty').value) || 1);
+    
+    let html = '';
+    
+    if (method === 'equal') {
+        // 均分模式：顯示 Checkbox
+        FAMILY_MEMBERS.forEach(m => {
+            // 如果有存檔，檢查是否在名單內；若無存檔，預設全選
+            const isChecked = savedDetails ? savedDetails.some(d => d.name === m.name) : true;
+            html += `
+                <div class="member-check ${isChecked ? 'active' : ''}" onclick="this.classList.toggle('active'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox" value="${m.name}" class="hidden" ${isChecked ? 'checked' : ''}>
+                    <i class="fa-solid ${isChecked ? 'fa-circle-check' : 'fa-circle'} text-xs"></i> ${m.name}
+                </div>`;
+        });
+    } else if (method === 'amount') {
+        // 金額模式：顯示輸入框
+        FAMILY_MEMBERS.forEach(m => {
+            const savedVal = savedDetails ? (savedDetails.find(d => d.name === m.name)?.amount || 0) : 0;
+            html += `
+                <div class="flex items-center gap-2 bg-white p-2 rounded border">
+                    <span class="text-xs font-bold w-8">${m.name}</span>
+                    <input type="number" data-name="${m.name}" value="${savedVal}" placeholder="金額" class="split-amount-input w-full text-sm border-b outline-none text-right">
+                </div>`;
+        });
+    } else {
+        html = `<div class="col-span-2 text-xs text-gray-400 text-center py-2">費用將全額歸於付款人</div>`;
+    }
+    
+    container.innerHTML = html;
+}
+
+// --- 自動計算總額 ---
+function updateCalc() {
+    const p = parseInt(document.getElementById('in-ex-price').value) || 0;
+    const q = parseInt(document.getElementById('in-ex-qty').value) || 1;
+    const total = p * q;
+    
+    document.getElementById('calc-total').innerText = total.toLocaleString();
+    
+    const isTwd = document.getElementById('in-ex-currency').value === 'TWD';
+    if (!isTwd) {
+        document.getElementById('calc-twd').innerText = Math.round(total * JPY_RATE).toLocaleString();
+    }
+}
+
+// --- 儲存/更新支出 (核心邏輯) ---
+function saveExpense() {
+    const key = document.getElementById('in-ex-key').value;
+    const category = document.getElementById('in-ex-category').value;
+    const payer = document.getElementById('in-ex-payer').value;
+    const store = document.getElementById('in-ex-store').value;
+    const item = document.getElementById('in-ex-item').value;
+    const price = parseInt(document.getElementById('in-ex-price').value);
+    const qty = parseInt(document.getElementById('in-ex-qty').value);
+    const currency = document.getElementById('in-ex-currency').value;
+    const payment = document.getElementById('in-ex-pay').value;
+    const fullTime = document.getElementById('in-ex-time').value;
+    const receiptUrl = document.getElementById('in-ex-receipt').value;
+    const splitMethod = document.getElementById('in-ex-split-method').value;
+
+    if(!item || isNaN(price)) return alert("請輸入正確的品名和金額");
+
+    const totalAmount = price * qty;
+    let splitDetails = [];
+
+    // 計算分帳細節
+    if (splitMethod === 'equal') {
+        const checks = document.querySelectorAll('#split-options-container input[type="checkbox"]:checked');
+        if (checks.length > 0) {
+            const perPerson = Math.round(totalAmount / checks.length); // 簡單四捨五入，誤差不計
+            checks.forEach(chk => {
+                splitDetails.push({ name: chk.value, amount: perPerson });
+            });
+        } else {
+            // 如果沒勾選人，預設歸付款人
+            splitDetails.push({ name: payer, amount: totalAmount });
+        }
+    } else if (splitMethod === 'amount') {
+        const inputs = document.querySelectorAll('.split-amount-input');
+        let currentTotal = 0;
+        inputs.forEach(inp => {
+            const val = parseInt(inp.value) || 0;
+            if (val > 0) {
+                splitDetails.push({ name: inp.dataset.name, amount: val });
+                currentTotal += val;
+            }
+        });
+        // 驗證金額是否吻合 (可選：這裡先不強制卡死，彈性一點)
+        if (currentTotal !== totalAmount) {
+           if(!confirm(`分帳總額 (${currentTotal}) 與 總支出 (${totalAmount}) 不符，確定要儲存嗎？`)) return;
+        }
+    } else {
+        // 不分帳 (個人)
+        splitDetails.push({ name: payer, amount: totalAmount });
+    }
+
+    const expenseData = {
+        category, store, item, payer, currency, payment, receiptUrl, splitMethod, splitDetails,
+        priceJp: price, // 保存單價
+        qty,
+        amount: totalAmount, // 保存總價
+        date: fullTime.split('T')[0].replace(/-/g, '/'),
+        fullTime,
+        timestamp: Date.now() // 排序用
+    };
+
+    if(db) {
+        if(key) {
+            db.ref('expenses/' + key).update(expenseData);
+        } else {
+            db.ref('expenses').push(expenseData);
+        }
+    } else {
+        const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || [];
+        if(key) {
+            const index = parseInt(key.split('_')[1]);
+            localData[index] = expenseData;
+        } else {
+            localData.push(expenseData);
+        }
+        localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData));
+        renderBudget();
+    }
+    
+    closeModal('modal-budget');
+}
+        
         function addExpense() { 
             const category = document.getElementById('in-ex-category').value; const store = document.getElementById('in-ex-store').value; const item = document.getElementById('in-ex-item').value; const price = document.getElementById('in-ex-price').value; const qty = document.getElementById('in-ex-qty').value; const payment = document.getElementById('in-ex-pay').value; const timeValue = document.getElementById('in-ex-time').value;
-            if(!item || !price) return alert("請輸入品名和價格"); const totalAmount = parseInt(price) * parseInt(qty); const expenseData = { category, store, item, priceJp: price, qty, payment, amount: totalAmount, date: new Date().toLocaleDateString(), fullTime: timeValue, timestamp: Date.now() };
+            if(!item || !price) return alert("請輸入品名和價格"); 
+            const totalAmount = parseInt(price) * parseInt(qty); 
+            const expenseData = { category, store, item, priceJp: price, qty, payment, amount: totalAmount, date: new Date().toLocaleDateString(), fullTime: timeValue, timestamp: Date.now() };
             if(db) { db.ref('expenses').push(expenseData); } else { const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; localData.push(expenseData); localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData)); renderBudget(); }
             closeModal('modal-budget'); document.getElementById('in-ex-store').value = ''; document.getElementById('in-ex-item').value = ''; document.getElementById('in-ex-price').value = ''; document.getElementById('in-ex-qty').value = '1'; 
         }
+
         function adjustQty(delta) { const input = document.getElementById('in-ex-qty'); let val = parseInt(input.value) || 1; val += delta; if(val < 1) val = 1; input.value = val; input.dispatchEvent(new Event('input')); }
-        function deleteExpense(key) { if(confirm("刪除此紀錄？")) { if(db) { db.ref('expenses/' + key).remove(); } else { const index = parseInt(key.split('_')[1]); const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; localData.splice(index, 1); localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData)); renderBudget(); } } }
+        
+        function deleteExpense(key) { 
+            if(confirm("刪除此紀錄？")) { 
+                if(db) { db.ref('expenses/' + key).remove(); } 
+                else { 
+                    const index = parseInt(key.split('_')[1]); 
+                    const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; 
+                    localData.splice(index, 1); 
+                    localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData)); 
+                    renderBudget(); 
+                } 
+            } 
+        }
+
         function getPackingList() { const stored = localStorage.getItem(PACKING_KEY); if (!stored) { localStorage.setItem(PACKING_KEY, JSON.stringify(defaultPackingList)); return defaultPackingList; } return JSON.parse(stored); }
-        function togglePacking(id) { const list = getPackingList(); const item = list.find(i => i.id === id); if(item) { item.done = !item.done; localStorage.setItem(PACKING_KEY, JSON.stringify(list)); if(currentTab === 'home') renderHome(); if(currentTab === 'vouchers') renderVouchers(); } }
+        function togglePacking(id) { 
+            const list = getPackingList(); 
+            const item = list.find(i => i.id === id); 
+            if(item) { 
+                item.done = !item.done; 
+                localStorage.setItem(PACKING_KEY, JSON.stringify(list)); 
+                if(currentTab === 'home') renderHome();
+                if(currentTab === 'vouchers') renderVouchers();
+            } 
+        }
         function switchTab(tab) { currentTab = tab; document.querySelectorAll('.nav-item').forEach(btn => { btn.classList.remove('active', 'text-orange-500'); btn.classList.add('text-gray-400'); }); if (tab !== 'home') document.getElementById(`btn-${tab}`).classList.replace('text-gray-400', 'text-orange-500'); if (tab === 'home') renderHome(); if (tab === 'schedule') renderSchedule(); if (tab === 'shopping') renderShopping(); if (tab === 'budget') renderBudget(); if (tab === 'vouchers') renderVouchers(); window.scrollTo(0, 0); }
         function changeDate(index) { selectedDateIndex = index; renderSchedule(); }
         function toggleCard(element) { const details = element.querySelector('.details-content'); if(details) { details.style.display = details.style.display==='block'?'none':'block'; element.classList.toggle('card-active'); } }
@@ -525,6 +1303,7 @@
         function closeModal(id) { document.getElementById(id).classList.remove('open'); }
         function openPdfModal(encodedContent) { const content = decodeURIComponent(encodedContent); const modal = document.getElementById('modal-pdf'); const body = document.getElementById('pdf-content'); let html = `<div class="pdf-header border-b-2 border-gray-800 pb-2 mb-4 flex justify-between items-end"><h2 class="text-xl font-bold text-gray-800">BOOKING CONFIRMATION</h2><div class="text-right text-xs text-gray-500">2025/11/27</div></div>`; content.split('\n').forEach(line => { if(line.includes('：')) { const [key, val] = line.split('：'); html += `<div class="mb-2"><div class="text-[10px] text-gray-500 uppercase">${key}</div><div class="font-bold text-gray-900">${val}</div></div>`; } else if(line.trim() === '') html += `<div class="h-4"></div>`; else html += `<div class="text-sm text-gray-700 mb-1">${line}</div>`; }); body.innerHTML = html; modal.classList.add('open'); }
         function closePdfModal() { document.getElementById('modal-pdf').classList.remove('open'); }
+        function openVoucherImage(imgSrc) { const modal = document.getElementById('modal-pdf'); const body = document.getElementById('pdf-content'); const finalSrc = imgSrc.startsWith('http') ? imgSrc : `./${imgSrc}`; body.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><img src="${finalSrc}" class="max-w-full max-h-full object-contain rounded-lg shadow-lg"><p class="text-xs text-gray-400 mt-4">可使用雙指縮放查看</p></div>`; modal.classList.add('open'); }
         function openDetailModal(dayIdx, eventIdx, choiceIdx = null) { const modal = document.getElementById('modal-detail'); const content = document.getElementById('modal-detail-content'); let event = tripData[dayIdx].events[eventIdx]; if (choiceIdx !== null && event.choices) event = event.choices[choiceIdx]; const img = event.imgUrl || 'https://via.placeholder.com/400x250?text=No+Image'; const detail = event.detailInfo || {}; let tagsHtml = ''; if(detail.tags) detail.tags.forEach(t => tagsHtml += `<span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full mr-1">#${t}</span>`); let highlightHtml = ''; if(detail.highlights) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">✨ 必看亮點</h4><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${detail.highlights.map(h => `<li>${h}</li>`).join('')}</ul></div>`; if(detail.menu) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">👩‍🍳 推薦菜單</h4><div class="grid grid-cols-1 gap-2">${detail.menu.map(m => `<div class="flex justify-between items-center bg-gray-50 p-2 rounded"><span class="font-bold text-gray-700 text-sm">${m.n}</span><span class="text-orange-500 text-sm font-bold">${m.p || ''}</span></div>`).join('')}</div></div>`; content.innerHTML = `<div class="detail-handle" onclick="closeDetailModal()"></div><button class="detail-close-btn" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button><img src="${img}" class="detail-header-img"><div class="detail-body"><div class="flex items-center gap-2 mb-1"><span class="text-sm text-gray-400">${event.time || '詳細資訊'}</span>${tagsHtml}</div><h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2><p class="text-gray-600 text-sm leading-relaxed">${detail.desc || event.guide || '暫無詳細介紹'}</p>${highlightHtml}<div class="mt-6 flex gap-3"><a href="${event.link || `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`}" target="_blank" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-center font-bold shadow-lg active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> 導航</a>${event.mapCode ? `<button onclick="copyText('${event.mapCode}')" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold border border-gray-200 active:scale-95 transition">複製 MapCode</button>` : ''}</div></div>`; modal.classList.add('open'); }
         function closeDetailModal() { document.getElementById('modal-detail').classList.remove('open'); }
         async function updateWeatherUI() {
