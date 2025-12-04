@@ -56,11 +56,35 @@
         
         /* Elements */
         .detail-header-img { width: 100%; height: 250px; object-fit: cover; }
-        .detail-body { padding: 24px; overflow-y: auto; padding-bottom: 100px; }
+        .detail-body { padding: 24px; overflow-y: auto; flex: 1; /* 自動填滿剩餘高度 *//* 移除原本的 padding-bottom: 100px */ }
         .detail-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 100px; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-        .detail-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .detail-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 50; }
         .ticket-box { background-image: radial-gradient(circle at 0 50%, transparent 10px, #FFF5F5 11px), radial-gradient(circle at 100% 50%, transparent 10px, #FFF5F5 11px); border: 2px dashed #FFCDD2; color: #C62828; padding: 15px 25px; border-radius: 8px; position: relative; }
-        .pdf-sheet { background: #fff; width: 90%; height: 80vh; border-radius: 8px; overflow-y: auto; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-family: 'Courier New', Courier, monospace; position: relative; margin: auto; align-self: center; }
+        .pdf-sheet { 
+    /* ...原有樣式... */
+    padding: 0; /* 建議歸零，由內部元素控制間距 */
+    /* ... */
+}
+/* --- 修改：讓預覽視窗變大 --- */
+.pdf-sheet { 
+    background: #fff; 
+    width: 100%;        /* 寬度改為 100% */
+    height: 92vh;       /* 高度改為 92% (留一點點底給手指操作) */
+    border-radius: 16px 16px 0 0; 
+    padding: 0;         /* ★ 關鍵：移除內距，讓內容滿版 */
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.2); 
+    position: absolute; 
+    bottom: 0;          /* 固定在底部 */
+    overflow: hidden;   /* 防止圓角被內容蓋住 */
+    display: flex;
+    flex-direction: column;
+}
+
+
+.pdf-close-btn:active {
+    transform: scale(0.9);
+    background: rgba(0, 0, 0, 0.8);
+}
         .pdf-label { font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 2px; }
         .voucher-card { border-left: 4px solid #FF7043; }
         .sync-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
@@ -178,6 +202,80 @@
     text-align: center;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
+/* --- 記帳分頁樣式 START --- */
+.budget-tab-container {
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    display: flex;
+    margin-bottom: 16px;
+}
+.budget-tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #64748b;
+    transition: all 0.2s;
+}
+.budget-tab-btn.active {
+    background: white;
+    color: #f97316; /* 橘色 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+/* --- 記帳分頁樣式 END --- */
+/* --- 新增：底部安全區域 (避開 iPhone 橫條) --- */
+.safe-area-bottom {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+
+/* 請確保 .pdf-sheet 是這樣設定的 */
+.pdf-sheet { 
+    background: #fff; 
+    width: 100%;
+    height: 95vh; /* 拉高一點，佔據更多螢幕 */
+    border-radius: 16px 16px 0 0; 
+    padding: 0;
+    position: absolute; 
+    bottom: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* 確保沒有其他 padding 干擾 */
+}
+
+/* 底部安全區 (如果之前沒加，請加上) */
+.safe-area-bottom {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+/* --- 新增：日期選單置頂樣式 --- */
+.sticky-date-bar {
+    position: sticky;
+    top: 72px; /* 固定在 Header (約72px) 下方 */
+    z-index: 40;
+    
+    /* 背景色與 body 一致，加一點透明度 */
+    background-color: rgba(255, 248, 225, 0.95); 
+    backdrop-filter: blur(5px);
+    
+    /* 上下調整 */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    
+    /* 關鍵：使用負邊界抵消 #app 的 padding，讓捲動條滿版 */
+    margin-left: -16px; 
+    margin-right: -16px;
+    
+    /* 補回內距，讓內容不會貼邊 */
+    padding-left: 16px;
+    padding-right: 16px;
+    
+    /* 加一點陰影讓層次分明 */
+    box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
     </style>
 </head>
 <body class="pb-28">
@@ -201,7 +299,7 @@
             <button onclick="selectRole('driver')" class="bg-white p-4 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2 hover:bg-orange-50"><div class="text-4xl">🚗</div><div class="font-bold text-gray-700">妹妹 (駕駛)</div></button>
             <button onclick="selectRole('copilot')" class="bg-white p-4 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2 hover:bg-orange-50"><div class="text-4xl">🗺️</div><div class="font-bold text-gray-700">爸爸 (副駕)</div></button>
             <button onclick="selectRole('tourist')" class="bg-white p-4 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2 hover:bg-orange-50"><div class="text-4xl">📸</div><div class="font-bold text-gray-700">媽媽 (遊客)</div></button>
-            <button onclick="selectRole('admin')" class="bg-white p-4 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2 hover:bg-orange-50"><div class="text-4xl">📝</div><div class="font-bold text-gray-700">我 (主揪)</div></button>
+            <button onclick="selectRole('admin')" class="bg-white p-4 rounded-2xl shadow-lg border-2 border-orange-100 flex flex-col items-center gap-2 hover:bg-orange-50"><div class="text-4xl">📝</div><div class="font-bold text-gray-700">姊姊 (主揪)</div></button>
         </div>
     </div>
 
@@ -229,7 +327,7 @@
             <div class="grid grid-cols-2 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
                 <div><label class="text-xs text-gray-500 font-bold">🇹🇼 台灣售價</label><input id="in-shop-tw" type="number" placeholder="NT$" class="w-full p-2 bg-white rounded border border-blue-200 mt-1"></div>
                 <div><label class="text-xs text-gray-500 font-bold">🇯🇵 日本售價</label><input id="in-shop-jp" type="number" placeholder="¥" class="w-full p-2 bg-white rounded border border-blue-200 mt-1"></div>
-                <div class="col-span-2 text-center text-xs text-blue-500 pt-1">輸入日本價格自動計算匯率 (0.218)</div>
+                <div class="col-span-2 text-center text-xs text-blue-500 pt-1">輸入日本價格自動計算匯率 (0.2025)</div>
             </div>
             <button onclick="saveShopItem()" class="w-full bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">儲存</button>
         </div>
@@ -270,17 +368,56 @@
     </div>
 
     <script>
-        // --- 新增篩選狀態變數 ---
-let currentCategoryFilter = 'all';
-let currentStoreFilter = 'all';
+        // --- 1. 工具函式 ---
+        function getDirectImageUrl(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com') && url.includes('/file/d/')) {
+                try {
+                    const id = url.split('/file/d/')[1].split('/')[0].split('?')[0];
+                    return `https://lh3.googleusercontent.com/d/${id}`;
+                } catch (e) { return url; }
+            }
+            return url;
+        }
 
-// --- 新增篩選更新函式 ---
-function updateFilter(type, value) {
-    if (type === 'category') currentCategoryFilter = value;
-    if (type === 'store') currentStoreFilter = value;
-    renderShopping(); // 重新渲染畫面
-}
+        function getDrivePreviewUrl(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com') && url.includes('/file/d/')) {
+                try {
+                    const id = url.split('/file/d/')[1].split('/')[0].split('?')[0];
+                    return `https://drive.google.com/file/d/${id}/preview`;
+                } catch (e) { return url; }
+            }
+            return url;
+        }
+
+        // --- 2. 全域變數與設定 ---
+        let currentRole = localStorage.getItem('user_role');
+        let currentSimulatedDate = null;
+        let selectedDateIndex = 0;
+        let currentTab = 'home';
+        const JPY_RATE = 0.2025;
         
+        // 記帳相關
+        let currentBudgetTab = 'details';
+        let budgetChart = null;
+        const FAMILY_MEMBERS = [
+            { id: 'driver', name: '妹妹' },
+            { id: 'copilot', name: '爸爸' },
+            { id: 'tourist', name: '媽媽' },
+            { id: 'admin', name: '姊姊' }
+        ];
+
+        // 購物篩選相關
+        let currentCategoryFilter = 'all';
+        let currentStoreFilter = 'all';
+
+        // Keys
+        const PACKING_KEY = 'okinawa_packing_v3'; 
+        const SHOPPING_KEY = 'okinawa_shop_local_v6'; 
+        const EXPENSE_KEY = 'okinawa_expenses_local_v2';
+
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDLahJlYtLuCYrZBgiSYl7FqfOICJkJBd0",
             authDomain: "okinawa-202512.firebaseapp.com",
@@ -302,32 +439,19 @@ function updateFilter(type, value) {
             }
         } catch (e) { console.error("Firebase Init Error", e); }
 
-        let currentRole = localStorage.getItem('user_role'); 
-        let currentSimulatedDate = null;
-        let selectedDateIndex = 0;
-        let currentTab = 'home';
-        const JPY_RATE = 0.218;
-
-        const PACKING_KEY = 'okinawa_packing_v3'; 
+        // --- 3. 資料定義 ---
         const defaultPackingList = [
             { id: 'imp1', text: "護照 (效期6個月以上)", category: "重要", done: false }, { id: 'imp2', text: "駕照 + 中文譯本", category: "重要", done: false }, { id: 'imp3', text: "登機證 (電子/紙本)", category: "重要", done: false }, { id: 'imp4', text: "錢包 (卡/日幣/台幣)", category: "重要", done: false }, { id: 'imp5', text: "SIM 卡 (4張)", category: "重要", done: false }, { id: 'imp6', text: "鑰匙", category: "重要", done: false },
             { id: 't1', text: "牙刷、牙膏、牙線", category: "盥洗", done: false }, { id: 't2', text: "洗沐護髮、洗面乳", category: "盥洗", done: false }, { id: 't3', text: "髮油、梳子、鯊魚夾", category: "盥洗", done: false }, { id: 't4', text: "毛巾、浴巾", category: "盥洗", done: false }, { id: 't5', text: "化妝品、保養品", category: "盥洗", done: false }, { id: 't6', text: "隱形眼鏡、水盒", category: "盥洗", done: false },
             { id: 'c1', text: "外出衣服 (5天)", category: "衣物", done: false }, { id: 'c2', text: "內衣褲、襪子", category: "衣物", done: false }, { id: 'c3', text: "睡衣、拖鞋", category: "衣物", done: false }, { id: 'c4', text: "外套、帽子、墨鏡", category: "衣物", done: false }, { id: 'e1', text: "充電器、線、行充", category: "電子", done: false }, { id: 'e2', text: "導航手機架", category: "電子", done: false }, { id: 'o1', text: "隨身包、環保袋", category: "雜項", done: false }, { id: 'o2', text: "雨傘、水壺", category: "雜項", done: false }, { id: 'o3', text: "防蚊液、防曬", category: "雜項", done: false }, { id: 'o4', text: "個人藥品", category: "雜項", done: false }, { id: 'o5', text: "貓條", category: "雜項", done: false }
         ];
-        const SHOPPING_KEY = 'okinawa_shop_local_v6'; 
+        
         const defaultShoppingList = [
             { id: 's1', category: '雜貨', store: '那霸機場/單軌', item: 'OKIKA 交通卡', priceJp: 2000, priceTw: 440, done: false },
             { id: 's2', category: '電器', store: '便利商店/超市', item: '拍立得 (Instant Camera)', priceJp: 15000, priceTw: 3300, done: false },
-            { id: 's3', category: '衣物', store: '美國村 American Depot', item: '古著 (Vintage)', priceJp: 3500, priceTw: 770, done: false },
-            { id: 's4', category: '雜貨', store: 'Parco City 3F', item: '獅薩 (Shisa) 擺飾', priceJp: 2500, priceTw: 550, done: false },
-            { id: 's5', category: '零食', store: 'Parco City 1F', item: '必買餅乾/伴手禮', priceJp: 1200, priceTw: 260, done: false },
-            { id: 's6', category: '雜貨', store: 'Parco City 1F', item: '3COINS+ 生活小物', priceJp: 330, priceTw: 70, done: false },
-            { id: 's7', category: '零食', store: '國際通', item: '世界第一蘋果派', priceJp: 450, priceTw: 100, done: false },
-            { id: 's8', category: '雜貨', store: '壺屋通陶瓷街', item: '沖繩陶器 (Yachimun)', priceJp: 3000, priceTw: 660, done: false },
-            { id: 's9', category: '雜貨', store: '波上宮', item: '開運御守', priceJp: 800, priceTw: 175, done: false },
-            { id: 's10', category: '雜貨', store: '北谷 GIGO', item: '扭蛋', priceJp: 500, priceTw: 110, done: false }
+            { id: 's3', category: '衣物', store: '美國村 American Depot', item: '古著 (Vintage)', priceJp: 3500, priceTw: 770, done: false }
         ];
-        const EXPENSE_KEY = 'okinawa_expenses_local_v2';
+
         const okinawaEvents = [
             { title: "東南植物樂園 燈光秀", date: "10/25 - 5/25", loc: "沖繩市", img: "https://www.okinawastory.jp/feature/illumination/images/spot01_img01.jpg", link: "https://www.google.com/maps/search/Southeast+Botanical+Gardens" },
             { title: "糸滿和平燈飾", date: "12/13 - 1/03", loc: "糸滿市", img: "https://www.okinawastory.jp/feature/illumination/images/spot04_img01.jpg", link: "https://www.google.com/maps/search/Itoman+Peaceful+Illumination" },
@@ -337,82 +461,293 @@ function updateFilter(type, value) {
         ];
 
         const tripData = [
-            {
-                date: "12/25", fullDate: "2025/12/25", day: "週四", weather: "☁️ 20°C",
-                events: [
-                    { time: "14:50", title: "Uber 出發北車", type: "trans", guide: "護照、手機、錢包帶了嗎？", appLink: { url: "https://m.uber.com/ul", text: "開啟 Uber", icon: "fa-brands fa-uber" }, travel: { mode: 'train', time: '40分' } },
-                    { time: "15:20", title: "機捷往機場 (直達車)", type: "trans", guide: "A1 台北車站 -> A13 第一航廈", frequency: "約 15 分鐘一班", timetableUrl: "https://www.tymetro.com.tw/tymetro-new/tw/_pages/travel-guide/timetable.php" },
-                    { time: "16:30", title: "機場 Check-in", type: "trans", title_detail: "樂桃 MM930", bookingInfo: { code: "1616324336315022", note: "Trip.com 訂單", extra: "T1 | 20kg 託運 / 7kg 手提 | 登機門: 現場確認", pdfContent: "航班：MM930\n起飛：18:20 (T1)\n抵達：20:50 (D)\n\n乘客：\n1. Chen Szu Yu\n2. Chen Ru Xuan\n3. Chen Chien Liang\n4. Hsu Mei Ling\n\n行李：\n託運 20kg x 4\n手提 7kg x 4", voucherImg: "flight_go.jpg" }, guide: "18:20 起飛 -> 20:50 抵達 (D)。" },
-                    { time: "21:30", title: "單軌列車往市區", type: "trans", guide: "那霸機場站 -> 美榮橋站。", frequency: "約 10-12 分鐘一班", timetableUrl: "https://www.yui-rail.co.jp/tc/timetable/", travel: { mode: 'walk', time: '5分' } },
-                    { time: "22:00", title: "東橫INN 美榮橋", type: "hotel", mapCode: "33 157 154*55", bookingInfo: { code: "會員卡 Check-in", note: "現場付款" } },
-                    { time: "22:30", title: "晚餐選擇 (左右滑動)", type: "choice", choices: [ { title: "蝦湯拉麵 Chanya", type: "eat", guide: "濃郁蝦湯頭，營業至深夜。", mapCode: "33 157 435*30", link: "https://maps.app.goo.gl/Chanya", detailInfo: { desc: "濃郁鮮甜的蝦湯拉麵。", tags: ["拉麵","宵夜"], menu:[{n:"蝦湯拉麵",p:"¥980"}] } }, { title: "琉球中華 蛙吽", type: "eat", guide: "創意中華料理，有訂位。", mapCode: "33 157 288*22", link: "https://maps.app.goo.gl/Waon", detailInfo: { desc: "時尚的創意中華料理。", tags: ["中華","訂位"], menu:[{n:"紅油抄手",p:"¥680"},{n:"擔擔麵",p:"¥880"}] } } ] }
-                ]
+    {
+        date: "12/25", fullDate: "2025/12/25", day: "週四", weather: "☁️ 20°C",
+        events: [
+            { time: "14:50", title: "Uber 出發北車", type: "trans", guide: "護照、手機、錢包帶了嗎？", appLink: { url: "https://m.uber.com/ul", text: "開啟 Uber", icon: "fa-brands fa-uber" }, travel: { mode: 'train', time: '40分' } },
+            { 
+                time: "15:20", title: "機捷往機場 (直達車)", type: "trans", guide: "A1 台北車站 -> A13 第一航廈", frequency: "約 15 分鐘一班", 
+                timetableUrl: "https://drive.google.com/file/d/16MInONdMqG5ZsAsTRm5-S3Tymmrf2EOb/view?usp=drive_link" 
             },
-            {
-                date: "12/26", fullDate: "2025/12/26", day: "週五", weather: "☀️ 21°C",
-                events: [
-                    { time: "06:00", title: "起床 & 早餐", type: "prep", guide: "飯店早餐。請準時整理行李。", departureTime: "08:00 準時出發", travel: { mode: 'trans', time: '30分' } },
-                    { time: "08:30", title: "OTS 租車 (臨空豐崎)", type: "trans", mapCode: "232 543 502*66", bookingInfo: { code: "Email", note: "預約名：Chen Ru Xuan" }, guide: "右駕口訣：靠左開，雨刷在左，方向燈在右。", travel: { mode: 'drive', time: '30分' } },
-                    { time: "10:30", title: "Once a Week Coffee", type: "eat", guide: "必吃肉桂捲，停留 10 分鐘買了車上吃。", menu: [{n:"肉桂捲", j:"シナモンロール"}], travel: { mode: 'drive', time: '15分' } },
-                    { time: "11:00", title: "港川外人居住宅", type: "spot", mapCode: "33 341 063*55", imgUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=500", detailInfo: { desc: "前美軍宿舍改建的文青聚落。", tags: ["拍照", "甜點"], highlights: ["O'Hacorte 水果塔", "houkiboshi 可麗露"] }, travel: { mode: 'drive', time: '20分' } },
-                    { time: "12:30", title: "普天滿宮", type: "spot", mapCode: "33 438 616*33", guide: "宜野灣市的能量景點，有鐘乳石洞穴。", travel: { mode: 'drive', time: '30分' } },
-                    { time: "14:30", title: "午餐：壽司市場 泡瀨店", type: "eat", mapCode: "33 531 366*44", detailInfo: { desc: "人氣迴轉壽司，CP值高。", tags: ["壽司", "平價"], menu: [{n:"炙燒鮭魚", p:"¥100"}, {n:"鮪魚大腹", p:"¥300"}] }, travel: { mode: 'drive', time: '15分' } },
-                    { time: "15:50", title: "泡瀨漁港 / AEON Mall", type: "spot", guide: "視時間決定：想吃海膽焗烤去漁港，想逛街去 AEON Rycom。", travel: { mode: 'drive', time: '20分' } },
-                    { time: "18:00", title: "晚餐：阿古豬鍋", type: "eat", title_detail: "Chatan Dining Chaabu", mapCode: "33 526 212*25", bookingInfo: { code: "3JYNWGHFKM", note: "Tabelog 預約", pdfContent: "預約號：3JYNWGHFKM\n時間：12/26 18:00\n人數：4位\n\n*系統費 ¥1,760 已付", voucherImg: "dinner_day2.jpg" }, detailInfo: { desc: "位於北谷的阿古豬涮涮鍋名店。", tags: ["阿古豬", "涮涮鍋"], menu: [{n:"阿古豬涮涮鍋", p:"¥3,500"}] }, travel: { mode: 'walk', time: '5分' } },
-                    { time: "19:40", title: "美濱日落度假飯店", type: "hotel", title_detail: "Sunset Resort Mihama", mapCode: "33 525 205*74", bookingInfo: { code: "1616323760441360", note: "PIN: 1047", extra: "已付 ¥9,424", pdfContent: "訂單號：1616323760441360\nPIN碼：1047\n入住：12/26 - 12/28 (2晚)\n房型：標準雙床房 x1", voucherImg: "hotel_mihama.jpg" } },
-                    { time: "20:10", title: "美國村逛逛", type: "spot", mapCode: "33 526 450*63", guide: "可以去大國藥妝補貨，摩天輪拍照。" }
-                ]
+            { 
+                time: "16:30", title: "機場 Check-in", type: "trans", title_detail: "樂桃 MM930", 
+                bookingInfo: { 
+                    code: "1616324336315022", 
+                    note: "Trip.com 訂單", 
+                    extra: "桃園國際機場 T1 | 20kg 託運 / 7kg 手提", 
+                    driveLink: "https://drive.google.com/file/d/1iScNq9RHqi_l-JYoXhKnhk8Btu-4gTaG/view?usp=drive_link"
+                }, 
+                guide: "18:20 起飛 -> 20:50 抵達 (D)。",
             },
-            {
-                date: "12/27", fullDate: "2025/12/27", day: "週六", weather: "⛅ 22°C",
-                events: [
-                    { time: "06:00", title: "起床", type: "prep", guide: "早餐外面買，車上吃。", departureTime: "07:30 出發往北部", travel: { mode: 'drive', time: '45分' } },
-                    { time: "08:30", title: "許田休息站", type: "spot", mapCode: "206 476 706*66", guide: "必吃：炸天婦羅、黑糖球。", travel: { mode: 'drive', time: '30分' } },
-                    { time: "09:45", title: "Panchori-na 麵包店", type: "eat", guide: "可愛麵包店，停留 30 分鐘。", travel: { mode: 'drive', time: '30分' } },
-                    { time: "11:00", title: "午餐：蝦蝦飯", type: "eat", mapCode: "485 692 167*55", detailInfo: { desc: "古宇利島必吃！建議先找座位。", tags: ["海景", "蝦飯"], menu: [{n:"原味大蒜蝦飯", p:"¥1,400"}] }, travel: { mode: 'drive', time: '40分' } },
-                    { time: "13:20", title: "美麗海水族館", type: "spot", mapCode: "553 075 797*77", detailInfo: { desc: "亞洲最大水族館之一，黑潮之海必看。", tags: ["鯨鯊", "海豚秀"], highlights: ["黑潮之海", "戶外海豚劇場"] }, travel: { mode: 'drive', time: '50分' } },
-                    { time: "17:00", title: "晚餐：Obaa no Ya 燒肉", type: "eat", title_detail: "Obaa no Ya (名護燒肉)", mapCode: "206 598 371*14", bookingInfo: { code: "2QZLY2AV4K", note: "Tabelog 預約", pdfContent: "預約號：2QZLY2AV4K\n時間：12/27 17:00\n人數：4位\n\n*當天取消收費 ¥3000/人", voucherImg: "dinner_day3.jpg" }, detailInfo: { desc: "名護人氣燒肉，炭火燒烤風味絕佳。", tags: ["燒肉", "和牛"], menu: [{n:"特上牛五花", p:"¥1,800"}] }, travel: { mode: 'drive', time: '40分' } },
-                    { time: "20:00", title: "美國村煙火", type: "spot", guide: "週六限定！觀賞點：北谷日落步道。" }
-                ]
+            { 
+                time: "18:20", title: "樂桃 MM930 起飛", type: "trans",
+                guide: "18:20 起飛 -> 20:50 抵達 (D)。",
+                travel: { mode: 'plane', time: '1h 30m' }
             },
-            {
-                date: "12/28", fullDate: "2025/12/28", day: "週日", weather: "🌧️ 20°C",
-                events: [
-                    { time: "06:00", title: "起床 & 退房", type: "prep", guide: "11:00 前退房。", departureTime: "07:30 出發", travel: { mode: 'drive', time: '30分' } },
-                    { time: "08:00", title: "早餐：A&W 漢堡", type: "eat", mapCode: "33 341 602*66", guide: "必點 Root Beer (沙士)。", travel: { mode: 'drive', time: '30分' } },
-                    { time: "09:30", title: "瀨長島 Umikaji", type: "spot", mapCode: "33 002 605*15", guide: "希臘風情白色建築，看飛機起降。", travel: { mode: 'drive', time: '30分' } },
-                    { time: "11:30", title: "午餐：沖繩麵 / 義大利麵", type: "eat", guide: "Yagiya (沖繩麵) 或 The Slow (義大利麵)。", travel: { mode: 'drive', time: '20分' } },
-                    { time: "12:30", title: "Shinmei Coffee", type: "eat", guide: "古民家咖啡，推薦黑糖拿鐵。", travel: { mode: 'drive', time: '20分' } },
-                    { time: "14:00", title: "玉泉洞 (王國村)", type: "spot", mapCode: "232 495 330*28", guide: "鐘乳石洞，出來看太鼓表演。", travel: { mode: 'drive', time: '20分' } },
-                    { time: "17:00", title: "奧武島 (貓島)", type: "spot", mapCode: "232 468 336*41", guide: "必買：中本鮮魚店天婦羅。", travel: { mode: 'drive', time: '15分' } },
-                    { time: "17:30", title: "Gangala之谷 導覽", type: "spot", mapCode: "232 495 330*28", bookingInfo: { code: "0Y0BGC4I", note: "Nutmeg 預約", pdfContent: "預約號：0Y0BGC4I\n時間：12/28 17:30\n\n*請提早15分鐘集合", voucherImg: "gangala.jpg" }, detailInfo: { desc: "太古森林導覽，集合時間 17:30。", tags: ["自然", "導覽"], highlights: ["巨大榕樹", "CAVE CAFE"] }, travel: { mode: 'drive', time: '40分' } },
-                    { time: "20:00", title: "東橫INN 那霸旭橋", type: "hotel", bookingInfo: { code: "會員卡", note: "現場付款" }, mapCode: "33 126 733*12" },
-                    { time: "21:00", title: "AEON 超市 / 國際通", type: "spot", guide: "買半價品、零食伴手禮。" }
-                ]
+             { 
+                time: "20:50", title: "抵達 那霸機場 D", type: "trans",
+                guide: "18:20 起飛 -> 20:50 抵達 (D)。",
             },
-            {
-                date: "12/29", fullDate: "2025/12/29", day: "週一", weather: "☀️ 23°C",
-                events: [
-                    { time: "07:00", title: "起床 & 早餐", type: "prep", guide: "飯店早餐。10:00 前退房。", departureTime: "10:30 出發", travel: { mode: 'drive', time: '20分' } },
-                    { time: "10:30", title: "Ashibinaa Outlet", type: "spot", mapCode: "232 544 452*22", guide: "運動品牌、GAP 都很便宜。", travel: { mode: 'drive', time: '15分' } },
-                    { time: "13:30", title: "OTS 還車", type: "trans", guide: "加滿油再還車！搭接駁車去機場。", travel: { mode: 'trans', time: '20分' } },
-                    { time: "14:30", title: "機場午餐", type: "eat", guide: "豬肉蛋飯糰。" },
-                    { time: "16:55", title: "回程飛機 (FD231)", type: "trans", title_detail: "泰國亞航 FD231", bookingInfo: { code: "1616324336315022", note: "Trip.com", pdfContent: "航班：FD231\n起飛：16:55 (那霸 I)\n抵達：17:35 (T1)\n\n行李：\n託運 20kg x 4\n手提 7kg x 4", voucherImg: "flight_back.jpg" }, guide: "那霸 I -> 桃機 T1。提早 2.5 小時到。" }
-                ]
+            { 
+                time: "21:30", title: "單軌列車往市區", type: "trans", guide: "那霸機場站 -(7站約14分)> 美榮橋站 1號出口。", frequency: "約 10-12 分鐘一班", 
+                timetableUrl: "https://drive.google.com/file/d/1brg7uYoSb6vgqMZXRK4oGMJARYow6M79/view?usp=drive_link", 
+                travel: { mode: 'walk', time: '5分' } 
+            },
+            { 
+                time: "22:00", title: "東橫INN 美榮橋", type: "hotel", mapCode: "33 157 154*55", 
+                bookingInfo: { 
+                    code: "5892799 / 5892800", 
+                    note: "會員卡 Check-in (現場付)",
+                    driveLink: "https://drive.google.com/file/d/1LxppScaTh2hwfZVWykidQtgDm9UagXeQ/view?usp=drive_link"
+                } 
+            },
+            { 
+                time: "22:30", title: "晚餐二選一", type: "choice", 
+                choices: [ 
+                    { 
+                        title: "蝦湯拉麵 Chanya", 
+                        type: "eat", 
+                        imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/306129/640x640_rect_1c59d40469eed39e39ca6f832061d5dd.jpg",
+                        guide: "隱藏巷弄的濃郁蝦湯，深夜食堂氛圍。", 
+                        // ★ 交通時間
+                        travelTime: "步行 10分",
+                        navLink: "https://maps.app.goo.gl/4C2URtcJCK8evziz8",
+                        // ★ Google 評論用連結
+                        reviewLink: "https://maps.app.goo.gl/HEYTrTrB5RyKFYBx5",
+                        link: "https://tabelog.com/tw/okinawa/A4701/A470101/47002685/",
+                        detailInfo: { 
+                            desc: `這家店不在國際通大街上，而是隱藏在松山巷弄裡，是當地人下班喝酒後的「收尾拉麵」。<br><br><b>🦐 靈魂湯頭：</b><br>蝦味的暴力美學！使用大量甜蝦、車海老熬煮，不是淡淡清香，而是<b>「濃縮的衝擊」</b>！入口鮮甜直衝鼻腔。<br><br><b>⚠️ 重要提醒：店內全面不禁菸</b>，介意菸味者請斟酌。`, 
+                            tags: ["拉麵", "宵夜", "重口味", "吸菸可"], 
+                            highlights: [
+                                "👑 首選：海老味噌拉麵 (濃郁爽度)",
+                                "🥈 清爽派：海老鹽味拉麵 (鮮甜)",
+                                "🥟 配角：一口餃子 (皮薄餡多)",
+                                "氛圍：西裝大叔的深夜食堂"
+                            ],
+                            menu:[
+                                {n:"海老味噌拉麵", p:"¥980"},
+                                {n:"海老鹽味拉麵", p:"¥980"},
+                                {n:"一口餃子", p:"¥400"}
+                            ] 
+                        } 
+                    }, 
+                    { 
+                        title: "琉球中華 蛙吽", 
+                        type: "eat", 
+                        // ★ 封面照片
+                        imgUrl: "https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/198123/29193b52eb9c59bf138115b14443726a.jpg?token=df157a4&api=v2",
+                        // ★ 簡短說明
+                        guide: "霓虹港風 x 沖繩老宅，在地年輕人聚集的潮店。", 
+                        // ★ 交通時間
+                        travelTime: "步行 12分",
+                        // ★ 導航與 Tabelog
+                        navLink: "https://maps.app.goo.gl/uxpRiSDsBC5r8D78A",
+                        // ★ Google 評論連結
+                        reviewLink: "https://maps.app.goo.gl/GogoMVRZ79Bem3N97", 
+                        link: "https://tabelog.com/tw/okinawa/A4701/A470101/47029564/", 
+                        detailInfo: { 
+                            // ★ 詳細介紹
+                            desc: `這家店走的是<b>「霓虹港風 x 沖繩老宅」</b>路線，被稱為「新派中華 (Neo Chinese)」。<br><br><b>🏮 氛圍：王家衛電影感</b><br>店內充滿紅色與綠色霓虹燈，很有 Cyberpunk (賽博龐克) 感，像電影《墮落天使》的場景，隨便拍都像網美照。<br><br><b>⚠️ 沖繩超人提醒：</b><br>1. <b>菸味警報</b>：23:00 後通常全面開放吸菸。<br>2. <b>費用細節</b>：有座席費 (Otoshi) 約 ¥330/人，且每人低消一杯飲料。`, 
+                            tags: ["新派中華","霓虹港風","深夜營業","網美點"], 
+                            highlights: [
+                                "📸 視覺：王家衛電影風格 (超好拍)",
+                                "🔥 必點：四川藥膳麻婆豆腐 (花椒麻)",
+                                "🍹 打卡：凍檸塔 (整顆檸檬堆高高)",
+                                "🥟 點心：溢汁小籠包 / 燒賣"
+                            ],
+                            menu:[
+                                {n:"藥膳麻婆豆腐", p:"¥960"},
+                                {n:"蛙吽黑炒飯", p:"¥930"},
+                                {n:"凍檸塔沙瓦", p:"¥630"},
+                                {n:"座席費(Otoshi)", p:"¥330"}
+                            ] 
+                        } 
+                    }  
+                ] 
             }
-        ];
-        
-        // --- 記帳成員設定 ---
-// 對應 role 的顯示名稱
-const FAMILY_MEMBERS = [
-    { id: 'driver', name: '妹妹' },
-    { id: 'copilot', name: '爸爸' },
-    { id: 'tourist', name: '媽媽' },
-    { id: 'admin', name: '我' }
+        ]
+    },
+    {
+        date: "12/26", fullDate: "2025/12/26", day: "週五", weather: "☀️ 21°C",
+        events: [
+            { time: "06:00", title: "起床 & 早餐(6:30 - 9:00)", type: "prep", guide: "飯店早餐。請準時整理行李。", departureTime: "08:00 準時出發", travel: { mode: 'trans', time: '30分' } },
+            { 
+                time: "08:30", title: "OTS 租車 (臨空豐崎)", type: "trans", 
+                bookingInfo: { 
+                    code: "OTS1365405", 
+                    note: "預約名：Chen Ru Xuan",
+                    driveLink: "https://drive.google.com/file/d/1tmm03HWp8HNxlyd9rlX4RjYBaGOsh-OJ/view?usp=drive_link"
+                }, 
+                guide: "右駕口訣：靠左開，雨刷在左，方向燈在右。", travel: { mode: 'drive', time: '30分' } 
+            },
+            { 
+                time: "10:30", 
+                title: "Once a Week Boutique", 
+                type: "eat", 
+                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/262352/640x640_rect_b36a9b4580015fb4deb55dafe1237997.jpg", // 示意圖
+                guide: "傳說中的肉桂捲名店，建議買了車上吃。", 
+                
+                // 1. 卡片右上角小圓鈕 (導航用)
+                navLink: "https://maps.app.goo.gl/JRaZSCn2YMe5Grri7", 
+                
+                // 2. 詳細視窗右邊藍色按鈕 (看評論用)
+                reviewLink: "https://maps.app.goo.gl/GFrbHtViTLTuy7BG7",
+                
+                // 3. 詳細視窗左邊按鈕 (官方 IG)
+                link: "https://www.instagram.com/onceaweekcoffee.naha/", 
+                
+                detailInfo: { 
+                    desc: "這是一間非常低調但人氣超高的肉桂捲專賣店。外皮酥脆、內層濕潤，肉桂香氣濃郁但不刺鼻，是很多沖繩通心中的 No.1。",
+                    tags: ["肉桂捲", "外帶美食", "甜點"], 
+                    highlights: [
+                        "每日限量，晚來買不到",
+                        "多種口味：原味、黑糖、奶油乳酪",
+                        "適合當作開車途中的點心"
+                    ],
+                    menu: [
+                        {n: "經典肉桂捲", p: "¥450"},
+                        {n: "黑糖核桃肉桂捲", p: "¥480"},
+                        {n: "冰拿鐵", p: "¥550"}
+                    ]
+                },
+                
+                travel: { mode: 'drive', time: '15分' } 
+            },
+            { 
+                time: "11:00", 
+                title: "港川外人住宅街", 
+                type: "spot", 
+                // 封面圖：選用最具代表性的 oHacorte 小木屋與粉藍色建築
+                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/115764/640x640_rect_115764560.jpg",
+                
+                guide: "馬卡龍色系的美軍宿舍群，甜點戰區 (oHacorte / ほうき星)。", 
+                
+                // 1. 導航：設定到外人住宅區入口
+                navLink: "https://maps.app.goo.gl/K9gV9bZ7yqJqJqJq7", 
+                
+                // 2. 評論：這裡設定為 Google Maps 的評論頁面
+                reviewLink: "https://maps.app.goo.gl/K9gV9bZ7yqJqJqJq7",
+                
+                // 3. 官網：港川外人住宅官方網站
+                link: "http://minatogawa-shop.r-cms.jp/", 
+                
+                detailInfo: { 
+                    desc: `這裡以前是美軍眷屬宿舍，現在是超好拍的文青聚落。每棟平房都漆成可愛的馬卡龍色，路名也是用美國州名命名（如 Nevada St.），充滿異國風情。<br><br><b>🚗 停車攻略 (重要！)：</b><br>這裡是「自駕小魔王關卡」，<b>路非常窄，會車困難！</b>且店家專屬車位極少。<br>💡 <b>強烈建議：</b>直接停在入口處或中間的<b>「投幣式停車場 (Coin Parking)」</b>再走進去逛，最輕鬆省事。`, 
+                    
+                    tags: ["文青", "甜點", "拍照聖地", "馬卡龍色"], 
+                    
+                    highlights: [
+                        "⚡️ 1小時快閃：11:00 拍照 -> 11:30 買甜點 -> 12:00 離開",
+                        "🛍️ 必買：ほうき星 (黑糖可麗露) - 25號",
+                        "🍰 必吃：oHacorte (水果塔) - 18號 (門口必拍!)",
+                        "⚠️ 注意：ippe coppe 麵包店 12:30 才開，可能會來不及"
+                    ],
+                    
+                    // 把店家當作 Menu 顯示，方便查看
+                    menu: [
+                        {n: "[25號] ほうき星", p: "黑糖可麗露"},
+                        {n: "[18號] oHacorte", p: "珠寶盒水果塔"},
+                        {n: "[26號] ippe coppe", p: "天然酵母麵包"}
+                    ]
+                }, 
+                
+                travel: { mode: 'drive', time: '20分' } 
+            },
+            { time: "12:30", title: "普天滿宮", type: "spot", mapCode: "33 438 616*33", guide: "宜野灣市的能量景點，有鐘乳石洞穴。", travel: { mode: 'drive', time: '30分' } },
+            { time: "14:30", title: "午餐：壽司市場 泡瀨店", type: "eat", mapCode: "33 531 366*44", detailInfo: { desc: "人氣迴轉壽司，CP值高。", tags: ["壽司", "平價"], menu: [{n:"炙燒鮭魚", p:"¥100"}, {n:"鮪魚大腹", p:"¥300"}] }, travel: { mode: 'drive', time: '15分' } },
+            { time: "15:50", title: "泡瀨漁港 / AEON Mall", type: "spot", guide: "視時間決定：想吃海膽焗烤去漁港，想逛街去 AEON Rycom。", travel: { mode: 'drive', time: '20分' } },
+            { 
+                time: "18:00", title: "晚餐：阿古豬鍋", type: "eat", title_detail: "Chatan Dining Chaabu", mapCode: "33 526 212*25", 
+                bookingInfo: { 
+                    code: "3JYNWGHFKM", 
+                    note: "Tabelog 預約", 
+                    driveLink: "https://drive.google.com/file/d/1aC-aVfvv4iy578apmaEv9HksOD-rzjOt/view?usp=drive_link"
+                }, 
+                detailInfo: { desc: "位於北谷的阿古豬涮涮鍋名店。", tags: ["阿古豬", "涮涮鍋"], menu: [{n:"阿古豬涮涮鍋", p:"¥3,500"}] }, travel: { mode: 'walk', time: '5分' } 
+            },
+            { 
+                time: "19:40", title: "美濱日落度假飯店", type: "hotel", title_detail: "Sunset Resort Mihama", mapCode: "33 525 205*74", 
+                bookingInfo: { 
+                    code: "1616323760441360", 
+                    note: "PIN: 1047", 
+                    extra: "已付 ¥9,424", 
+                    driveLink: "https://drive.google.com/file/d/16zfKPiZBPPBFJyARHDH503a85w6vEmJi/view?usp=drive_link"
+                } 
+            },
+            { time: "20:10", title: "美國村逛逛", type: "spot", mapCode: "33 526 450*63", guide: "可以去大國藥妝補貨，摩天輪拍照。" }
+        ]
+    },
+    {
+        date: "12/27", fullDate: "2025/12/27", day: "週六", weather: "⛅ 22°C",
+        events: [
+            { time: "06:00", title: "起床", type: "prep", guide: "早餐外面買，車上吃。", departureTime: "07:30 出發往北部", travel: { mode: 'drive', time: '45分' } },
+            { time: "08:30", title: "許田休息站", type: "spot", mapCode: "206 476 706*66", guide: "必吃：炸天婦羅、黑糖球。", travel: { mode: 'drive', time: '30分' } },
+            { time: "09:45", title: "Panchori-na 麵包店", type: "eat", guide: "可愛麵包店，停留 30 分鐘。", travel: { mode: 'drive', time: '30分' } },
+            { time: "11:00", title: "午餐：蝦蝦飯", type: "eat", mapCode: "485 692 167*55", detailInfo: { desc: "古宇利島必吃！建議先找座位。", tags: ["海景", "蝦飯"], menu: [{n:"原味大蒜蝦飯", p:"¥1,400"}] }, travel: { mode: 'drive', time: '40分' } },
+            { time: "13:20", title: "美麗海水族館", type: "spot", mapCode: "553 075 797*77", detailInfo: { desc: "亞洲最大水族館之一，黑潮之海必看。", tags: ["鯨鯊", "海豚秀"], highlights: ["黑潮之海", "戶外海豚劇場"] }, travel: { mode: 'drive', time: '50分' } },
+            { 
+                time: "17:00", title: "晚餐：Obaa no Ya 燒肉", type: "eat", title_detail: "Obaa no Ya (名護燒肉)", mapCode: "206 598 371*14", 
+                bookingInfo: { 
+                    code: "2QZLY2AV4K", 
+                    note: "Tabelog 預約", 
+                    driveLink: "https://drive.google.com/file/d/18WY990jEKlkvz1VmGCljkT07xTVBNPle/view?usp=drive_link"
+                }, 
+                detailInfo: { desc: "名護人氣燒肉，炭火燒烤風味絕佳。", tags: ["燒肉", "和牛"], menu: [{n:"特上牛五花", p:"¥1,800"}] }, travel: { mode: 'drive', time: '40分' } 
+            },
+            { time: "20:00", title: "美國村煙火", type: "spot", guide: "週六限定！觀賞點：北谷日落步道。" }
+        ]
+    },
+    {
+        date: "12/28", fullDate: "2025/12/28", day: "週日", weather: "🌧️ 20°C",
+        events: [
+            { time: "06:00", title: "起床 & 退房", type: "prep", guide: "11:00 前退房。", departureTime: "07:30 出發", travel: { mode: 'drive', time: '30分' } },
+            { time: "08:00", title: "早餐：A&W 漢堡", type: "eat", mapCode: "33 341 602*66", guide: "必點 Root Beer (沙士)。", travel: { mode: 'drive', time: '30分' } },
+            { time: "09:30", title: "瀨長島 Umikaji", type: "spot", mapCode: "33 002 605*15", guide: "希臘風情白色建築，看飛機起降。", travel: { mode: 'drive', time: '30分' } },
+            { time: "11:30", title: "午餐：沖繩麵 / 義大利麵", type: "eat", guide: "Yagiya (沖繩麵) 或 The Slow (義大利麵)。", travel: { mode: 'drive', time: '20分' } },
+            { time: "12:30", title: "Shinmei Coffee", type: "eat", guide: "古民家咖啡，推薦黑糖拿鐵。", travel: { mode: 'drive', time: '20分' } },
+            { time: "14:00", title: "玉泉洞 (王國村)", type: "spot", mapCode: "232 495 330*28", guide: "鐘乳石洞，出來看太鼓表演。", travel: { mode: 'drive', time: '20分' } },
+            { time: "17:00", title: "奧武島 (貓島)", type: "spot", mapCode: "232 468 336*41", guide: "必買：中本鮮魚店天婦羅。", travel: { mode: 'drive', time: '15分' } },
+            { 
+                time: "17:30", title: "Gangala之谷 導覽", type: "spot", mapCode: "232 495 330*28", 
+                bookingInfo: { 
+                    code: "0Y0BGC4I", 
+                    note: "Nutmeg 預約", 
+                    driveLink: "https://drive.google.com/file/d/1INEKGZkeFmle8EsCNkY7BCETvtdZUgpt/view?usp=drive_link"
+                }, 
+                detailInfo: { desc: "太古森林導覽，集合時間 17:30。", tags: ["自然", "導覽"], highlights: ["巨大榕樹", "CAVE CAFE"] }, travel: { mode: 'drive', time: '40分' } 
+            },
+            { 
+                time: "20:00", title: "東橫INN 那霸旭橋", type: "hotel", mapCode: "33 126 733*12",
+                bookingInfo: { 
+                    code: "5892799 / 5892800", 
+                    note: "會員卡 (現場付)" 
+                } 
+            },
+            { time: "21:00", title: "AEON 超市 / 國際通", type: "spot", guide: "買半價品、零食伴手禮。" }
+        ]
+    },
+    {
+        date: "12/29", fullDate: "2025/12/29", day: "週一", weather: "☀️ 23°C",
+        events: [
+            { time: "07:00", title: "起床 & 早餐", type: "prep", guide: "飯店早餐。10:00 前退房。", departureTime: "10:30 出發", travel: { mode: 'drive', time: '20分' } },
+            { time: "10:30", title: "Ashibinaa Outlet", type: "spot", mapCode: "232 544 452*22", guide: "運動品牌、GAP 都很便宜。", travel: { mode: 'drive', time: '15分' } },
+            { time: "13:30", title: "OTS 還車", type: "trans", guide: "加滿油再還車！搭接駁車去機場。", travel: { mode: 'trans', time: '20分' } },
+            { time: "14:30", title: "機場午餐", type: "eat", guide: "豬肉蛋飯糰。" },
+            { 
+                time: "16:55", title: "回程飛機 (FD231)", type: "trans", title_detail: "泰國亞航 FD231", 
+                bookingInfo: { 
+                    code: "1616324336315022", 
+                    note: "Trip.com", 
+                    extra: "那霸機場 I | 20kg 託運 / 7kg 手提",
+                    driveLink: "https://drive.google.com/file/d/1iScNq9RHqi_l-JYoXhKnhk8Btu-4gTaG/view?usp=drive_link" 
+                }, 
+                guide: "那霸 I -> 桃機 T1。提早 2.5 小時到。" 
+            }
+        ]
+    }
 ];
 
-let budgetChart = null; // 用來存儲圖表實例
-
+        // --- 4. 核心邏輯 ---
         function init() {
             if (!currentRole) {
                 document.getElementById('role-selector').classList.remove('hidden');
@@ -421,20 +756,6 @@ let budgetChart = null; // 用來存儲圖表實例
                 renderHome();
                 setupRealtimeListeners();
             }
-            // Auto Calc for Budget
-            const exPrice = document.getElementById('in-ex-price');
-            const exQty = document.getElementById('in-ex-qty');
-            const calcTotal = document.getElementById('calc-total');
-            const calcTwd = document.getElementById('calc-twd');
-            function updateExTotal() {
-                const p = parseInt(exPrice.value) || 0;
-                const q = parseInt(exQty.value) || 1;
-                const total = p * q;
-                calcTotal.innerText = total.toLocaleString();
-                calcTwd.innerText = Math.round(total * JPY_RATE).toLocaleString();
-            }
-            exPrice.addEventListener('input', updateExTotal);
-            exQty.addEventListener('input', updateExTotal);
         }
 
         function selectRole(role) {
@@ -448,341 +769,7 @@ let budgetChart = null; // 用來存儲圖表實例
         function clearRole() { localStorage.removeItem('user_role'); location.reload(); }
         function setupRealtimeListeners() { if(db) { db.ref('shoppingList').on('value', () => { if(currentTab === 'shopping') renderShopping(); }); db.ref('expenses').on('value', () => { if(currentTab === 'budget') renderBudget(); }); } }
 
-        // --- Render Pages ---
-        function renderShopping() {
-    document.getElementById('header-desc').innerText = "購物清單";
-    const container = document.getElementById('app');
-    
-    // 修改：將 shopping-controls 加上 sticky-filters class，並移除 mb-2
-    let html = `
-        <button onclick="openEditShopModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
-        
-        <!-- 置頂篩選區塊 -->
-        <div id="shopping-controls" class="sticky-filters"></div>
-        
-        <div id="shopping-list-container" class="space-y-4 pb-24">
-            <div class="text-center text-gray-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
-        </div>`;
-    container.innerHTML = html;
-
-    const loadData = (data) => {
-        const listContainer = document.getElementById('shopping-list-container');
-        const controlsContainer = document.getElementById('shopping-controls');
-
-        if(!data) { 
-            // 沒資料時隱藏篩選列，避免佔位
-            controlsContainer.style.display = 'none';
-            listContainer.innerHTML = '<div class="text-center text-gray-400 mt-10">清單是空的，點擊 + 新增</div>'; 
-            return; 
-        }
-
-        // --- 資料處理與提取選項 ---
-        const allEntries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
-        
-        const categories = new Set();
-        const stores = new Set();
-        allEntries.forEach(([_, item]) => {
-            if(item.category) categories.add(item.category);
-            if(item.store) stores.add(item.store);
-        });
-
-        const catOptions = Array.from(categories).map(c => `<option value="${c}" ${currentCategoryFilter===c?'selected':''}>${c}</option>`).join('');
-        const storeOptions = Array.from(stores).map(s => `<option value="${s}" ${currentStoreFilter===s?'selected':''}>${s}</option>`).join('');
-
-        // 顯示篩選器內容
-        controlsContainer.style.display = 'block';
-        controlsContainer.innerHTML = `
-            <div class="filter-row">
-                <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-                    <select class="filter-select" onchange="updateFilter('category', this.value)">
-                        <option value="all">全部種類</option>
-                        ${catOptions}
-                    </select>
-                    <select class="filter-select" onchange="updateFilter('store', this.value)">
-                        <option value="all">全部店舖</option>
-                        ${storeOptions}
-                    </select>
-                </div>
-                <div class="rate-badge">
-                    <i class="fa-solid fa-calculator mr-1"></i>匯率 ${JPY_RATE}
-                </div>
-            </div>
-        `;
-
-        // --- 執行篩選 ---
-        const filteredEntries = allEntries.filter(([_, item]) => {
-            const catMatch = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
-            const storeMatch = currentStoreFilter === 'all' || item.store === currentStoreFilter;
-            return catMatch && storeMatch;
-        });
-
-        if (filteredEntries.length === 0) {
-            listContainer.innerHTML = '<div class="text-center text-gray-400 py-8">沒有符合篩選條件的商品</div>';
-            return;
-        }
-        
-        // --- 生成列表 (邏輯保持不變) ---
-        let itemsHtml = '';
-        filteredEntries.reverse().forEach(([key, item]) => {
-            // 省錢計算
-            let savingsInfo = '';
-            let twdEstimate = 0;
-            if (item.priceJp) { 
-                twdEstimate = Math.round(parseInt(item.priceJp) * JPY_RATE); 
-                if (item.priceTw) { 
-                    const priceTw = parseInt(item.priceTw); 
-                    const diff = priceTw - twdEstimate;
-                    if (diff > 0) savingsInfo = `<span class="ml-2 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">省 $${diff}</span>`; 
-                    else if (diff < 0) savingsInfo = `<span class="ml-2 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">貴 $${Math.abs(diff)}</span>`;
-                } 
-            }
-
-            // 圖片邏輯
-            let imgSource = '';
-            if (item.imgUrl) { imgSource = item.imgUrl.startsWith('http') ? item.imgUrl : `./${item.imgUrl}`; }
-            let imgBoxContent = '';
-            let clickAction = '';
-            let boxClass = 'shop-img-box';
-            if (imgSource) {
-                imgBoxContent = `<img src="${imgSource}" onerror="this.style.display='none'">`;
-                clickAction = `onclick="openVoucherImage('${imgSource}')"`;
-            } else { boxClass += ' no-image'; }
-
-            // 卡片 HTML
-            itemsHtml += `
-                <div class="card p-4 flex gap-4 bg-white items-center ${item.done ? 'opacity-60' : ''}">
-                    <div>
-                        <input type="checkbox" onchange="toggleShopItem('${key}')" 
-                               class="w-6 h-6 accent-blue-600 border-2 border-blue-600 rounded cursor-pointer" 
-                               ${item.done ? 'checked' : ''}>
-                    </div>
-                    <div class="${boxClass}" ${clickAction}>${imgBoxContent}</div>
-                    <div class="flex-1 flex flex-col justify-between min-w-0 self-stretch">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded">${item.category || '未分類'}</span>
-                            <button onclick="deleteShopItem('${key}')" class="text-gray-800 hover:text-red-500 transition">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
-                        <div class="mb-3">
-                            <h3 class="font-bold text-gray-800 text-lg leading-snug break-words line-clamp-2">${item.item}</h3>
-                            <div class="text-sm text-gray-500 mt-0.5">${item.store || ''}</div>
-                        </div>
-                        <div class="mt-auto">
-                            <div class="text-gray-800 font-bold mb-2 flex items-center">
-                                台幣 : $ ${item.priceTw || '-'} ${savingsInfo}
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-gray-600 font-bold">日幣</span>
-                                    <input type="number" placeholder="0" value="${item.priceJp || ''}" 
-                                           class="jp-price-input-clean" 
-                                           onchange="updateShopPrice('${key}', this.value)"
-                                           onclick="event.stopPropagation()">
-                                    ${twdEstimate > 0 ? `<span class="text-xs text-gray-400">(≈$${twdEstimate})</span>` : ''}
-                                </div>
-                                <button onclick="openEditShopModal('${key}')" class="text-blue-600 text-lg hover:scale-110 transition px-2">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-        });
-        
-        listContainer.innerHTML = itemsHtml;
-    };
-
-    if(db) { 
-        db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); 
-    } else { 
-        const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || defaultShoppingList; 
-        loadData(localData); 
-    }
-}
-
-        function renderBudget() {
-    document.getElementById('header-desc').innerText = "記帳本 & 分帳";
-    const container = document.getElementById('app');
-
-    // 1. 容器 HTML：新增圖表區、個人統計區
-    let html = `
-        <div class="card p-4 mb-4 bg-white">
-            <h3 class="font-bold text-gray-700 mb-2 text-center">📊 消費分類統計</h3>
-            <div class="chart-container">
-                <canvas id="expenseChart"></canvas>
-            </div>
-        </div>
-
-        <div class="card p-4 mb-4 bg-orange-50 border-orange-200">
-            <h3 class="font-bold text-gray-700 mb-3"><i class="fa-solid fa-users-viewfinder mr-2"></i>每人應付金額 (預估台幣)</h3>
-            <div id="personal-summary" class="grid grid-cols-2 gap-3">
-                <div class="text-center py-4 text-gray-400"><i class="fa-solid fa-spinner fa-spin"></i> 計算中...</div>
-            </div>
-        </div>
-
-        <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
-        <div id="expenses-list" class="space-y-3 pb-24"></div>
-    `;
-    container.innerHTML = html;
-
-    const loadData = (data) => {
-        const listContainer = document.getElementById('expenses-list');
-        const personalContainer = document.getElementById('personal-summary');
-        
-        if(!data) { 
-            personalContainer.innerHTML = '<div class="col-span-2 text-center text-gray-400 text-sm">尚無紀錄</div>';
-            listContainer.innerHTML = '<div class="text-center text-gray-400 py-4">目前沒有支出，點擊 + 記帳</div>'; 
-            return; 
-        }
-
-        let totalByCat = {};
-        let personalTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '我': 0 };
-        let itemsHtml = '';
-        const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
-
-        entries.reverse().forEach(([key, ex]) => {
-            const amount = parseInt(ex.amount);
-            // 轉換為台幣作統計 (若是日幣則 * 匯率，台幣則直接用)
-            const amountTwd = ex.currency === 'TWD' ? amount : Math.round(amount * JPY_RATE);
-            
-            // 1. 分類統計 (給圓餅圖用)
-            totalByCat[ex.category] = (totalByCat[ex.category] || 0) + amountTwd;
-
-            // 2. 分帳邏輯計算
-            if (ex.splitDetails) {
-                // 如果有詳細分帳資訊
-                ex.splitDetails.forEach(detail => {
-                    if(personalTotal[detail.name] !== undefined) {
-                        // 詳細分帳金額需換算成台幣
-                        const splitAmountTwd = ex.currency === 'TWD' ? detail.amount : Math.round(detail.amount * JPY_RATE);
-                        personalTotal[detail.name] += splitAmountTwd;
-                    }
-                });
-            } else {
-                // 舊資料相容：預設為付款人全付 (或是當作不分帳的公款?)
-                // 這裡假設舊資料算在"付款人"頭上，或者如果無付款人欄位預設為"我"
-                const payer = ex.payer || '我'; 
-                // 這裡簡單處理：如果是舊資料，直接算在付款人身上，不進行複雜拆分
-                if(personalTotal[payer] !== undefined) personalTotal[payer] += amountTwd;
-            }
-
-            // 3. 列表顯示
-            let icon = '💸'; 
-            if(ex.category === '食物') icon = '🍔'; if(ex.category === '購物') icon = '🛍️'; 
-            if(ex.category === '交通') icon = '🚗'; if(ex.category === '門票') icon = '🎫';
-            
-            // 處理金額顯示
-            const priceDisplay = ex.currency === 'TWD' 
-                ? `NT$${amount.toLocaleString()}` 
-                : `¥${amount.toLocaleString()}`;
-            const subDisplay = ex.currency === 'TWD' 
-                ? '' 
-                : `<div class="text-[10px] text-gray-400">≈ NT$${amountTwd.toLocaleString()}</div>`;
-
-            // 處理憑證圖示
-            const receiptIcon = ex.receiptUrl 
-                ? `<button onclick="openVoucherImage('${ex.receiptUrl}')" class="text-blue-500 hover:bg-blue-50 p-1 rounded"><i class="fa-solid fa-receipt"></i></button>` 
-                : '';
-
-            itemsHtml += `
-                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center relative overflow-hidden">
-                    <div class="w-1 bg-orange-400 absolute left-0 top-0 bottom-0"></div>
-                    <div class="flex-1 ml-2">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-lg">${icon}</span>
-                            <span class="font-bold text-gray-700 text-sm line-clamp-1">${ex.item}</span>
-                            <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">${ex.payer || '未知'}</span>
-                        </div>
-                        <div class="text-xs text-gray-400 flex items-center gap-2">
-                            <span>${ex.fullTime ? ex.fullTime.slice(5, 16).replace('T', ' ') : ex.date}</span>
-                            <span>• ${ex.payment || '現金'}</span>
-                        </div>
-                    </div>
-                    <div class="text-right flex flex-col items-end mr-3 min-w-[70px]">
-                        <div class="font-bold text-orange-600">${priceDisplay}</div>
-                        ${subDisplay}
-                    </div>
-                    <div class="flex gap-2 pl-2 border-l border-gray-100">
-                        ${receiptIcon}
-                        <button onclick="openBudgetModal('${key}')" class="text-gray-400 hover:text-blue-500 p-1"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteExpense('${key}')" class="text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>`;
-        });
-
-        // 4. 更新畫面
-        listContainer.innerHTML = itemsHtml;
-
-        // 更新個人統計卡片
-        let personalHtml = '';
-        Object.keys(personalTotal).forEach(name => {
-            personalHtml += `
-                <div class="person-card">
-                    <div class="text-xs text-gray-500 font-bold mb-1">${name}</div>
-                    <div class="text-xl font-bold text-gray-800">
-                        <span class="text-xs mr-0.5">$</span>${personalTotal[name].toLocaleString()}
-                    </div>
-                </div>`;
-        });
-        personalContainer.innerHTML = personalHtml;
-
-        // 5. 繪製圖表
-        renderChart(totalByCat);
-    };
-
-    if(db) { db.ref('expenses').once('value').then(snapshot => loadData(snapshot.val())); } 
-    else { const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; loadData(localData); }
-}
-
-// --- 圖表繪製函式 ---
-function renderChart(dataObj) {
-    const ctx = document.getElementById('expenseChart');
-    if (!ctx) return;
-    
-    // 銷毀舊圖表以防重疊
-    if (budgetChart) { budgetChart.destroy(); }
-
-    const labels = Object.keys(dataObj);
-    const data = Object.values(dataObj);
-    const colors = ['#FFAB91', '#FFCC80', '#B2EBF2', '#E1BEE7', '#DCEDC8', '#F8BBD0'];
-
-    budgetChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: colors,
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right', labels: { font: { family: "'M PLUS Rounded 1c'" }, boxWidth: 12 } }
-            }
-        }
-    });
-}
-
-        function createEventCard(event, dayIdx, evtIdx) {
-            if (event.type === 'choice') {
-                return `<div class="overflow-hidden"><div class="flex items-center gap-2 mb-2 px-1"><span class="font-bold text-xl text-gray-700">${event.time}</span> <h3 class="font-bold text-lg text-gray-800">${event.title}</h3></div><div class="flex gap-4 overflow-x-auto snap-x-mandatory hide-scrollbar pb-4 px-1">${event.choices.map((c, cIdx) => `<div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm" onclick="openDetailModal(${dayIdx}, ${evtIdx}, ${cIdx})"><div class="flex justify-between items-start mb-2"><h4 class="font-bold text-lg text-gray-800">${c.title}</h4><span class="text-xs px-2 py-1 rounded-full tag-eat">美食</span></div><p class="text-sm text-gray-600 mb-3 line-clamp-2">${c.guide}</p><button class="w-full bg-blue-50 text-blue-600 py-2 rounded-lg text-sm font-bold">查看詳情 & 導航</button></div>`).join('')}</div></div>`;
-            }
-            if (event.type === 'prep') {
-                return `<div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center"><div><div class="font-bold text-xl text-purple-800">${event.time}</div><div class="text-sm text-purple-600 font-bold">${event.title}</div><div class="text-xs text-purple-500 mt-1">${event.guide}</div></div><div class="text-right"><div class="text-xs text-gray-500">預計出發</div><div class="text-2xl font-bold text-purple-900">${event.departureTime.split(' ')[0]}</div><div class="text-xs text-purple-700">準時出發 🚗</div></div></div>`;
-            }
-            let previewContent = '';
-            if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
-            if (currentRole === 'admin' && event.bookingInfo) previewContent = `<div class="mt-2 text-xs text-red-500 font-bold"><i class="fa-solid fa-ticket mr-1"></i> ${event.bookingInfo.note}</div>`;
-            if (event.frequency) previewContent += `<div class="mt-2 text-xs text-blue-600 font-bold"><i class="fa-solid fa-clock"></i> ${event.frequency} <a href="${event.timetableUrl}" target="_blank" class="ml-1 underline">時刻表</a></div>`;
-            let clickAction = (event.type === 'eat' || event.type === 'spot') ? `onclick="openDetailModal(${dayIdx}, ${evtIdx})"` : `onclick="toggleCard(this)"`;
-            
-            return `<div class="card p-5" ${clickAction}><div class="flex items-start gap-4 pointer-events-none"><div class="font-bold text-xl text-gray-700 min-w-[50px] pt-1">${event.time}</div><div class="flex-1"><h3 class="font-bold text-lg text-gray-800">${event.title}</h3>${event.appLink ? `<a href="${event.appLink.url}" class="mt-2 inline-block bg-black text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}<span class="text-xs px-2 py-1 rounded-full ${event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans'} block w-fit mt-1">${event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通'}</span>${previewContent}</div></div><div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}${event.bookingInfo ? `<div class="ticket-box"><div class="text-sm opacity-70">預約憑證 / 訂單號</div><div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div><div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div>${event.bookingInfo.pdfContent ? `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證</button>` : ''}${event.bookingInfo.voucherImg ? `<button onclick="openVoucherImage('${event.bookingInfo.voucherImg}')" class="mt-2 w-full bg-red-500 text-white py-2 rounded-lg font-bold text-sm shadow-md mb-2"><i class="fa-solid fa-image mr-1"></i> 查看憑證圖片</button>` : ''}</div>` : ''}${event.multiMaps ? `<div class="grid grid-cols-2 gap-3">${event.multiMaps.map(m => `<a href="https://www.google.com/maps/search/?api=1&query=${m.query}" target="_blank" class="bg-blue-50 text-blue-600 py-3 rounded-xl text-center font-bold shadow-sm border border-blue-100 active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> ${m.name}</a>`).join('')}</div>` : ''}${event.mapCode ? `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center mb-2"><span class="text-sm font-bold text-gray-600">MapCode</span><div class="flex items-center gap-2"><span class="font-mono text-xl font-bold">${event.mapCode}</span><button onclick="copyText('${event.mapCode}', event)" class="text-orange-500"><i class="fa-regular fa-copy"></i></button></div></div><a href="https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩" target="_blank" class="block w-full text-center bg-blue-500 text-white font-bold py-2 rounded-lg shadow-sm"><i class="fa-solid fa-location-arrow mr-2"></i> Google 導航</a>${event.parking ? `<div class="mt-2 text-xs text-gray-500"><i class="fa-solid fa-square-parking"></i> ${event.parking.info}</div>` : ''}</div>` : ''}${event.guide ? `<div class="text-sm text-gray-700 leading-relaxed"><i class="fa-solid fa-circle-info text-orange-400 mr-1"></i> ${event.guide}</div>` : ''}${event.adminNote ? `<div class="text-sm text-gray-600 bg-yellow-50 p-2 rounded border border-yellow-100"><i class="fa-solid fa-pen mr-1"></i> 筆記: ${event.adminNote}</div>` : ''}</div></div>`;
-        }
-
+        // --- Render: Home ---
         function renderHome() {
             const container = document.getElementById('app');
             const now = currentSimulatedDate ? new Date(currentSimulatedDate) : new Date();
@@ -791,11 +778,9 @@ function renderChart(dataObj) {
             const displayData = tripIndex !== -1 ? tripData[tripIndex] : tripData[0];
             const displayIndex = tripIndex !== -1 ? tripIndex : 0;
             const nextEvent = displayData.events[0];
-            const roleName = ({ 'driver': '妹妹 (駕駛)', 'copilot': '爸爸 (副駕)', 'tourist': '媽媽 (遊客)', 'admin': '我 (主揪)' })[currentRole] || '旅人';
             const roleIcons = { driver: '🚗', copilot: '🗺️', tourist: '📸', admin: '📝' };
             document.getElementById('header-icon').innerText = roleIcons[currentRole] || '🦁';
 
-            // Packing List Logic: Only show BEFORE 12/25
             const isBeforeTrip = now < new Date("2025-12-25T00:00:00");
             let packingHtml = '';
             if (isBeforeTrip) { packingHtml = getPackingListHTML(); }
@@ -814,25 +799,45 @@ function renderChart(dataObj) {
             updateWeatherUI();
         }
 
-        function renderSchedule() {
-            const container = document.getElementById('app');
-            document.getElementById('header-desc').innerText = "行程總覽";
-            let tabsHtml = `<div class="date-scroll flex gap-2 mb-4 px-1 pb-2">`;
-            tripData.forEach((d, idx) => { const active = idx === selectedDateIndex ? 'active' : 'bg-white text-gray-500 border border-gray-200'; tabsHtml += `<button onclick="changeDate(${idx})" class="date-tab ${active} px-4 py-2 rounded-full min-w-[90px] text-center transition shadow-sm flex-shrink-0"><div class="text-xs opacity-80">${d.day}</div><div class="font-bold text-lg leading-tight">${d.date}</div><div class="text-xs mt-1 font-normal opacity-90">${d.weather}</div></button>`; });
-            tabsHtml += `</div>`;
-            const dayData = tripData[selectedDateIndex];
-            let eventsHtml = `<div class="space-y-4 animation-fade pb-12">`;
-            dayData.events.forEach((event, eIdx) => {
-                eventsHtml += createEventCard(event, selectedDateIndex, eIdx);
-                if (event.type !== 'choice' && event.travel && eIdx < dayData.events.length - 1) {
-                    let icon = 'fa-car'; if(event.travel.mode === 'walk') icon = 'fa-person-walking'; if(event.travel.mode === 'train') icon = 'fa-train-subway'; if(event.travel.mode === 'plane') icon = 'fa-plane';
-                    eventsHtml += `<div class="flex flex-col items-center -my-3 z-0 relative"><div class="h-6 w-0.5 bg-gray-300 border-l border-dashed border-gray-400"></div><div class="bg-white text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full border border-gray-200 shadow-sm flex items-center gap-1 z-10"><i class="fa-solid ${icon}"></i> ${event.travel.time}</div><div class="h-6 w-0.5 bg-gray-300 border-l border-dashed border-gray-400"></div></div>`;
-                }
-            });
-            eventsHtml += `</div>`;
-            container.innerHTML = tabsHtml + eventsHtml;
+        // --- Render: Schedule (日期選單置頂版) ---
+function renderSchedule() {
+    const container = document.getElementById('app');
+    document.getElementById('header-desc').innerText = "行程總覽";
+    
+    // ★ 修改：加入 sticky-date-bar 類別，並移除原本的 mb-4 (改由 CSS 控制)
+    let tabsHtml = `<div class="date-scroll flex gap-2 sticky-date-bar">`;
+    
+    tripData.forEach((d, idx) => { 
+        const active = idx === selectedDateIndex ? 'active' : 'bg-white text-gray-500 border border-gray-200'; 
+        tabsHtml += `
+            <button onclick="changeDate(${idx})" class="date-tab ${active} px-4 py-2 rounded-full min-w-[90px] text-center transition shadow-sm flex-shrink-0">
+                <div class="text-xs opacity-80">${d.day}</div>
+                <div class="font-bold text-lg leading-tight">${d.date}</div>
+                <div class="text-xs mt-1 font-normal opacity-90">${d.weather}</div>
+            </button>`; 
+    });
+    tabsHtml += `</div>`;
+    
+    const dayData = tripData[selectedDateIndex];
+    let eventsHtml = `<div class="space-y-4 animation-fade pb-12">`;
+    
+    dayData.events.forEach((event, eIdx) => {
+        eventsHtml += createEventCard(event, selectedDateIndex, eIdx);
+        if (event.type !== 'choice' && event.travel && eIdx < dayData.events.length - 1) {
+            let icon = 'fa-car'; 
+            if(event.travel.mode === 'walk') icon = 'fa-person-walking'; 
+            if(event.travel.mode === 'train') icon = 'fa-train-subway'; 
+            if(event.travel.mode === 'plane') icon = 'fa-plane';
+            
+            eventsHtml += `<div class="flex flex-col items-center -my-3 z-0 relative"><div class="h-6 w-0.5 bg-gray-300 border-l border-dashed border-gray-400"></div><div class="bg-white text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full border border-gray-200 shadow-sm flex items-center gap-1 z-10"><i class="fa-solid ${icon}"></i> ${event.travel.time}</div><div class="h-6 w-0.5 bg-gray-300 border-l border-dashed border-gray-400"></div></div>`;
         }
+    });
+    eventsHtml += `</div>`;
+    
+    container.innerHTML = tabsHtml + eventsHtml;
+}
 
+        // --- Render: Vouchers ---
         function renderVouchers() {
             document.getElementById('header-desc').innerText = "預約憑證夾";
             const container = document.getElementById('app');
@@ -843,12 +848,16 @@ function renderChart(dataObj) {
                     if (event.bookingInfo) {
                         let linkBtn = '';
                         const fullText = (event.bookingInfo.note + (event.bookingInfo.extra || '')).toLowerCase();
-                        if (fullText.includes('trip.com')) linkBtn = `<a href="https://trip.com" target="_blank" class="mt-3 block w-full text-center bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm hover:bg-blue-100 transition border border-blue-100"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟 Trip.com 訂單</a>`;
+                        if (fullText.includes('trip.com')) linkBtn = `<a href="https://trip.com" target="_blank" class="mt-3 block w-full text-center bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm hover:bg-blue-100 transition border border-blue-100"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟 Trip.com </a>`;
                         else if (fullText.includes('nutmeg')) linkBtn = `<a href="https://ntmg.jp/" target="_blank" class="mt-3 block w-full text-center bg-green-50 text-green-600 py-2 rounded-lg font-bold text-sm hover:bg-green-100 transition border border-green-100"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟 Nutmeg 訂單</a>`;
                         else if (fullText.includes('tabelog')) linkBtn = `<a href="https://tabelog.com/" target="_blank" class="mt-3 block w-full text-center bg-yellow-50 text-yellow-600 py-2 rounded-lg font-bold text-sm hover:bg-yellow-100 transition border border-yellow-100"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 開啟 Tabelog</a>`;
                         
-                        let imgBtn = '';
-                        if (event.bookingInfo.voucherImg) { imgBtn = `<button onclick="openVoucherImage('${event.bookingInfo.voucherImg}')" class="mt-2 w-full bg-red-500 text-white py-2 rounded-lg font-bold text-sm shadow-md mb-2"><i class="fa-solid fa-image mr-1"></i> 查看憑證圖片</button>`; }
+                        let voucherBtn = '';
+                        if (event.bookingInfo.driveLink) {
+                            voucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.driveLink}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100 hover:bg-red-100 transition"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證 (PDF)</button>`;
+                        } else if (event.bookingInfo.pdfContent) {
+                            voucherBtn = `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100 hover:bg-red-100 transition"><i class="fa-solid fa-file-lines mr-1"></i> 預覽憑證內容</button>`;
+                        }
 
                         vouchersHtml += `
                             <div class="card p-5 border-l-4 border-orange-500 shadow-sm bg-white">
@@ -856,8 +865,7 @@ function renderChart(dataObj) {
                                 <div class="text-sm text-gray-600 mb-3">${event.bookingInfo.note}</div>
                                 <div class="bg-gray-50 p-3 rounded border border-gray-200 dashed mb-3 relative group active:bg-orange-50 transition"><div class="text-xs text-gray-400 mb-1">訂單編號 / PIN</div><div class="text-xl font-mono font-bold text-gray-800 select-all break-all">${event.bookingInfo.code}</div><div class="absolute right-2 top-2 text-gray-300"><i class="fa-regular fa-copy"></i></div></div>
                                 ${event.bookingInfo.extra ? `<div class="text-xs text-orange-600 font-bold text-right mb-3">${event.bookingInfo.extra}</div>` : ''}
-                                ${event.bookingInfo.pdfContent ? `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證</button>` : ''}
-                                ${imgBtn}
+                                ${voucherBtn}
                                 ${linkBtn}
                             </div>`;
                     }
@@ -866,6 +874,550 @@ function renderChart(dataObj) {
             const packingHtml = getPackingListHTML();
             container.innerHTML = infoHtml + `<div class="text-gray-500 text-sm mb-2 px-2">預約憑證</div>` + vouchersHtml + `<div class="mt-8 text-gray-500 text-sm mb-2 px-2">隨時檢查</div>` + packingHtml + `</div>`;
         }
+
+        // --- Render: Shopping ---
+        function renderShopping() {
+            document.getElementById('header-desc').innerText = "購物清單";
+            const container = document.getElementById('app');
+            
+            let html = `
+                <button onclick="openEditShopModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
+                <div id="shopping-controls" class="sticky-filters"></div>
+                <div id="shopping-list-container" class="space-y-4 pb-24">
+                    <div class="text-center text-gray-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
+                </div>`;
+            container.innerHTML = html;
+
+            const loadData = (data) => {
+                const listContainer = document.getElementById('shopping-list-container');
+                const controlsContainer = document.getElementById('shopping-controls');
+
+                if(!data) { 
+                    controlsContainer.style.display = 'none';
+                    listContainer.innerHTML = '<div class="text-center text-gray-400 mt-10">清單是空的，點擊 + 新增</div>'; 
+                    return; 
+                }
+
+                const allEntries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
+                
+                const categories = new Set();
+                const stores = new Set();
+                allEntries.forEach(([_, item]) => {
+                    if(item.category) categories.add(item.category);
+                    if(item.store) stores.add(item.store);
+                });
+
+                const catOptions = Array.from(categories).map(c => `<option value="${c}" ${currentCategoryFilter===c?'selected':''}>${c}</option>`).join('');
+                const storeOptions = Array.from(stores).map(s => `<option value="${s}" ${currentStoreFilter===s?'selected':''}>${s}</option>`).join('');
+
+                controlsContainer.style.display = 'block';
+                controlsContainer.innerHTML = `
+                    <div class="filter-row">
+                        <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                            <select class="filter-select" onchange="updateFilter('category', this.value)">
+                                <option value="all">全部種類</option>
+                                ${catOptions}
+                            </select>
+                            <select class="filter-select" onchange="updateFilter('store', this.value)">
+                                <option value="all">全部店舖</option>
+                                ${storeOptions}
+                            </select>
+                        </div>
+                        <div class="rate-badge"><i class="fa-solid fa-calculator mr-1"></i>匯率 ${JPY_RATE}</div>
+                    </div>`;
+
+                const filteredEntries = allEntries.filter(([_, item]) => {
+                    const catMatch = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
+                    const storeMatch = currentStoreFilter === 'all' || item.store === currentStoreFilter;
+                    return catMatch && storeMatch;
+                });
+
+                if (filteredEntries.length === 0) {
+                    listContainer.innerHTML = '<div class="text-center text-gray-400 py-8">沒有符合篩選條件的商品</div>';
+                    return;
+                }
+                
+                let itemsHtml = '';
+                filteredEntries.reverse().forEach(([key, item]) => {
+                    let savingsInfo = '';
+                    let twdEstimate = 0;
+                    if (item.priceJp) { 
+                        twdEstimate = Math.round(parseInt(item.priceJp) * JPY_RATE); 
+                        if (item.priceTw) { 
+                            const priceTw = parseInt(item.priceTw); 
+                            const diff = priceTw - twdEstimate;
+                            if (diff > 0) savingsInfo = `<span class="ml-2 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">省 $${diff}</span>`; 
+                            else if (diff < 0) savingsInfo = `<span class="ml-2 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">貴 $${Math.abs(diff)}</span>`;
+                        } 
+                    } 
+
+                    let imgSource = '';
+                    if (item.imgUrl) { 
+                        let rawUrl = item.imgUrl.startsWith('http') ? item.imgUrl : `./${item.imgUrl}`;
+                        imgSource = getDirectImageUrl(rawUrl); 
+                    }
+                    
+                    let imgBoxContent = '';
+                    let clickAction = '';
+                    let boxClass = 'shop-img-box';
+
+                    if (imgSource) {
+                        imgBoxContent = `<img src="${imgSource}" onerror="this.style.display='none'">`;
+                        clickAction = `onclick="openVoucherImage('${imgSource}')"`;
+                    } else {
+                        boxClass += ' no-image';
+                    }
+
+                    itemsHtml += `
+                        <div class="card p-4 flex gap-4 bg-white items-center ${item.done ? 'opacity-60' : ''}">
+                            <div>
+                                <input type="checkbox" onchange="toggleShopItem('${key}')" class="w-6 h-6 accent-blue-600 border-2 border-blue-600 rounded cursor-pointer" ${item.done ? 'checked' : ''}>
+                            </div>
+                            <div class="${boxClass}" ${clickAction}>${imgBoxContent}</div>
+                            <div class="flex-1 flex flex-col justify-between min-w-0 self-stretch">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded">${item.category || '未分類'}</span>
+                                    <button onclick="deleteShopItem('${key}')" class="text-gray-800 hover:text-red-500 transition"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                                <div class="mb-3">
+                                    <h3 class="font-bold text-gray-800 text-lg leading-snug break-words line-clamp-2">${item.item}</h3>
+                                    <div class="text-sm text-gray-500 mt-0.5">${item.store || ''}</div>
+                                </div>
+                                <div class="mt-auto">
+                                    <div class="text-gray-800 font-bold mb-2 flex items-center">台幣 : $ ${item.priceTw || '-'} ${savingsInfo}</div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-gray-600 font-bold">日幣</span>
+                                            <input type="number" placeholder="0" value="${item.priceJp || ''}" class="jp-price-input-clean" onchange="updateShopPrice('${key}', this.value)" onclick="event.stopPropagation()">
+                                            ${twdEstimate > 0 ? `<span class="text-xs text-gray-400">(≈$${twdEstimate})</span>` : ''}
+                                        </div>
+                                        <button onclick="openEditShopModal('${key}')" class="text-blue-600 text-lg hover:scale-110 transition px-2"><i class="fa-solid fa-pen"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                
+                listContainer.innerHTML = itemsHtml;
+            };
+
+            if(db) { 
+                db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); 
+            } else { 
+                const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || defaultShoppingList; 
+                loadData(localData); 
+            }
+        }
+
+        // 2. 切換分頁函式 (這就是按鈕點擊後要執行的功能)
+function switchBudgetTab(tab) {
+    currentBudgetTab = tab;
+    renderBudget(); // 切換後重新渲染畫面
+}
+
+
+// 3. 記帳主渲染函式
+function renderBudget() {
+    document.getElementById('header-desc').innerText = "記帳本 & 分帳";
+    const container = document.getElementById('app');
+
+    // 建立分頁按鈕與內容容器
+    const tabsHtml = `
+        <div class="budget-tab-container">
+            <button onclick="switchBudgetTab('details')" class="budget-tab-btn ${currentBudgetTab === 'details' ? 'active' : ''}">
+                <i class="fa-solid fa-list-ul mr-1"></i> 明細
+            </button>
+            <button onclick="switchBudgetTab('overview')" class="budget-tab-btn ${currentBudgetTab === 'overview' ? 'active' : ''}">
+                <i class="fa-solid fa-chart-pie mr-1"></i> 總覽
+            </button>
+        </div>
+        <div id="budget-content-area">
+            <div class="text-center text-gray-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
+        </div>
+    `;
+    container.innerHTML = tabsHtml;
+
+    const loadData = (data) => {
+        const contentArea = document.getElementById('budget-content-area');
+        
+        // 初始化統計變數
+        let totalByCat = {};
+        let personalTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '姊姊': 0 };
+        let expenseListHtml = '';
+        const hasData = !!data;
+        
+        if (hasData) {
+            const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
+            
+            // 遍歷資料進行計算
+            entries.reverse().forEach(([key, ex]) => {
+                const amount = parseInt(ex.amount);
+                const amountTwd = ex.currency === 'TWD' ? amount : Math.round(amount * JPY_RATE);
+                
+                // 1. 累加分類統計
+                totalByCat[ex.category] = (totalByCat[ex.category] || 0) + amountTwd;
+
+                // 2. 累加分帳統計
+                if (ex.splitDetails) {
+                    ex.splitDetails.forEach(detail => {
+                        if(personalTotal[detail.name] !== undefined) {
+                            const splitAmountTwd = ex.currency === 'TWD' ? detail.amount : Math.round(detail.amount * JPY_RATE);
+                            personalTotal[detail.name] += splitAmountTwd;
+                        }
+                    });
+                } else {
+                    const payer = ex.payer || '姊姊'; 
+                    if(personalTotal[payer] !== undefined) personalTotal[payer] += amountTwd;
+                }
+
+                // 3. 準備明細列表 (僅當在明細頁時需要)
+                if (currentBudgetTab === 'details') {
+                    let icon = '💸'; 
+                    if(ex.category === '食物') icon = '🍔'; if(ex.category === '購物') icon = '🛍️'; 
+                    if(ex.category === '交通') icon = '🚗'; if(ex.category === '門票') icon = '🎫';
+                    
+                    const priceDisplay = ex.currency === 'TWD' ? `NT$${amount.toLocaleString()}` : `¥${amount.toLocaleString()}`;
+                    const subDisplay = ex.currency === 'TWD' ? '' : `<div class="text-[10px] text-gray-400">≈ NT$${amountTwd.toLocaleString()}</div>`;
+                    
+                    const isDrive = ex.receiptUrl && ex.receiptUrl.includes('drive.google.com');
+                    const iconClass = isDrive ? 'fa-file-contract' : 'fa-receipt';
+                    const receiptIcon = ex.receiptUrl 
+                        ? `<button onclick="openVoucherImage('${ex.receiptUrl}')" class="text-blue-500 hover:bg-blue-50 p-1 rounded"><i class="fa-solid ${iconClass}"></i></button>` 
+                        : '';
+
+                    expenseListHtml += `
+                        <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center relative overflow-hidden">
+                            <div class="w-1 bg-orange-400 absolute left-0 top-0 bottom-0"></div>
+                            <div class="flex-1 ml-2">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-lg">${icon}</span>
+                                    <span class="font-bold text-gray-700 text-sm line-clamp-1">${ex.item}</span>
+                                    <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">${ex.payer || '未知'}</span>
+                                </div>
+                                <div class="text-xs text-gray-400 flex items-center gap-2">
+                                    <span>${ex.fullTime ? ex.fullTime.slice(5, 16).replace('T', ' ') : ex.date}</span>
+                                    <span>• ${ex.payment || '現金'}</span>
+                                </div>
+                            </div>
+                            <div class="text-right flex flex-col items-end mr-3 min-w-[70px]">
+                                <div class="font-bold text-orange-600">${priceDisplay}</div>
+                                ${subDisplay}
+                            </div>
+                            <div class="flex gap-2 pl-2 border-l border-gray-100">
+                                ${receiptIcon}
+                                <button onclick="openBudgetModal('${key}')" class="text-gray-400 hover:text-blue-500 p-1"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteExpense('${key}')" class="text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                }
+            });
+        }
+
+        // --- 根據目前分頁渲染內容 ---
+        if (currentBudgetTab === 'details') {
+            // [明細頁]
+            if (!hasData) {
+                contentArea.innerHTML = `
+                    <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
+                    <div class="text-center text-gray-400 py-10">目前沒有支出，點擊 + 記帳</div>
+                `;
+            } else {
+                contentArea.innerHTML = `
+                    <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
+                    <div class="space-y-3 pb-24 animation-fade">
+                        ${expenseListHtml}
+                    </div>
+                `;
+            }
+        } else {
+            // [總覽頁]
+            if (!hasData) {
+                contentArea.innerHTML = '<div class="text-center text-gray-400 py-10">尚無資料可分析</div>';
+            } else {
+                let personalHtml = '';
+                Object.keys(personalTotal).forEach(name => {
+                    personalHtml += `
+                        <div class="person-card">
+                            <div class="text-xs text-gray-500 font-bold mb-1">${name}</div>
+                            <div class="text-xl font-bold text-gray-800">
+                                <span class="text-xs mr-0.5">$</span>${personalTotal[name].toLocaleString()}
+                            </div>
+                        </div>`;
+                });
+
+                contentArea.innerHTML = `
+                    <div class="space-y-4 pb-24 animation-fade">
+                        <div class="card p-4 bg-white">
+                            <h3 class="font-bold text-gray-700 mb-2 text-center text-sm">📊 消費分類統計 (NT$)</h3>
+                            <div class="chart-container">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card p-4 bg-orange-50 border-orange-200">
+                            <h3 class="font-bold text-gray-700 mb-3 text-sm"><i class="fa-solid fa-users-viewfinder mr-2"></i>每人應付總額 (NT$)</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                ${personalHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 加上延遲確保 Canvas 已存在
+                setTimeout(() => {
+                    renderChart(totalByCat);
+                }, 50);
+            }
+        }
+    };
+
+    if(db) { 
+        db.ref('expenses').once('value').then(snapshot => loadData(snapshot.val())); 
+    } else { 
+        const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; 
+        loadData(localData); 
+    }
+}
+
+// 4. 圖表繪製函式
+function renderChart(dataObj) {
+    const ctx = document.getElementById('expenseChart');
+    if (!ctx) return;
+    
+    if (budgetChart) { 
+        try { budgetChart.destroy(); } catch(e) { console.log(e); }
+    }
+
+    const labels = Object.keys(dataObj);
+    const data = Object.values(dataObj);
+    const colors = ['#FFAB91', '#FFCC80', '#B2EBF2', '#E1BEE7', '#DCEDC8', '#F8BBD0', '#90CAF9'];
+
+    try {
+        budgetChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { font: { family: "'M PLUS Rounded 1c'" }, boxWidth: 12 } }
+                }
+            }
+        });
+    } catch (e) {
+        console.error("圖表繪製失敗:", e);
+        ctx.parentNode.innerHTML = '<div class="text-red-400 text-xs text-center py-4">圖表載入失敗，請重新整理</div>';
+    }
+}
+
+// --- 圖表繪製函式 ---
+function renderChart(dataObj) {
+    const ctx = document.getElementById('expenseChart');
+    if (!ctx) {
+        console.warn("等待圖表載入..."); 
+        return;
+    }
+    
+    // 銷毀舊圖表以防重疊
+    if (budgetChart) { 
+        try {
+            budgetChart.destroy();
+        } catch(e) { console.log(e); }
+    }
+
+    const labels = Object.keys(dataObj);
+    const data = Object.values(dataObj);
+    const colors = ['#FFAB91', '#FFCC80', '#B2EBF2', '#E1BEE7', '#DCEDC8', '#F8BBD0', '#90CAF9'];
+
+    try {
+        budgetChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { font: { family: "'M PLUS Rounded 1c'" }, boxWidth: 12 } }
+                }
+            }
+        });
+    } catch (e) {
+        console.error("圖表繪製失敗:", e);
+        ctx.parentNode.innerHTML = '<div class="text-red-400 text-xs text-center py-4">圖表載入失敗，請重新整理</div>';
+    }
+}
+
+       // --- 建立行程卡片 HTML (支援二選一交通時間顯示) ---
+function createEventCard(event, dayIdx, evtIdx) {
+    // 1. 左右滑動選擇 (例如：晚餐二選一)
+    if (event.type === 'choice') {
+        const choicesHtml = event.choices.map((c, cIdx) => {
+            // 決定小卡片的導航連結 (右上角小圓鈕用 navLink)
+            const targetUrl = c.navLink || c.link || `https://www.google.com/maps/search/?api=1&query=${c.title}+沖繩`;
+            
+            // ★ 新增：交通時間顯示邏輯
+            let travelTimeHtml = '';
+            if (c.travelTime) {
+                // 簡單判斷：如果有 "步" 或 "走" 顯示走路圖示，否則顯示車子
+                const icon = (c.travelTime.includes('步') || c.travelTime.includes('走')) ? 'fa-person-walking' : 'fa-car';
+                travelTimeHtml = `<span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-full border border-gray-200 shrink-0 flex items-center gap-1"><i class="fa-solid ${icon}"></i> ${c.travelTime}</span>`;
+            }
+
+            return `
+            <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm relative flex flex-col" 
+                 onclick="openDetailModal(${dayIdx}, ${evtIdx}, ${cIdx})">
+                
+                <div class="flex justify-between items-start mb-2 gap-2">
+                    <h4 class="font-bold text-lg text-gray-800 line-clamp-1">${c.title}</h4>
+                    <!-- 標籤群組 -->
+                    <div class="flex gap-1 shrink-0">
+                        ${travelTimeHtml} <!-- 交通時間放這裡 -->
+                        <span class="text-xs px-2 py-1 rounded-full tag-eat flex items-center">美食</span>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-gray-600 mb-8 line-clamp-2">${c.guide}</p>
+                
+                <!-- 底部按鈕區 -->
+                <div class="mt-auto flex justify-between items-center">
+                    <button class="text-blue-600 text-sm font-bold bg-blue-50 px-3 py-1.5 rounded-lg w-full text-left">
+                        查看詳情
+                    </button>
+                    
+                    <!-- 導航按鈕 (右下角懸浮) -->
+                    <a href="${targetUrl}" 
+                       target="_blank" 
+                       class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md active:scale-95 transition" 
+                       onclick="event.stopPropagation()">
+                        <i class="fa-solid fa-location-arrow text-sm"></i>
+                    </a>
+                </div>
+            </div>`;
+        }).join('');
+
+        return `
+            <div class="overflow-hidden">
+                <div class="flex items-center gap-2 mb-2 px-1">
+                    <span class="font-bold text-xl text-gray-700">${event.time}</span> 
+                    <h3 class="font-bold text-lg text-gray-800">${event.title}</h3>
+                </div>
+                <div class="flex gap-4 overflow-x-auto snap-x-mandatory hide-scrollbar pb-4 px-1">
+                    ${choicesHtml}
+                </div>
+            </div>`;
+    }
+
+    // 2. 準備事項
+    if (event.type === 'prep') {
+        return `<div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center"><div><div class="font-bold text-xl text-purple-800">${event.time}</div><div class="text-sm text-purple-600 font-bold">${event.title}</div><div class="text-xs text-purple-500 mt-1">${event.guide}</div></div><div class="text-right"><div class="text-xs text-gray-500">預計出發</div><div class="text-2xl font-bold text-purple-900">${event.departureTime.split(' ')[0]}</div><div class="text-xs text-purple-700">準時出發 🚗</div></div></div>`;
+    }
+
+    // 3. 一般行程
+    let previewContent = '';
+    if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
+    if (currentRole === 'admin' && event.bookingInfo) previewContent = `<div class="mt-2 text-xs text-red-500 font-bold"><i class="fa-solid fa-ticket mr-1"></i> ${event.bookingInfo.note}</div>`;
+    
+    // 時刻表連結
+    if (event.frequency) {
+        let timeLinkHtml = '';
+        if (event.timetableUrl) {
+            if (event.timetableUrl.includes('drive.google.com')) {
+                timeLinkHtml = `<button onclick="openVoucherImage('${event.timetableUrl}'); event.stopPropagation();" class="ml-1 underline hover:text-blue-800 cursor-pointer pointer-events-auto text-blue-600">時刻表</button>`;
+            } else {
+                timeLinkHtml = `<a href="${event.timetableUrl}" target="_blank" class="ml-1 underline pointer-events-auto" onclick="event.stopPropagation()">時刻表</a>`;
+            }
+        }
+        previewContent += `<div class="mt-2 text-xs text-blue-600 font-bold"><i class="fa-solid fa-clock"></i> ${event.frequency} ${timeLinkHtml}</div>`;
+    }
+    
+    let clickAction = (event.type === 'eat' || event.type === 'spot') ? `onclick="openDetailModal(${dayIdx}, ${evtIdx})"` : `onclick="toggleCard(this)"`;
+    
+    let voucherBtn = '';
+    if (event.bookingInfo) {
+        if (event.bookingInfo.driveLink) {
+            voucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.driveLink}')" class="mt-2 w-full bg-red-500 text-white py-2 rounded-lg font-bold text-sm shadow-md mb-2"><i class="fa-solid fa-file-pdf mr-1"></i> 查看憑證 (PDF)</button>`;
+        } else if (event.bookingInfo.voucherImg) {
+            voucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.voucherImg}')" class="mt-2 w-full bg-red-500 text-white py-2 rounded-lg font-bold text-sm shadow-md mb-2"><i class="fa-solid fa-image mr-1"></i> 查看憑證圖片</button>`;
+        }
+    }
+
+    // 一般卡片的導航按鈕 (右上角)
+    let navIconBtn = '';
+    if (['spot', 'hotel', 'eat'].includes(event.type)) {
+        // 使用 navLink
+        const targetUrl = event.navLink ? event.navLink : `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`;
+        
+        navIconBtn = `
+            <a href="${targetUrl}" 
+               target="_blank" 
+               class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0 ml-2" 
+               onclick="event.stopPropagation()">
+                <i class="fa-solid fa-location-arrow text-sm"></i>
+            </a>`;
+    }
+
+    const tagClass = event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans';
+    const tagName = event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通';
+
+    return `
+        <div class="card p-5" ${clickAction}>
+            <!-- 卡片頭部 -->
+            <div class="flex items-start gap-4 pointer-events-none">
+                <div class="font-bold text-xl text-gray-700 min-w-[50px] pt-1">${event.time}</div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-bold text-lg text-gray-800 leading-tight">${event.title}</h3>
+                    ${event.appLink ? `<a href="${event.appLink.url}" class="mt-2 inline-block bg-black text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}
+                    <span class="text-xs px-2 py-1 rounded-full ${tagClass} block w-fit mt-1">${tagName}</span>
+                    ${previewContent}
+                </div>
+                ${navIconBtn}
+            </div>
+
+            <!-- 展開後的詳細內容 -->
+            <div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">
+                ${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}
+                
+                ${event.bookingInfo ? `
+                    <div class="ticket-box">
+                        <div class="text-sm opacity-70">預約憑證 / 訂單號</div>
+                        <div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div>
+                        <div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div>
+                        ${event.bookingInfo.pdfContent ? `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}')" class="mt-2 w-full bg-red-50 text-red-600 py-2 rounded text-xs font-bold border border-red-100"><i class="fa-solid fa-file-pdf mr-1"></i> 預覽憑證</button>` : ''}
+                        ${voucherBtn}
+                    </div>` : ''}
+                
+                ${event.multiMaps ? `<div class="grid grid-cols-2 gap-3">${event.multiMaps.map(m => `<a href="https://www.google.com/maps/search/?api=1&query=${m.query}" target="_blank" class="bg-blue-50 text-blue-600 py-3 rounded-xl text-center font-bold shadow-sm border border-blue-100 active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> ${m.name}</a>`).join('')}</div>` : ''}
+                
+                ${event.mapCode ? `
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-gray-600">MapCode</span>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono text-xl font-bold">${event.mapCode}</span>
+                                <button onclick="copyText('${event.mapCode}', event)" class="text-orange-500"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                        ${event.parking ? `<div class="mt-2 text-xs text-gray-500"><i class="fa-solid fa-square-parking"></i> ${event.parking.info}</div>` : ''}
+                    </div>` : ''}
+                
+                ${event.guide ? `<div class="text-sm text-gray-700 leading-relaxed"><i class="fa-solid fa-circle-info text-orange-400 mr-1"></i> ${event.guide}</div>` : ''}
+                ${event.adminNote ? `<div class="text-sm text-gray-600 bg-yellow-50 p-2 rounded border border-yellow-100"><i class="fa-solid fa-pen mr-1"></i> 筆記: ${event.adminNote}</div>` : ''}
+            </div>
+        </div>`;
+}
 
         function getPackingListHTML() {
             const packingList = getPackingList();
@@ -879,33 +1431,27 @@ function renderChart(dataObj) {
             return `<div class="card p-5 mb-6 border-l-4 border-teal-500 shadow-lg bg-white"><div class="flex justify-between items-end mb-2"><h3 class="font-bold text-teal-700"><i class="fa-solid fa-list-check mr-2"></i>行李清單</h3><span class="text-xs font-bold text-teal-600">${doneCount}/${totalCount} (${progressPercent}%)</span></div><div class="w-full bg-gray-200 rounded-full h-2 mb-3"><div class="bg-teal-500 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div></div><div class="grid grid-cols-1 gap-2 max-h-[240px] overflow-y-auto pr-1">${itemsHtml}</div></div>`;
         }
 
+        // --- Modals & Actions ---
         function openEditShopModal(key = null) {
-            const modalTitle = document.getElementById('shop-modal-title');
-            const inKey = document.getElementById('in-shop-key');
-            inKey.value = key || ''; 
-            if(key) {
-                modalTitle.innerText = '編輯商品';
+            const isEdit = !!key;
+            let item = {};
+            if (isEdit) {
                 if(db) {
-                    db.ref('shoppingList/' + key).once('value').then(snapshot => { fillShopModal(snapshot.val()); });
+                    db.ref('shoppingList/' + key).once('value').then(snapshot => { renderShopModalHTML(key, snapshot.val()); openModal('modal-shopping'); });
+                    return;
                 } else {
                     const index = parseInt(key.split('_')[1]);
                     const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY));
-                    fillShopModal(localData[index]);
+                    item = localData[index];
                 }
-            } else {
-                modalTitle.innerText = '新增必買';
-                fillShopModal({});
             }
+            renderShopModalHTML(key, item);
             openModal('modal-shopping');
         }
 
-        function fillShopModal(item) {
-            document.getElementById('in-shop-img').value = item.imgUrl || '';
-            document.getElementById('in-shop-cat').value = item.category || '藥妝';
-            document.getElementById('in-shop-store').value = item.store || '';
-            document.getElementById('in-shop-item').value = item.item || '';
-            document.getElementById('in-shop-tw').value = item.priceTw || '';
-            document.getElementById('in-shop-jp').value = item.priceJp || ''; 
+        function renderShopModalHTML(key, item = {}) {
+            const modalSheet = document.querySelector('#modal-shopping .modal-sheet');
+            modalSheet.innerHTML = `<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gray-700" id="shop-modal-title">${key ? '編輯商品' : '新增必買 & 比價'}</h3><button onclick="closeModal('modal-shopping')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><input type="hidden" id="in-shop-key" value="${key || ''}"><input id="in-shop-img" placeholder="圖片連結 URL 或 檔名 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm mb-2" value="${item.imgUrl || ''}"><div class="grid grid-cols-3 gap-2 mb-2"><select id="in-shop-cat" class="p-3 bg-white rounded-xl border border-orange-200 font-bold text-gray-700">${['藥妝','零食','門票','電器','衣物','雜貨'].map(c => `<option value="${c}" ${item.category===c?'selected':''}>${c}</option>`).join('')}</select><input id="in-shop-store" placeholder="商店 (如: 大國)" class="col-span-2 p-3 bg-gray-50 rounded-xl border border-gray-200" value="${item.store || ''}"></div><input id="in-shop-item" placeholder="品名 (如: 合利他命)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${item.item || ''}"><div class="grid grid-cols-2 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100 mb-2"><div><label class="text-xs text-gray-500 font-bold">🇹🇼 台灣售價</label><input id="in-shop-tw" type="number" placeholder="NT$" class="w-full p-2 bg-white rounded border border-blue-200 mt-1" value="${item.priceTw || ''}"></div><div><label class="text-xs text-gray-500 font-bold">🇯🇵 日本售價</label><input id="in-shop-jp" type="number" placeholder="¥" class="w-full p-2 bg-white rounded border border-blue-200 mt-1" value="${item.priceJp || ''}"></div><div class="col-span-2 text-center text-xs text-blue-500 pt-1">輸入日本價格自動計算匯率 (${JPY_RATE})</div></div><textarea id="in-shop-note" placeholder="備註：規格、代買人、細節 (不會顯示在卡片上)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm h-20 mb-2 resize-none">${item.note || ''}</textarea><button onclick="saveShopItem()" class="w-full bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">儲存</button>`;
         }
 
         function saveShopItem() {
@@ -916,23 +1462,20 @@ function renderChart(dataObj) {
                 store: document.getElementById('in-shop-store').value,
                 item: document.getElementById('in-shop-item').value,
                 priceTw: document.getElementById('in-shop-tw').value,
-                priceJp: document.getElementById('in-shop-jp').value, 
+                priceJp: document.getElementById('in-shop-jp').value,
+                note: document.getElementById('in-shop-note').value,
                 done: false, addedBy: currentRole, timestamp: Date.now()
             };
             
             if(!newItem.item) return alert("請至少輸入品名");
 
             if(db) {
-                if(key) db.ref('shoppingList/' + key).update(newItem);
-                else db.ref('shoppingList').push(newItem);
+                if(key) { delete newItem.done; db.ref('shoppingList/' + key).update(newItem); }
+                else { db.ref('shoppingList').push(newItem); }
             } else {
                 const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || [];
-                if(key) {
-                    const index = parseInt(key.split('_')[1]);
-                    localData[index] = { ...localData[index], ...newItem }; 
-                } else {
-                    localData.push(newItem);
-                }
+                if(key) { const index = parseInt(key.split('_')[1]); newItem.done = localData[index].done; localData[index] = { ...localData[index], ...newItem }; }
+                else { localData.push(newItem); }
                 localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData));
                 renderShopping();
             }
@@ -940,358 +1483,250 @@ function renderChart(dataObj) {
         }
 
         function updateShopPrice(key, newPrice) {
-            if(db) {
-                db.ref('shoppingList/' + key).update({ priceJp: newPrice });
-            } else {
-                const index = parseInt(key.split('_')[1]);
-                const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY));
-                localData[index].priceJp = newPrice;
-                localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData));
-                renderShopping();
-            }
+            if(db) { db.ref('shoppingList/' + key).update({ priceJp: newPrice }); } 
+            else { const index = parseInt(key.split('_')[1]); const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); localData[index].priceJp = newPrice; localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); renderShopping(); }
         }
 
         function toggleShopItem(key) { 
-            if(db) { 
-                db.ref('shoppingList/' + key).once('value').then(snapshot => {
-                    const current = snapshot.val().done;
-                    db.ref('shoppingList/' + key).update({ done: !current });
-                });
-            } else { 
-                const index = parseInt(key.split('_')[1]); 
-                const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); 
-                localData[index].done = !localData[index].done; 
-                localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); 
-                renderShopping(); 
-            } 
+            if(db) { db.ref('shoppingList/' + key).once('value').then(snapshot => { const current = snapshot.val().done; db.ref('shoppingList/' + key).update({ done: !current }); }); } 
+            else { const index = parseInt(key.split('_')[1]); const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); localData[index].done = !localData[index].done; localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); renderShopping(); } 
         }
 
         function deleteShopItem(key) { 
             if(confirm("刪除此項目？")) { 
                 if(db) db.ref('shoppingList/' + key).remove(); 
-                else { 
-                    const index = parseInt(key.split('_')[1]); 
-                    const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); 
-                    localData.splice(index, 1); 
-                    localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); 
-                    renderShopping(); 
-                } 
+                else { const index = parseInt(key.split('_')[1]); const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)); localData.splice(index, 1); localStorage.setItem(SHOPPING_KEY, JSON.stringify(localData)); renderShopping(); } 
             } 
         }
 
+        // --- Budget Modal & Logic ---
         function openBudgetModal(key = null) {
-    const isEdit = !!key;
-    // 取得當前時間或編輯項目的資料
-    let editData = {};
-    if (isEdit) {
-        // 從資料庫或 localStorage 撈取該筆資料
-        if(db) {
-            // 注意：這裡是異步，Firebase 需要先撈資料再開 Modal
-            // 為了簡化，這邊假設資料已在 render 時快取，或是簡單地直接重撈
-             db.ref('expenses/' + key).once('value').then(snapshot => {
-                 fillAndShowBudgetModal(key, snapshot.val());
-             });
-             return;
-        } else {
-            const index = parseInt(key.split('_')[1]);
-            const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY));
-            editData = localData[index];
-            fillAndShowBudgetModal(key, editData);
-            return;
+            const isEdit = !!key;
+            let editData = {};
+            if (isEdit) {
+                if(db) { db.ref('expenses/' + key).once('value').then(snapshot => { fillAndShowBudgetModal(key, snapshot.val()); }); return; }
+                else { const index = parseInt(key.split('_')[1]); const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)); editData = localData[index]; fillAndShowBudgetModal(key, editData); return; }
+            }
+            const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const defaultData = { fullTime: now.toISOString().slice(0,16), category: '食物', payment: '現金', qty: 1, currency: 'JPY', payer: FAMILY_MEMBERS.find(m => m.id === currentRole)?.name || '姊姊' };
+            fillAndShowBudgetModal(null, defaultData);
         }
-    }
-    
-    // 新增模式
-    const now = new Date(); 
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    const defaultData = {
-        fullTime: now.toISOString().slice(0,16),
-        category: '食物',
-        payment: '現金',
-        qty: 1,
-        currency: 'JPY',
-        payer: FAMILY_MEMBERS.find(m => m.id === currentRole)?.name || '我'
-    };
-    fillAndShowBudgetModal(null, defaultData);
-}
 
-// --- 填充並顯示 Modal ---
-function fillAndShowBudgetModal(key, data) {
-    // 產生 Modal HTML (每次動態生成以確保狀態乾淨)
+       function fillAndShowBudgetModal(key, data) {
     const modalSheet = document.querySelector('#modal-budget .modal-sheet');
+    const splitMethod = data.splitMethod || 'equal';
     
-    // 預設選中的分帳成員 (如果是編輯模式，從 data.splitDetails 還原，否則全選)
-    const splitMethod = data.splitMethod || 'equal'; // equal, amount, none
-    
+    // ★ 關鍵修改：強制改變 Modal 的 CSS，使其支援「置底區塊」
+    // 移除預設 padding，改由內部區塊控制，並設定 Flex 佈局
+    modalSheet.style.padding = '0'; 
+    modalSheet.style.display = 'flex';
+    modalSheet.style.flexDirection = 'column';
+    modalSheet.style.overflow = 'hidden'; // 防止外層捲動
+    modalSheet.style.maxHeight = '90vh';  // 限制高度
+
     modalSheet.innerHTML = `
-        <div class="flex justify-between items-center mb-4">
+        <!-- 1. 固定頁首 (Header) -->
+        <div class="px-5 pt-5 pb-2 flex justify-between items-center shrink-0 bg-white z-10">
             <h3 class="text-xl font-bold text-gray-700">${key ? '編輯支出' : '記一筆支出'}</h3>
             <button onclick="closeModal('modal-budget')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
         
         <input type="hidden" id="in-ex-key" value="${key || ''}">
         
-        <!-- 時間 -->
-        <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 mb-3">
-            <label class="text-xs text-gray-500 font-bold ml-1">日期與時間</label>
-            <input id="in-ex-time" type="datetime-local" class="w-full bg-transparent font-bold text-gray-700 outline-none mt-1" value="${data.fullTime || ''}">
-        </div>
-
-        <!-- 類別與付款人 -->
-        <div class="grid grid-cols-2 gap-2 mb-3">
-            <select id="in-ex-category" class="p-3 bg-white rounded-xl border border-orange-200 text-gray-700 font-bold">
-                ${['食物','購物','交通','門票','其他'].map(c => `<option value="${c}" ${data.category===c?'selected':''}>${c}</option>`).join('')}
-            </select>
-            <select id="in-ex-payer" class="p-3 bg-white rounded-xl border border-blue-200 text-blue-800 font-bold">
-                ${FAMILY_MEMBERS.map(m => `<option value="${m.name}" ${data.payer===m.name?'selected':''}>付款: ${m.name}</option>`).join('')}
-            </select>
-        </div>
-
-        <!-- 商店與品項 -->
-        <input id="in-ex-store" placeholder="商店/餐廳 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${data.store || ''}">
-        <input id="in-ex-item" placeholder="品名/內容" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${data.item || ''}">
-
-        <!-- 金額與幣別 -->
-        <div class="grid grid-cols-3 gap-2 mb-2">
-            <div class="col-span-2 relative">
-                 <input id="in-ex-price" type="number" placeholder="單價" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 font-bold text-lg" value="${data.priceJp || ''}"> <!-- 注意: 這裡用 priceJp 欄位存原始單價 -->
-                 <span class="absolute right-3 top-3 text-gray-400 text-xs">單價</span>
+        <!-- 2. 可捲動內容區 (Body) -->
+        <div class="flex-1 overflow-y-auto px-5 pb-4" style="overscroll-behavior: contain;">
+            
+            <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 mb-3">
+                <label class="text-xs text-gray-500 font-bold ml-1">日期與時間</label>
+                <input id="in-ex-time" type="datetime-local" class="w-full bg-transparent font-bold text-gray-700 outline-none mt-1" value="${data.fullTime || ''}">
             </div>
-            <select id="in-ex-currency" class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700 font-bold">
-                <option value="JPY" ${data.currency!=='TWD'?'selected':''}>¥ JPY</option>
-                <option value="TWD" ${data.currency==='TWD'?'selected':''}>$ TWD</option>
-            </select>
-        </div>
 
-        <!-- 數量與支付方式 -->
-        <div class="grid grid-cols-2 gap-3 mb-3">
-            <div class="flex items-center gap-2">
-                <button class="qty-btn" onclick="adjustQty(-1)">-</button>
-                <input id="in-ex-qty" type="number" value="${data.qty || 1}" class="w-full p-3 text-center bg-gray-50 rounded-xl border border-gray-200" readonly>
-                <button class="qty-btn" onclick="adjustQty(1)">+</button>
-            </div>
-            <select id="in-ex-pay" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700">
-                ${['現金','信用卡','Suica/IC卡'].map(p => `<option value="${p}" ${data.payment===p?'selected':''}>${p}</option>`).join('')}
-            </select>
-        </div>
-        
-        <!-- 憑證圖片 (新增) -->
-        <div class="mb-3">
-            <input id="in-ex-receipt" placeholder="憑證圖片網址 (URL)" class="w-full p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm" value="${data.receiptUrl || ''}">
-        </div>
-
-        <!-- 分帳設定 (新增) -->
-        <div class="split-box">
-            <div class="flex justify-between items-center mb-2">
-                <label class="font-bold text-gray-700 text-sm">分帳方式</label>
-                <select id="in-ex-split-method" onchange="renderSplitOptions()" class="text-xs border p-1 rounded bg-white">
-                    <option value="equal" ${splitMethod==='equal'?'selected':''}>按人頭均分</option>
-                    <option value="amount" ${splitMethod==='amount'?'selected':''}>指定金額</option>
-                    <option value="none" ${splitMethod==='none'?'selected':''}>不分帳(個人)</option>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <select id="in-ex-category" class="p-3 bg-white rounded-xl border border-orange-200 text-gray-700 font-bold">
+                    ${['食物','購物','交通','門票','其他'].map(c => `<option value="${c}" ${data.category===c?'selected':''}>${c}</option>`).join('')}
+                </select>
+                <select id="in-ex-payer" class="p-3 bg-white rounded-xl border border-blue-200 text-blue-800 font-bold">
+                    ${FAMILY_MEMBERS.map(m => `<option value="${m.name}" ${data.payer===m.name?'selected':''}>付款: ${m.name}</option>`).join('')}
                 </select>
             </div>
-            <div id="split-options-container" class="grid grid-cols-2 gap-2">
-                <!-- 動態生成 -->
+
+            <input id="in-ex-store" placeholder="商店/餐廳 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${data.store || ''}">
+            <input id="in-ex-item" placeholder="品名/內容" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${data.item || ''}">
+
+            <div class="grid grid-cols-3 gap-2 mb-2">
+                <div class="col-span-2 relative">
+                     <input id="in-ex-price" type="number" placeholder="單價" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 font-bold text-lg" value="${data.priceJp || ''}">
+                     <span class="absolute right-3 top-3 text-gray-400 text-xs">單價</span>
+                </div>
+                <select id="in-ex-currency" class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700 font-bold">
+                    <option value="JPY" ${data.currency!=='TWD'?'selected':''}>¥ JPY</option>
+                    <option value="TWD" ${data.currency==='TWD'?'selected':''}>$ TWD</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="flex items-center gap-2">
+                    <button class="qty-btn" onclick="adjustQty(-1)">-</button>
+                    <input id="in-ex-qty" type="number" value="${data.qty || 1}" class="w-full p-3 text-center bg-gray-50 rounded-xl border border-gray-200" readonly>
+                    <button class="qty-btn" onclick="adjustQty(1)">+</button>
+                </div>
+                <select id="in-ex-pay" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700">
+                    ${['現金','信用卡','Suica/IC卡'].map(p => `<option value="${p}" ${data.payment===p?'selected':''}>${p}</option>`).join('')}
+                </select>
+            </div>
+            
+            <div class="mb-2">
+                <input id="in-ex-receipt" placeholder="憑證圖片網址 (URL)" class="w-full p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm" value="${data.receiptUrl || ''}">
+            </div>
+
+            <div class="mb-3">
+                 <textarea id="in-ex-note" placeholder="備註：細節、心情" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm h-16 resize-none">${data.note || ''}</textarea>
+            </div>
+
+            <div class="split-box mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="font-bold text-gray-700 text-sm">分帳方式</label>
+                    <select id="in-ex-split-method" onchange="renderSplitOptions()" class="text-xs border p-1 rounded bg-white">
+                        <option value="equal" ${splitMethod==='equal'?'selected':''}>按人頭均分</option>
+                        <option value="amount" ${splitMethod==='amount'?'selected':''}>指定金額</option>
+                        <option value="none" ${splitMethod==='none'?'selected':''}>不分帳(個人)</option>
+                    </select>
+                </div>
+                <div id="split-options-container" class="grid grid-cols-2 gap-2"></div>
             </div>
         </div>
 
-        <!-- 總金額顯示 -->
-        <div class="bg-orange-50 p-3 rounded-xl text-center border border-orange-100 mt-2">
-            <div class="text-sm text-gray-500 mb-1">總金額</div>
-            <div class="text-2xl font-bold text-orange-600"><span id="lbl-currency">${data.currency==='TWD'?'$':'¥'}</span><span id="calc-total">0</span></div>
-            <div id="calc-convert-hint" class="text-xs font-bold text-blue-500 mt-1 ${data.currency==='TWD'?'hidden':''}">≈ NT$<span id="calc-twd">0</span></div>
-        </div>
+        <!-- 3. 固定頁尾 (Footer) - 總金額與按鈕 -->
+        <div class="p-4 bg-white border-t border-gray-100 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] safe-area-bottom z-20">
+            <div class="flex items-stretch gap-3">
+                <!-- 左側：總金額顯示 -->
+                <div class="flex-1 bg-orange-50 p-2 rounded-xl text-center border border-orange-100 flex flex-col justify-center">
+                    <div class="text-[10px] text-gray-500 mb-0.5">總金額</div>
+                    <div class="text-xl font-bold text-orange-600 leading-none">
+                        <span id="lbl-currency">${data.currency==='TWD'?'$':'¥'}</span><span id="calc-total">0</span>
+                    </div>
+                    <div id="calc-convert-hint" class="text-[10px] font-bold text-blue-500 mt-0.5 ${data.currency==='TWD'?'hidden':''}">
+                        ≈ NT$<span id="calc-twd">0</span>
+                    </div>
+                </div>
 
-        <button onclick="saveExpense()" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow-lg mt-4">
-            ${key ? '更新紀錄' : '儲存紀錄'}
-        </button>
+                <!-- 右側：儲存按鈕 -->
+                <button onclick="saveExpense()" class="flex-1 bg-orange-500 text-white font-bold py-2 rounded-xl shadow-lg text-lg flex items-center justify-center active:scale-95 transition">
+                    ${key ? '更新紀錄' : '儲存紀錄'}
+                </button>
+            </div>
+        </div>
     `;
 
     openModal('modal-budget');
     
-    // 初始化分帳選項 UI
+    // 初始化分帳 UI
     renderSplitOptions(data.splitDetails);
     
-    // 綁定自動計算事件
-    document.getElementById('in-ex-price').addEventListener('input', updateCalc);
-    document.getElementById('in-ex-qty').addEventListener('input', updateCalc);
-    document.getElementById('in-ex-currency').addEventListener('change', (e) => {
-        document.getElementById('lbl-currency').innerText = e.target.value === 'TWD' ? '$' : '¥';
-        document.getElementById('calc-convert-hint').classList.toggle('hidden', e.target.value === 'TWD');
+    // 綁定事件
+    const priceEl = document.getElementById('in-ex-price');
+    const qtyEl = document.getElementById('in-ex-qty');
+    const currEl = document.getElementById('in-ex-currency');
+
+    if (priceEl) priceEl.addEventListener('input', updateCalc);
+    if (qtyEl) qtyEl.addEventListener('input', updateCalc);
+    if (currEl) currEl.addEventListener('change', () => {
+        document.getElementById('lbl-currency').innerText = currEl.value === 'TWD' ? '$' : '¥';
+        document.getElementById('calc-convert-hint').classList.toggle('hidden', currEl.value === 'TWD');
         updateCalc();
     });
-    
-    // 初次計算
+
     updateCalc();
 }
 
-// --- 渲染分帳選項 UI ---
-function renderSplitOptions(savedDetails = null) {
-    const method = document.getElementById('in-ex-split-method').value;
-    const container = document.getElementById('split-options-container');
-    const totalAmount = (parseInt(document.getElementById('in-ex-price').value) || 0) * (parseInt(document.getElementById('in-ex-qty').value) || 1);
-    
-    let html = '';
-    
-    if (method === 'equal') {
-        // 均分模式：顯示 Checkbox
-        FAMILY_MEMBERS.forEach(m => {
-            // 如果有存檔，檢查是否在名單內；若無存檔，預設全選
-            const isChecked = savedDetails ? savedDetails.some(d => d.name === m.name) : true;
-            html += `
-                <div class="member-check ${isChecked ? 'active' : ''}" onclick="this.classList.toggle('active'); this.querySelector('input').checked = !this.querySelector('input').checked;">
-                    <input type="checkbox" value="${m.name}" class="hidden" ${isChecked ? 'checked' : ''}>
-                    <i class="fa-solid ${isChecked ? 'fa-circle-check' : 'fa-circle'} text-xs"></i> ${m.name}
-                </div>`;
-        });
-    } else if (method === 'amount') {
-        // 金額模式：顯示輸入框
-        FAMILY_MEMBERS.forEach(m => {
-            const savedVal = savedDetails ? (savedDetails.find(d => d.name === m.name)?.amount || 0) : 0;
-            html += `
-                <div class="flex items-center gap-2 bg-white p-2 rounded border">
-                    <span class="text-xs font-bold w-8">${m.name}</span>
-                    <input type="number" data-name="${m.name}" value="${savedVal}" placeholder="金額" class="split-amount-input w-full text-sm border-b outline-none text-right">
-                </div>`;
-        });
-    } else {
-        html = `<div class="col-span-2 text-xs text-gray-400 text-center py-2">費用將全額歸於付款人</div>`;
-    }
-    
-    container.innerHTML = html;
-}
-
-// --- 自動計算總額 ---
+// --- 2. 自動計算總額 (修正版) ---
 function updateCalc() {
-    const p = parseInt(document.getElementById('in-ex-price').value) || 0;
-    const q = parseInt(document.getElementById('in-ex-qty').value) || 1;
+    const priceEl = document.getElementById('in-ex-price');
+    const qtyEl = document.getElementById('in-ex-qty');
+    
+    if (!priceEl || !qtyEl) return; // 防止元素找不到報錯
+
+    const p = parseInt(priceEl.value) || 0;
+    const q = parseInt(qtyEl.value) || 1;
     const total = p * q;
     
-    document.getElementById('calc-total').innerText = total.toLocaleString();
+    const totalEl = document.getElementById('calc-total');
+    if (totalEl) totalEl.innerText = total.toLocaleString();
     
-    const isTwd = document.getElementById('in-ex-currency').value === 'TWD';
-    if (!isTwd) {
-        document.getElementById('calc-twd').innerText = Math.round(total * JPY_RATE).toLocaleString();
-    }
-}
-
-// --- 儲存/更新支出 (核心邏輯) ---
-function saveExpense() {
-    const key = document.getElementById('in-ex-key').value;
-    const category = document.getElementById('in-ex-category').value;
-    const payer = document.getElementById('in-ex-payer').value;
-    const store = document.getElementById('in-ex-store').value;
-    const item = document.getElementById('in-ex-item').value;
-    const price = parseInt(document.getElementById('in-ex-price').value);
-    const qty = parseInt(document.getElementById('in-ex-qty').value);
+    // 匯率換算顯示
     const currency = document.getElementById('in-ex-currency').value;
-    const payment = document.getElementById('in-ex-pay').value;
-    const fullTime = document.getElementById('in-ex-time').value;
-    const receiptUrl = document.getElementById('in-ex-receipt').value;
-    const splitMethod = document.getElementById('in-ex-split-method').value;
-
-    if(!item || isNaN(price)) return alert("請輸入正確的品名和金額");
-
-    const totalAmount = price * qty;
-    let splitDetails = [];
-
-    // 計算分帳細節
-    if (splitMethod === 'equal') {
-        const checks = document.querySelectorAll('#split-options-container input[type="checkbox"]:checked');
-        if (checks.length > 0) {
-            const perPerson = Math.round(totalAmount / checks.length); // 簡單四捨五入，誤差不計
-            checks.forEach(chk => {
-                splitDetails.push({ name: chk.value, amount: perPerson });
-            });
-        } else {
-            // 如果沒勾選人，預設歸付款人
-            splitDetails.push({ name: payer, amount: totalAmount });
-        }
-    } else if (splitMethod === 'amount') {
-        const inputs = document.querySelectorAll('.split-amount-input');
-        let currentTotal = 0;
-        inputs.forEach(inp => {
-            const val = parseInt(inp.value) || 0;
-            if (val > 0) {
-                splitDetails.push({ name: inp.dataset.name, amount: val });
-                currentTotal += val;
-            }
-        });
-        // 驗證金額是否吻合 (可選：這裡先不強制卡死，彈性一點)
-        if (currentTotal !== totalAmount) {
-           if(!confirm(`分帳總額 (${currentTotal}) 與 總支出 (${totalAmount}) 不符，確定要儲存嗎？`)) return;
-        }
-    } else {
-        // 不分帳 (個人)
-        splitDetails.push({ name: payer, amount: totalAmount });
+    if (currency !== 'TWD') {
+        const twdEl = document.getElementById('calc-twd');
+        if (twdEl) twdEl.innerText = Math.round(total * JPY_RATE).toLocaleString();
     }
-
-    const expenseData = {
-        category, store, item, payer, currency, payment, receiptUrl, splitMethod, splitDetails,
-        priceJp: price, // 保存單價
-        qty,
-        amount: totalAmount, // 保存總價
-        date: fullTime.split('T')[0].replace(/-/g, '/'),
-        fullTime,
-        timestamp: Date.now() // 排序用
-    };
-
-    if(db) {
-        if(key) {
-            db.ref('expenses/' + key).update(expenseData);
-        } else {
-            db.ref('expenses').push(expenseData);
-        }
-    } else {
-        const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || [];
-        if(key) {
-            const index = parseInt(key.split('_')[1]);
-            localData[index] = expenseData;
-        } else {
-            localData.push(expenseData);
-        }
-        localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData));
-        renderBudget();
-    }
-    
-    closeModal('modal-budget');
 }
-        
-        function addExpense() { 
-            const category = document.getElementById('in-ex-category').value; const store = document.getElementById('in-ex-store').value; const item = document.getElementById('in-ex-item').value; const price = document.getElementById('in-ex-price').value; const qty = document.getElementById('in-ex-qty').value; const payment = document.getElementById('in-ex-pay').value; const timeValue = document.getElementById('in-ex-time').value;
-            if(!item || !price) return alert("請輸入品名和價格"); 
-            const totalAmount = parseInt(price) * parseInt(qty); 
-            const expenseData = { category, store, item, priceJp: price, qty, payment, amount: totalAmount, date: new Date().toLocaleDateString(), fullTime: timeValue, timestamp: Date.now() };
-            if(db) { db.ref('expenses').push(expenseData); } else { const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; localData.push(expenseData); localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData)); renderBudget(); }
-            closeModal('modal-budget'); document.getElementById('in-ex-store').value = ''; document.getElementById('in-ex-item').value = ''; document.getElementById('in-ex-price').value = ''; document.getElementById('in-ex-qty').value = '1'; 
+
+// --- 3. 調整數量按鈕 (修正版) ---
+function adjustQty(delta) {
+    const input = document.getElementById('in-ex-qty');
+    if (!input) return;
+    
+    let val = parseInt(input.value) || 1;
+    val += delta;
+    if (val < 1) val = 1;
+    input.value = val;
+    
+    // ★ 直接呼叫 updateCalc，比 dispatchEvent 更穩定
+    updateCalc();
+}
+
+        function saveExpense() {
+            const key = document.getElementById('in-ex-key').value;
+            const category = document.getElementById('in-ex-category').value;
+            const payer = document.getElementById('in-ex-payer').value;
+            const store = document.getElementById('in-ex-store').value;
+            const item = document.getElementById('in-ex-item').value;
+            const price = parseInt(document.getElementById('in-ex-price').value);
+            const qty = parseInt(document.getElementById('in-ex-qty').value);
+            const currency = document.getElementById('in-ex-currency').value;
+            const payment = document.getElementById('in-ex-pay').value;
+            const fullTime = document.getElementById('in-ex-time').value;
+            const receiptUrl = document.getElementById('in-ex-receipt').value;
+            const note = document.getElementById('in-ex-note').value; 
+            const splitMethod = document.getElementById('in-ex-split-method').value;
+
+            if(!item || isNaN(price)) return alert("請輸入正確的品名和金額");
+
+            const totalAmount = price * qty;
+            let splitDetails = [];
+
+            if (splitMethod === 'equal') {
+                const checks = document.querySelectorAll('#split-options-container input[type="checkbox"]:checked');
+                if (checks.length > 0) { const perPerson = Math.round(totalAmount / checks.length); checks.forEach(chk => splitDetails.push({ name: chk.value, amount: perPerson })); } else { splitDetails.push({ name: payer, amount: totalAmount }); }
+            } else if (splitMethod === 'amount') {
+                const inputs = document.querySelectorAll('.split-amount-input');
+                inputs.forEach(inp => { const val = parseInt(inp.value) || 0; if (val > 0) splitDetails.push({ name: inp.dataset.name, amount: val }); });
+            } else { splitDetails.push({ name: payer, amount: totalAmount }); }
+
+            const expenseData = { category, store, item, payer, currency, payment, receiptUrl, note, splitMethod, splitDetails, priceJp: price, qty, amount: totalAmount, date: fullTime.split('T')[0].replace(/-/g, '/'), fullTime, timestamp: Date.now() };
+
+            if(db) { if(key) db.ref('expenses/' + key).update(expenseData); else db.ref('expenses').push(expenseData); } 
+            else { const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; if(key) { const index = parseInt(key.split('_')[1]); localData[index] = expenseData; } else { localData.push(expenseData); } localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData)); renderBudget(); }
+            closeModal('modal-budget');
+        }
+
+        function renderSplitOptions(savedDetails = null) {
+            const method = document.getElementById('in-ex-split-method').value;
+            const container = document.getElementById('split-options-container');
+            let html = '';
+            if (method === 'equal') {
+                FAMILY_MEMBERS.forEach(m => { const isChecked = savedDetails ? savedDetails.some(d => d.name === m.name) : true; html += `<div class="member-check ${isChecked ? 'active' : ''}" onclick="this.classList.toggle('active'); this.querySelector('input').checked = !this.querySelector('input').checked;"><input type="checkbox" value="${m.name}" class="hidden" ${isChecked ? 'checked' : ''}><i class="fa-solid ${isChecked ? 'fa-circle-check' : 'fa-circle'} text-xs"></i> ${m.name}</div>`; });
+            } else if (method === 'amount') {
+                FAMILY_MEMBERS.forEach(m => { const savedVal = savedDetails ? (savedDetails.find(d => d.name === m.name)?.amount || 0) : 0; html += `<div class="flex items-center gap-2 bg-white p-2 rounded border"><span class="text-xs font-bold w-8">${m.name}</span><input type="number" data-name="${m.name}" value="${savedVal}" placeholder="金額" class="split-amount-input w-full text-sm border-b outline-none text-right"></div>`; });
+            } else { html = `<div class="col-span-2 text-xs text-gray-400 text-center py-2">費用將全額歸於付款人</div>`; }
+            container.innerHTML = html;
         }
 
         function adjustQty(delta) { const input = document.getElementById('in-ex-qty'); let val = parseInt(input.value) || 1; val += delta; if(val < 1) val = 1; input.value = val; input.dispatchEvent(new Event('input')); }
+        function deleteExpense(key) { if(confirm("刪除此紀錄？")) { if(db) { db.ref('expenses/' + key).remove(); } else { const index = parseInt(key.split('_')[1]); const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; localData.splice(index, 1); localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData)); renderBudget(); } } }
         
-        function deleteExpense(key) { 
-            if(confirm("刪除此紀錄？")) { 
-                if(db) { db.ref('expenses/' + key).remove(); } 
-                else { 
-                    const index = parseInt(key.split('_')[1]); 
-                    const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; 
-                    localData.splice(index, 1); 
-                    localStorage.setItem(EXPENSE_KEY, JSON.stringify(localData)); 
-                    renderBudget(); 
-                } 
-            } 
-        }
-
         function getPackingList() { const stored = localStorage.getItem(PACKING_KEY); if (!stored) { localStorage.setItem(PACKING_KEY, JSON.stringify(defaultPackingList)); return defaultPackingList; } return JSON.parse(stored); }
-        function togglePacking(id) { 
-            const list = getPackingList(); 
-            const item = list.find(i => i.id === id); 
-            if(item) { 
-                item.done = !item.done; 
-                localStorage.setItem(PACKING_KEY, JSON.stringify(list)); 
-                if(currentTab === 'home') renderHome();
-                if(currentTab === 'vouchers') renderVouchers();
-            } 
-        }
+        function togglePacking(id) { const list = getPackingList(); const item = list.find(i => i.id === id); if(item) { item.done = !item.done; localStorage.setItem(PACKING_KEY, JSON.stringify(list)); if(currentTab === 'home') renderHome(); if(currentTab === 'vouchers') renderVouchers(); } }
         function switchTab(tab) { currentTab = tab; document.querySelectorAll('.nav-item').forEach(btn => { btn.classList.remove('active', 'text-orange-500'); btn.classList.add('text-gray-400'); }); if (tab !== 'home') document.getElementById(`btn-${tab}`).classList.replace('text-gray-400', 'text-orange-500'); if (tab === 'home') renderHome(); if (tab === 'schedule') renderSchedule(); if (tab === 'shopping') renderShopping(); if (tab === 'budget') renderBudget(); if (tab === 'vouchers') renderVouchers(); window.scrollTo(0, 0); }
         function changeDate(index) { selectedDateIndex = index; renderSchedule(); }
         function toggleCard(element) { const details = element.querySelector('.details-content'); if(details) { details.style.display = details.style.display==='block'?'none':'block'; element.classList.toggle('card-active'); } }
@@ -1303,30 +1738,116 @@ function saveExpense() {
         function closeModal(id) { document.getElementById(id).classList.remove('open'); }
         function openPdfModal(encodedContent) { const content = decodeURIComponent(encodedContent); const modal = document.getElementById('modal-pdf'); const body = document.getElementById('pdf-content'); let html = `<div class="pdf-header border-b-2 border-gray-800 pb-2 mb-4 flex justify-between items-end"><h2 class="text-xl font-bold text-gray-800">BOOKING CONFIRMATION</h2><div class="text-right text-xs text-gray-500">2025/11/27</div></div>`; content.split('\n').forEach(line => { if(line.includes('：')) { const [key, val] = line.split('：'); html += `<div class="mb-2"><div class="text-[10px] text-gray-500 uppercase">${key}</div><div class="font-bold text-gray-900">${val}</div></div>`; } else if(line.trim() === '') html += `<div class="h-4"></div>`; else html += `<div class="text-sm text-gray-700 mb-1">${line}</div>`; }); body.innerHTML = html; modal.classList.add('open'); }
         function closePdfModal() { document.getElementById('modal-pdf').classList.remove('open'); }
-        function openVoucherImage(imgSrc) { const modal = document.getElementById('modal-pdf'); const body = document.getElementById('pdf-content'); const finalSrc = imgSrc.startsWith('http') ? imgSrc : `./${imgSrc}`; body.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><img src="${finalSrc}" class="max-w-full max-h-full object-contain rounded-lg shadow-lg"><p class="text-xs text-gray-400 mt-4">可使用雙指縮放查看</p></div>`; modal.classList.add('open'); }
-        function openDetailModal(dayIdx, eventIdx, choiceIdx = null) { const modal = document.getElementById('modal-detail'); const content = document.getElementById('modal-detail-content'); let event = tripData[dayIdx].events[eventIdx]; if (choiceIdx !== null && event.choices) event = event.choices[choiceIdx]; const img = event.imgUrl || 'https://via.placeholder.com/400x250?text=No+Image'; const detail = event.detailInfo || {}; let tagsHtml = ''; if(detail.tags) detail.tags.forEach(t => tagsHtml += `<span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full mr-1">#${t}</span>`); let highlightHtml = ''; if(detail.highlights) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">✨ 必看亮點</h4><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${detail.highlights.map(h => `<li>${h}</li>`).join('')}</ul></div>`; if(detail.menu) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">👩‍🍳 推薦菜單</h4><div class="grid grid-cols-1 gap-2">${detail.menu.map(m => `<div class="flex justify-between items-center bg-gray-50 p-2 rounded"><span class="font-bold text-gray-700 text-sm">${m.n}</span><span class="text-orange-500 text-sm font-bold">${m.p || ''}</span></div>`).join('')}</div></div>`; content.innerHTML = `<div class="detail-handle" onclick="closeDetailModal()"></div><button class="detail-close-btn" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button><img src="${img}" class="detail-header-img"><div class="detail-body"><div class="flex items-center gap-2 mb-1"><span class="text-sm text-gray-400">${event.time || '詳細資訊'}</span>${tagsHtml}</div><h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2><p class="text-gray-600 text-sm leading-relaxed">${detail.desc || event.guide || '暫無詳細介紹'}</p>${highlightHtml}<div class="mt-6 flex gap-3"><a href="${event.link || `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`}" target="_blank" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-center font-bold shadow-lg active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> 導航</a>${event.mapCode ? `<button onclick="copyText('${event.mapCode}')" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold border border-gray-200 active:scale-95 transition">複製 MapCode</button>` : ''}</div></div>`; modal.classList.add('open'); }
-        function closeDetailModal() { document.getElementById('modal-detail').classList.remove('open'); }
-        async function updateWeatherUI() {
-            const container = document.getElementById('weather-scroll'); const sunsetEl = document.getElementById('sunset-time'); if(!container) return;
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=26.2124&longitude=127.6809&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=sunset&timezone=Asia%2FTokyo');
-                const data = await res.json();
-                const sunset = new Date(data.daily.sunset[0]);
-                if(sunsetEl) sunsetEl.innerHTML = `<i class="fa-solid fa-cloud-sun"></i> 日落 ${sunset.getHours()}:${String(sunset.getMinutes()).padStart(2,'0')}`;
-                const currentHour = new Date().getHours(); const startIndex = data.hourly.time.findIndex(t => new Date(t).getHours() === currentHour);
-                let html = '';
-                for(let i=startIndex; i<startIndex+12; i++) { 
-                    if(!data.hourly.time[i]) break;
-                    const time = new Date(data.hourly.time[i]).getHours() + ":00";
-                    const temp = Math.round(data.hourly.temperature_2m[i]);
-                    const code = data.hourly.weather_code[i];
-                    let icon = '☀️';
-                    if(code >= 1 && code <= 3) icon = '☁️'; else if(code >= 45) icon = '🌫️'; else if(code >= 51) icon = '🌧️'; else if(code >= 95) icon = '⛈️';
-                    html += `<div class="flex flex-col items-center min-w-[50px]"><span class="text-xs text-gray-400">${time}</span><span class="text-xl my-1">${icon}</span><span class="text-sm font-bold text-gray-700">${temp}°</span></div>`;
-                }
-                container.innerHTML = html;
-            } catch(e) { container.innerHTML = '<span class="text-xs text-red-400">天氣載入失敗</span>'; }
+        
+        // --- 憑證預覽 (三層不重疊版) ---
+        function openVoucherImage(imgSrc) {
+            const modal = document.getElementById('modal-pdf');
+            const body = document.getElementById('pdf-content');
+            
+            // 清空舊按鈕 (如果有的話)
+            const oldBtn = document.querySelector('#modal-pdf .pdf-sheet > button');
+            if (oldBtn) oldBtn.remove(); 
+
+            const isGoogleDrive = imgSrc.includes('drive.google.com');
+            let innerContent = '';
+            let footerContent = '';
+
+            if (isGoogleDrive) {
+                const previewUrl = getDrivePreviewUrl(imgSrc);
+                const fallbackUrl = previewUrl.replace('/preview', '/view');
+                innerContent = `<iframe src="${previewUrl}" class="w-full h-full border-0 bg-gray-100" allow="autoplay" referrerpolicy="no-referrer"></iframe>`;
+                footerContent = `<div class="p-3 bg-white border-t border-gray-200 safe-area-bottom"><a href="${fallbackUrl}" target="_blank" class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl text-sm font-bold shadow hover:bg-blue-700 transition"><i class="fa-solid fa-external-link-alt mr-1"></i> 開啟原始檔案</a></div>`;
+            } else {
+                const finalSrc = imgSrc.startsWith('http') ? imgSrc : `./${imgSrc}`;
+                innerContent = `<div class="w-full h-full bg-black flex items-center justify-center"><img src="${finalSrc}" class="max-w-full max-h-full object-contain"></div>`;
+            }
+
+            const finalHtml = `<div class="h-[50px] bg-white border-b border-gray-200 flex justify-between items-center px-4 shrink-0"><span class="font-bold text-gray-700">憑證預覽</span><button onclick="closePdfModal()" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button></div><div class="flex-1 relative overflow-hidden">${innerContent}</div>${footerContent}`;
+
+            body.style.width = '100%';
+            body.style.height = '100%';
+            body.style.padding = '0';
+            body.style.display = 'flex';
+            body.style.flexDirection = 'column';
+            body.innerHTML = finalHtml;
+            modal.classList.add('open');
         }
+
+        function openDetailModal(dayIdx, eventIdx, choiceIdx = null) {
+    const modal = document.getElementById('modal-detail');
+    const content = document.getElementById('modal-detail-content');
+    
+    let event = tripData[dayIdx].events[eventIdx];
+    if (choiceIdx !== null && event.choices) event = event.choices[choiceIdx];
+    
+    const img = event.imgUrl || 'https://via.placeholder.com/400x250?text=No+Image';
+    const detail = event.detailInfo || {};
+    
+    let tagsHtml = ''; 
+    if(detail.tags) detail.tags.forEach(t => tagsHtml += `<span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full mr-1">#${t}</span>`);
+    
+    let highlightHtml = ''; 
+    if(detail.highlights) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">✨ 必看亮點</h4><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${detail.highlights.map(h => `<li>${h}</li>`).join('')}</ul></div>`;
+    if(detail.menu) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">👩‍🍳 推薦菜單</h4><div class="grid grid-cols-1 gap-2">${detail.menu.map(m => `<div class="flex justify-between items-center bg-gray-50 p-2 rounded"><span class="font-bold text-gray-700 text-sm">${m.n}</span><span class="text-orange-500 text-sm font-bold">${m.p || ''}</span></div>`).join('')}</div></div>`;
+
+    // ★ 修改：右側按鈕連結 (Google 評論)
+    // 優先使用 reviewLink -> navLink -> 關鍵字搜尋
+    const reviewUrl = event.reviewLink || event.navLink || `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`;
+    
+    // 左側按鈕邏輯 (Tabelog / 官網 / MapCode)
+    let infoBtnHtml = '';
+    
+    if (event.mapCode) {
+        infoBtnHtml = `
+            <button onclick="copyText('${event.mapCode}')" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold border border-gray-200 active:scale-95 transition flex items-center justify-center gap-2">
+                <i class="fa-regular fa-copy"></i> 複製 MapCode
+            </button>`;
+    } else if (event.link) {
+        const isTabelog = event.link.includes('tabelog');
+        const btnText = isTabelog ? 'Tabelog 食記' : '官方網站';
+        const btnIcon = isTabelog ? 'fa-solid fa-utensils' : 'fa-solid fa-globe';
+        const btnClasses = isTabelog ? 'bg-orange-500 text-white shadow-orange-200' : 'bg-gray-100 text-gray-700 border-gray-200';
+
+        infoBtnHtml = `
+            <a href="${event.link}" target="_blank" class="flex-1 ${btnClasses} py-3 rounded-xl font-bold shadow-lg active:scale-95 transition text-center flex items-center justify-center gap-2">
+                <i class="${btnIcon}"></i> ${btnText}
+            </a>`;
+    } else {
+        infoBtnHtml = `<div class="flex-1"></div>`; 
+    }
+
+    content.innerHTML = `
+        <div class="detail-handle" onclick="closeDetailModal()"></div>
+        <button class="detail-close-btn" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button>
+        <img src="${img}" class="detail-header-img shrink-0">
+        <div class="detail-body">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-sm text-gray-400">${event.time || '詳細資訊'}</span>
+                ${tagsHtml}
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2>
+            <p class="text-gray-600 text-sm leading-relaxed">${detail.desc || event.guide || '暫無詳細介紹'}</p>
+            ${highlightHtml}
+        </div>
+
+        <div class="p-4 bg-white border-t border-gray-100 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] safe-area-bottom z-20">
+            <div class="flex gap-3">
+                <!-- 左側：資訊/MapCode -->
+                ${infoBtnHtml}
+                
+                <!-- ★ 修改：右側按鈕改為 Google 評論 -->
+                <a href="${reviewUrl}" target="_blank" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-center font-bold shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-comments"></i> Google 評論
+                </a>
+            </div>
+        </div>`;
+        
+    modal.classList.add('open');
+}
+
+function closeDetailModal() { 
+    document.getElementById('modal-detail').classList.remove('open'); 
+}
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
