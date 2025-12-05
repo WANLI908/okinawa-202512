@@ -4,21 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2025 沖繩 🌺</title>
+    
+    <!-- LINE/FB 分享設定 -->
     <meta property="og:title" content="2025 沖繩 🌺" />
     <meta property="og:description" content="12/25 - 12/29 五天四夜行程表、必買清單與記帳分帳全攻略！" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://wanli908.github.io/okinawa-202512/" />
     <meta property="og:image" content="https://cdn.zekkei-japan.jp/datas/images/2024/04/30/c03f51ed4ebc5e578df0cbe7501f1a9ee742df4e.jpg" />
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- ★ 修正：Font Awesome Icons (最新版) ★ -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        /* ... (您的 CSS 樣式保持不變) ... */
+        body { font-family: 'M PLUS Rounded 1c', sans-serif; background-color: #FFF8E1; -webkit-tap-highlight-color: transparent; }
+        /* ... */
+    </style>
 
     <style>
         body { font-family: 'M PLUS Rounded 1c', sans-serif; background-color: #FFF8E1; -webkit-tap-highlight-color: transparent; }
@@ -63,26 +74,29 @@
         .detail-header-img { width: 100%; height: 250px; object-fit: cover; }
         .detail-body { padding: 24px; overflow-y: auto; flex: 1; /* 自動填滿剩餘高度 *//* 移除原本的 padding-bottom: 100px */ }
         .detail-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 100px; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-        .detail-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 50; }
+        .detail-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 500; }
         .ticket-box { background-image: radial-gradient(circle at 0 50%, transparent 10px, #FFF5F5 11px), radial-gradient(circle at 100% 50%, transparent 10px, #FFF5F5 11px); border: 2px dashed #FFCDD2; color: #C62828; padding: 15px 25px; border-radius: 8px; position: relative; }
         .pdf-sheet { 
     /* ...原有樣式... */
     padding: 0; /* 建議歸零，由內部元素控制間距 */
     /* ... */
 }
-/* --- 修改：讓預覽視窗變大 --- */
 .pdf-sheet { 
     background: #fff; 
-    width: 100%;        /* 寬度改為 100% */
-    height: 92vh;       /* 高度改為 92% (留一點點底給手指操作) */
+    width: 100%;
+    
+    /* ★ 修改這裡：從 95vh 改成 85vh (讓視窗變矮一點) */
+    height: 85vh; 
+    
     border-radius: 16px 16px 0 0; 
-    padding: 0;         /* ★ 關鍵：移除內距，讓內容滿版 */
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.2); 
+    padding: 0; 
     position: absolute; 
-    bottom: 0;          /* 固定在底部 */
-    overflow: hidden;   /* 防止圓角被內容蓋住 */
+    bottom: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.2); 
+    z-index: 1001; /* 確保層級夠高 */
 }
 
 
@@ -353,6 +367,34 @@
         </div>
     </div>
 
+   <!-- Order Card Modal (點餐字卡) -->
+    <div id="modal-order-card" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity" onclick="closeOrderCard()">
+        <div class="bg-white w-[85%] max-w-sm rounded-3xl p-6 text-center relative shadow-2xl transform transition-all scale-100" onclick="event.stopPropagation()">
+            <button onclick="closeOrderCard()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="mb-2 text-xs text-orange-500 font-bold tracking-widest uppercase">Order This</div>
+            
+            <!-- 日文 (超大字) -->
+            <div id="card-jp" class="text-3xl font-bold text-gray-800 mb-4 leading-tight break-words">
+                日本語メニュー
+            </div>
+            
+            <!-- 分隔線 -->
+            <div class="w-12 h-1 bg-gray-200 mx-auto mb-4 rounded-full"></div>
+            
+            <!-- 中文 (輔助) -->
+            <div id="card-cn" class="text-lg text-gray-500 font-medium">
+                中文菜單名
+            </div>
+            
+            <div class="mt-6 text-xs text-gray-400 bg-gray-50 py-2 rounded-lg">
+                <i class="fa-solid fa-hand-point-up mr-1"></i> 請將此畫面出示給店員
+            </div>
+        </div>
+    </div>
+
     <!-- Translation Modal -->
     <div id="trans-modal" class="fixed inset-0 bg-black/80 z-[110] hidden flex-col items-center justify-center p-6" onclick="closeTranslation()"><div class="bg-white rounded-2xl p-6 w-full max-w-sm text-center space-y-4" onclick="event.stopPropagation()"><h3 class="font-bold text-xl text-orange-600 border-b pb-2">🇯🇵 幫我說日文</h3><div class="grid grid-cols-2 gap-3"><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">結帳</div><div class="font-bold text-lg">お会計 (Okai-kei)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">謝謝</div><div class="font-bold text-lg">ありがとう (Arigatou)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">廁所</div><div class="font-bold text-lg">トイレ (Toire)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left"><div class="text-xs text-gray-400">水</div><div class="font-bold text-lg">お水 (Omizu)</div></div><div class="bg-gray-50 p-3 rounded-lg border text-left col-span-2"><div class="text-xs text-gray-400">不好意思 / 請問</div><div class="font-bold text-lg">すみません (Sumimasen)</div></div></div><button onclick="closeTranslation()" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-full font-bold w-full mt-2">關閉</button></div></div>
 
@@ -531,7 +573,7 @@ function getPrepListHTML() {
         ];
 
         const okinawaEvents = [
-            { title: "東南植物樂園 燈光秀", date: "10/25 - 5/25", loc: "沖繩市", img: "https://www.okinawastory.jp/feature/illumination/images/spot01_img01.jpg", link: "https://www.google.com/maps/search/Southeast+Botanical+Gardens" },
+            { title: "東南植物樂園 燈光秀", date: "10/25 - 5/25", loc: "沖繩市", img: "https://ohh.okinawa/wpdir/wp-content/uploads/2018/12/8cf8043b599f740cb0b21538e343a2eb-e1545957807732.jpg", link: "https://www.southeast-botanical.jp/tw/illumination/" },
             { title: "糸滿和平燈飾", date: "12/13 - 1/03", loc: "糸滿市", img: "https://www.okinawastory.jp/feature/illumination/images/spot04_img01.jpg", link: "https://www.google.com/maps/search/Itoman+Peaceful+Illumination" },
             { title: "琉球燈會 (読谷)", date: "12/01 - 3/31", loc: "讀谷村", img: "https://lantan.ryukyu/wp-content/uploads/2023/10/img_main_sp.jpg", link: "https://www.google.com/maps/search/Murasaki+Mura+Ryukyu+Kingdom+Theme+Park" },
             { title: "兒童王國 聖誕夢幻", date: "12/20 - 1/05", loc: "沖繩市", img: "https://www.xmas-fantasy.com/images/main_sp.jpg", link: "https://www.google.com/maps/search/Okinawa+Zoo+Museum" },
@@ -572,7 +614,7 @@ function getPrepListHTML() {
                 travel: { mode: 'walk', time: '5分' } 
             },
             { 
-                time: "22:00",leaveTime: "22:20",  title: "東橫INN 美榮橋", type: "hotel", mapCode: "33 157 154*55", 
+                time: "22:00",leaveTime: "22:20",  title: "東橫INN 美榮橋", type: "hotel", 
                 bookingInfo: { 
                     code: "5892799 / 5892800", 
                     note: "會員卡 Check-in (現場付)",
@@ -583,7 +625,7 @@ function getPrepListHTML() {
                 time: "22:30", title: "晚餐二選一", type: "choice", 
                 choices: [ 
                     { 
-                        title: "蝦湯拉麵 Chanya", 
+                        title: "蝦湯拉麵", 
                         type: "eat", 
                         imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/306129/640x640_rect_1c59d40469eed39e39ca6f832061d5dd.jpg",
                         guide: "隱藏巷弄的濃郁蝦湯，深夜食堂氛圍。", 
@@ -603,9 +645,9 @@ function getPrepListHTML() {
                                 "氛圍：西裝大叔的深夜食堂"
                             ],
                             menu:[
-                                {n:"海老味噌拉麵", p:"¥980"},
-                                {n:"海老鹽味拉麵", p:"¥980"},
-                                {n:"一口餃子", p:"¥400"}
+                                {n:"海老味噌拉麵", j:"海老味噌ラーメン", p:"¥980"},
+                                {n:"海老鹽味拉麵", j:"海老塩ラーメン", p:"¥980"},
+                                {n:"一口餃子", j:"一口餃子", p:"¥400"}
                             ] 
                         } 
                     }, 
@@ -635,10 +677,10 @@ function getPrepListHTML() {
                                 "🥟 點心：溢汁小籠包 / 燒賣"
                             ],
                             menu:[
-                                {n:"藥膳麻婆豆腐", p:"¥960"},
-                                {n:"蛙吽黑炒飯", p:"¥930"},
-                                {n:"凍檸塔沙瓦", p:"¥630"},
-                                {n:"座席費(Otoshi)", p:"¥330"}
+                                {n:"藥膳麻婆豆腐", j:"四川薬膳麻婆豆腐", p:"¥960"},
+                                {n:"蛙吽黑炒飯", j:"蛙吽黒炒飯", p:"¥930"},
+                                {n:"凍檸塔沙瓦", j:"凍結タワーレモンサワー", p:"¥630"},
+                                {n:"座席費(Otoshi)", j:"お通し代", p:"¥330"}
                             ] 
                         } 
                     }  
@@ -685,9 +727,9 @@ function getPrepListHTML() {
                         "適合當作開車途中的點心"
                     ],
                     menu: [
-                        {n: "經典肉桂捲", p: "¥450"},
-                        {n: "黑糖核桃肉桂捲", p: "¥480"},
-                        {n: "冰拿鐵", p: "¥550"}
+                        {n: "經典肉桂捲", j:"シナモンロール", p: "¥450"}, 
+                        {n: "黑糖核桃肉桂捲", j:"黒糖くるみシナモンロール", p: "¥480"}, 
+                        {n: "冰拿鐵", j:"アイスラテ", p: "¥550"}
                     ]
                 },
                 
@@ -726,9 +768,9 @@ function getPrepListHTML() {
                     
                     // 把店家當作 Menu 顯示，方便查看
                     menu: [
-                        {n: "[25號] ほうき星", p: "黑糖可麗露"},
-                        {n: "[18號] oHacorte", p: "珠寶盒水果塔"},
-                        {n: "[26號] ippe coppe", p: "天然酵母麵包"}
+                        {n: "[25號] ほうき星", j:"黒糖カヌレ", p: "黑糖可麗露"}, 
+                        {n: "[18號] oHacorte", j:"フルーツタルト", p: "珠寶盒水果塔"}, 
+                        {n: "[26號] ippe coppe", j:"天然酵母食パン", p: "天然酵母麵包"}
                     ]
                 }, 
                 
@@ -909,14 +951,11 @@ function getPrepListHTML() {
                 
                 navLink: "https://maps.app.goo.gl/YtcRzAkFkNEH64Un8",
                 reviewLink: "https://maps.app.goo.gl/nfRWvwG4nLVuNUhC6",
-                link: "https://tabelog.com/okinawa/A4703/A470304/47002631/",
-                
+                link: "https://tabelog.com/tw/okinawa/A4703/A470304/47029667/",
                 mapCode: "33 526 212*25", 
-                
                 bookingInfo: { 
                     code: "3JYNWGHFKM", 
                     note: "Tabelog 預約", 
-                    // ★ 關鍵：這個 driveLink 必須存在，按鈕才會顯示
                     driveLink: "https://drive.google.com/file/d/1aC-aVfvv4iy578apmaEv9HksOD-rzjOt/view?usp=drive_link"
                 }, 
                 
@@ -939,33 +978,232 @@ function getPrepListHTML() {
                 travel: { mode: 'drive', time: '10分' } 
             },
             { 
-                time: "19:40", title: "美濱日落度假飯店", type: "hotel", title_detail: "Sunset Resort Mihama", mapCode: "33 525 205*74", 
+                time: "19:40", leaveTime:"20:00", title: "美濱日落度假飯店", type: "hotel", title_detail: "Sunset Resort Mihama", mapCode: "33 525 205*74", guide: "可停車，先到先得。",
                 bookingInfo: { 
                     code: "1616323760441360", 
                     note: "PIN: 1047", 
                     extra: "已付 ¥9,424", 
                     driveLink: "https://drive.google.com/file/d/16zfKPiZBPPBFJyARHDH503a85w6vEmJi/view?usp=drive_link"
-                } 
+                },
+                travel: { mode: 'walk', time: '10分' } 
             },
-            { time: "20:10", title: "美國村逛逛", type: "spot", mapCode: "33 526 450*63", guide: "可以去大國藥妝補貨，摩天輪拍照。" }
+            { 
+                time: "20:10", 
+                leaveTime:"21:00", 
+                title: "美國村", 
+                type: "spot", 
+                mapCode: "33 526 450*63", 
+                guide: "摩天輪拍照、藥妝店補貨、聖誕燈飾。", 
+                // 導航
+                navLink: "https://maps.app.goo.gl/3J3J3J3J3J3J3J3J", 
+                 // google評論
+                reviewLink: "https://maps.app.goo.gl/nfRWvwG4nLVuNUhC6",
+                 // 官網或介紹
+                link: "https://tabelog.com/tw/okinawa/A4703/A470304/47029667/",
+                detailInfo: {
+                    desc: "充滿美式風情的購物區，聖誕節期間燈飾非常漂亮。有很多個性小店、古著店和大國藥妝。",
+                    tags: ["夜景", "購物", "聖誕燈飾", "大國藥妝"],
+                    highlights: ["🎡 摩天輪夜景 (已拆除但仍是地標)", "💊 大國藥妝 (最便宜)", "🎄 聖誕燈飾街景"]
+                },
+                travel: { mode: 'walk', time: '5分' }
+            },
+            {
+                time: "21:00",
+                leaveTime:"22:00", 
+                title: "AEON 北谷店", 
+                type: "spot", 
+                imgUrl: "https://world.aeon-ryukyu.jp/wp-content/uploads/2019/06/ae99205041fa68889b7e95f1a7c4ab70.jpg", 
+                guide: "就在美國村旁邊，買宵夜、水果、伴手禮。", 
+                navLink: "https://maps.app.goo.gl/P6P6P6P6P6P6P6P6", 
+                reviewLink:"https://maps.app.goo.gl/4jveh6ibcN4ccyst8",
+                detailInfo: { 
+                    desc: "這家 AEON 超市就在美國村旁邊，非常大間且營業到很晚。回飯店前一定要來這裡買<b>草莓、飲料、泡麵</b>當宵夜！熟食區晚上會有特價貼紙。", 
+                    tags: ["超市", "宵夜", "水果", "伴手禮"], 
+                    highlights: ["🍓 必買：日本草莓/麝香葡萄", "🍱 必搶：晚間特價熟食", "🍺 必喝：Orion 啤酒", "🐱 必買：貓條", "🍳 必買：隔天早餐"]
+                },
+                travel: { mode: 'walk', time: '10分' } 
+            },
+            { 
+                time: "22:10",  
+                title: "美濱日落度假飯店", 
+                type: "hotel", 
+                guide:"好好休息，明天也要早起。",
+                navLink:"https://maps.app.goo.gl/L5yYrNiG5n3MxPyt9",
+            },
+            {
+                time: "22:30",
+                title: "明天午餐準備",
+                type: "prep",
+                guide: "下載「古宇利蝦蝦飯」APP，明天可以預約點餐節省排隊時間。",
+                appLink: {
+                    url: "https://play.google.com/store/apps/details?id=com.newuplink.chain.tac906564&hl=zh_TW&pli=1",
+                    text: "下載 Kouri Shrimp",
+                    icon: "fa-brands fa-google-play"
+                }
+            }
+            
         ]
     },
+    
     {
         date: "12/27🎆", fullDate: "2025/12/27", day: "週六", weather: "⛅ 22°C",
         events: [
             { time: "06:00", title: "起床", type: "prep", guide: "早餐外面買，車上吃。", departureTime: "07:30 出發往北部", travel: { mode: 'drive', time: '45分' } },
-            { time: "08:30", title: "許田休息站", type: "spot", mapCode: "206 476 706*66", guide: "必吃：炸天婦羅、黑糖球。", travel: { mode: 'drive', time: '30分' } },
-            { time: "09:45", title: "Panchori-na 麵包店", type: "eat", guide: "可愛麵包店，停留 30 分鐘。", travel: { mode: 'drive', time: '30分' } },
-            { time: "11:00", title: "午餐：蝦蝦飯", type: "eat", mapCode: "485 692 167*55", detailInfo: { desc: "古宇利島必吃！建議先找座位。", tags: ["海景", "蝦飯"], menu: [{n:"原味大蒜蝦飯", p:"¥1,400"}] }, travel: { mode: 'drive', time: '40分' } },
-            { time: "13:20", title: "美麗海水族館", type: "spot", mapCode: "553 075 797*77", detailInfo: { desc: "亞洲最大水族館之一，黑潮之海必看。", tags: ["鯨鯊", "海豚秀"], highlights: ["黑潮之海", "戶外海豚劇場"] }, travel: { mode: 'drive', time: '50分' } },
             { 
-                time: "17:00", title: "晚餐：Obaa no Ya 燒肉", type: "eat", title_detail: "Obaa no Ya (名護燒肉)", mapCode: "206 598 371*14", 
+                time: "08:30", 
+                leaveTime: "09:30",
+                title: "許田休息站", 
+                type: "spot", 
+                
+                // 封面圖
+                imgUrl: "https://i0.wp.com/roundtripjp.com/wp-content/uploads/2023/03/P1040445.jpg?fit=1598%2C1200&ssl=1",
+                
+                guide: "前往北部的「勇者補給站」！買優惠門票、吃10円饅頭。", 
+                
+                mapCode: "206 476 706*66", 
+                // 導航
+                navLink: "https://maps.app.goo.gl/h3Q4S5k6L7P8X9jNA", 
+                // google 評論
+                reviewLink: "https://maps.app.goo.gl/HRufTamPLLMRXkDr5", 
+                // 官網
+                link: "https://tisshuang.com/blog/post/yanbaru-b", 
+                
+                detailInfo: { 
+                    desc: `<b>🚗 北部自駕的 RPG 補給站：</b><br>連續多年評選為日本最受歡迎休息站！不只是上廁所，更是買裝備(票)、補血(吃)的地方。<br><br><b>🎫 省錢必殺技 (只收現金!)：</b><br>售票櫃台販售美麗海水族館、鳳梨園等門票，約便宜 10-20%。<b>⚠️注意：買票只收現金！</b><br><br><b>🤤 必吃三寶：</b><br>1. <b>10円饅頭</b>：黑糖外皮包紅豆，熱騰騰一口一個 (適合車上吃)。<br>2. <b>三矢本舖</b>：必買<b>「黃金球 (Dragon Ball)」</b>，像麻糬波堤一樣Q彈。<br>3. <b>Oppa 冰淇淋</b>：找可愛乳牛LOGO，牧場直送超濃郁。<br><br><b>⚠️ 老司機交通提醒：</b><br>休息站位於<b>南下車道</b>。北上(往水族館)時，需<b>右轉跨越對向車道</b>進入，請務必注意安全！`, 
+                    
+                    tags: ["優惠門票", "只收現金", "點心", "休息站"], 
+                    
+                    highlights: [
+                        "🎫 買票：美麗海門票 (記得帶現金!)",
+                        "🥯 必吃：10円饅頭 (惠比壽饅頭)",
+                        "🍩 甜點：三矢本舖 黃金球 (每日限量)",
+                        "🍦 冰品：Oppa 牛奶冰淇淋 (濃郁!)、鮮奶布丁"
+                    ],
+                    
+                    menu: [
+                        {n: "美麗海門票(大人)", p: "¥1,850"},
+                        {n: "10円饅頭(10個)", p: "¥200~"},
+                        {n: "黃金球(開口笑)", p: "¥100"},
+                        {n: "Oppa牛奶冰淇淋", p: "¥100"}
+                    ]
+                }, 
+                
+                travel: { mode: 'drive', time: '30分' } 
+            },
+            { 
+                time: "09:45", 
+                leaveTime: "10:15",
+                title: "Panchori-na 麵包店", 
+                type: "eat", 
+                
+                // 封面圖：可愛的店鋪外觀
+                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/160864/640x640_rect_160864994.jpg",
+                
+                guide: "像吉卜力電影的童話小屋，必買蘑菇麵包 (⚠️路邊停車小心)。", 
+                
+                // ★ 連結
+                mapCode: "206 598 724*06", 
+                navLink: "https://maps.app.goo.gl/h7qQ5s1s1s1s1", // (示意連結，實際會搜尋)
+                reviewLink: "https://maps.app.goo.gl/h7qQ5s1s1s1s1",
+                link: "https://tabelog.com/okinawa/A4702/A470201/47002506/", 
+                
+                detailInfo: { 
+                    desc: `<b>🍞 森林裡的童話小屋：</b><br>位於58號公路旁的小山坡，被綠意包圍。店內空間極小（借物少女艾莉緹感），充滿奶油香與宮崎駿公仔。<br><br><b>🥖 必買麵包 (Must Buy)：</b><br>1. <b>🍄 蘑菇造型麵包</b>：IG 打卡神器！超療癒。<br>2. <b>🍛 咖哩麵包</b>：在地人推，外酥內濃。<br>3. <b>🌭 明太子法國</b>：越嚼越香的硬式麵包。<br><br><b>☕ 小確幸：</b>門口有保溫壺提供<b>免費咖啡</b>，買完在門口板凳吃超 Chill。<br><br><b>⚠️ 停車陷阱 (駕駛注意)：</b><br>停車場在地勢略斜的店門口，進出 58 號公路車速快，<b>請務必小心駕駛！</b>店內狹窄，包包請背前面。`, 
+                    
+                    tags: ["吉卜力風", "童話麵包", "免費咖啡", "IG打卡"], 
+                    
+                    highlights: [
+                        "🍄 必買：蘑菇造型麵包 (超可愛)",
+                        "🍛 推薦：咖哩麵包 (酥脆濃郁)",
+                        "☕ 福利：門口提供免費熱/冰咖啡",
+                        "🚗 注意：停車場在路邊斜坡，進出小心"
+                    ],
+                    
+                    menu: [
+                        {n: "蘑菇麵包", p: "¥200~"},
+                        {n: "咖哩麵包", p: "¥220~"},
+                        {n: "明太子法國", p: "¥280"}
+                    ]
+                }, 
+                
+                travel: { mode: 'drive', time: '30分' } 
+            },
+            { 
+                time: "11:00", 
+                title: "午餐：蝦蝦飯", 
+                type: "eat", 
+                mapCode: "485 692 167*55", 
+                detailInfo: { 
+                    desc: "古宇利島必吃！建議先找座位。", 
+                    tags: ["海景", "蝦飯"], 
+                    menu: [{n:"原味大蒜蝦飯", p:"¥1,400"}] 
+                }, 
+            travel: { mode: 'drive', time: '15分' } 
+            },
+            { 
+                time: "12:30",
+                leaveTime: "13:00",
+                title: "Shinmei Coffee", 
+                type: "eat", 
+                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/85555/640x640_rect_85555287.jpg",
+                guide: "隱身綠意中的紅瓦古民家咖啡，享受寧靜時光。", 
+                navLink: "https://maps.app.goo.gl/8a8a8a8a8a8a", // 請替換為正確連結
+                reviewLink: "https://maps.app.goo.gl/8a8a8a8a8a8a",
+                link: "https://tabelog.com/okinawa/A4702/A470202/47018681/",
+                detailInfo: { 
+                    desc: "這是一間非常有氣氛的沖繩古民家咖啡館，庭院充滿綠意。適合在去水族館前，來這裡喝杯咖啡、吃個甜點，稍微讓心靈沉澱一下。", 
+                    tags: ["古民家", "咖啡", "庭園", "放鬆"], 
+                    highlights: ["☕ 招牌：黑糖拿鐵", "🍰 甜點：自家製蛋糕", "🏡 環境：傳統紅瓦屋"], 
+                    menu: [{n: "黑糖拿鐵", p: "¥600"}, {n: "今日蛋糕", p: "¥500"}] 
+                }, 
+                travel: { mode: 'drive', time: '25分' } 
+            },
+            { time: "13:20", title: "美麗海水族館", type: "spot", mapCode: "553 075 797*77", detailInfo: { desc: "亞洲最大水族館之一，黑潮之海必看。", tags: ["鯨鯊", "海豚秀"], highlights: ["黑潮之海", "戶外海豚劇場"] }, travel: { mode: 'drive', time: '50分' } },
+{ 
+                time: "17:00", 
+                leaveTime: "18:00",
+                title: "晚餐：Obaa no Ya 燒肉", 
+                type: "eat", 
+                title_detail: "Obaa no Ya (名護燒肉)", 
+                
+                // ★ 封面圖：炭火七輪與燒肉
+                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/13637/640x640_rect_13637483.jpg",
+                
+                guide: "百年古民家炭火燒肉，最有沖繩靈魂的店 (⚠️煙很大)。", 
+                
+                // ★ 補上連結
+                mapCode: "206 598 371*14", 
+                navLink: "https://maps.app.goo.gl/KjKjKjKjKjKjKjKj", // (示意連結)
+                reviewLink: "https://maps.app.goo.gl/KjKjKjKjKjKjKjKj",
+                link: "https://tabelog.com/okinawa/A4702/A470201/47001327/", 
+                
                 bookingInfo: { 
                     code: "2QZLY2AV4K", 
                     note: "Tabelog 預約", 
+                    // 您的 Google Drive 憑證連結
                     driveLink: "https://drive.google.com/file/d/18WY990jEKlkvz1VmGCljkT07xTVBNPle/view?usp=drive_link"
                 }, 
-                detailInfo: { desc: "名護人氣燒肉，炭火燒烤風味絕佳。", tags: ["燒肉", "和牛"], menu: [{n:"特上牛五花", p:"¥1,800"}] }, travel: { mode: 'drive', time: '40分' } 
+                
+                detailInfo: { 
+                    desc: `<b>🏡 走進時光隧道：</b><br>這是我心目中<b>「最有沖繩靈魂」</b>的燒肉店！百年紅瓦古民家，用傳統「七輪 (炭火陶爐)」在榻榻米上烤肉，氣氛像回阿嬤家吃飯一樣溫馨。<br><br><b>🥩 必吃攻略：</b><br>1. <b>阿古豬 (Agu Pork)</b>：油脂非常甜！烤到焦脆完全不膩，沾鹽吃原味。<br>2. <b>黑毛和牛/本部牛</b>：牛舌厚切超香，上等牛五花必點。<br>3. <b>懶人推薦</b>：直接點「Obaa no Ya 套餐」一次滿足。<br><br><b>⚠️ 震撼教育 (必讀！)：</b><br>因為是老宅+炭火，排煙有限，<b>煙霧非常大 (High Smoke)</b>！全身100%會沾滿烤肉味，建議<b>不要穿太名貴的衣服</b>。`, 
+                    
+                    tags: ["古民家", "炭火燒肉", "阿古豬", "煙霧瀰漫"], 
+                    
+                    highlights: [
+                        "🏡 氣氛：百年老宅 + 榻榻米 + 炭火七輪",
+                        "🐷 必吃：阿古豬拼盤 (油脂超甜)",
+                        "🐮 推薦：和牛牛舌、上等牛五花",
+                        "⚠️ 警告：煙非常大！請做好全身烤肉味的準備"
+                    ],
+                    
+                    menu: [
+                        {n: "Obaa no Ya 套餐", p: "¥3,500~"},
+                        {n: "阿古豬拼盤", p: "¥2,800~"},
+                        {n: "上等牛五花", p: "¥1,800"}
+                    ] 
+                }, 
+                
+                travel: { mode: 'drive', time: '40分' } 
             },
             { time: "20:00", title: "美國村煙火", type: "spot", guide: "週六限定！觀賞點：北谷日落步道。" }
         ]
@@ -1611,38 +1849,59 @@ function renderChart(dataObj) {
     }
 }
 
-       // --- 建立行程卡片 HTML (未展開即可預覽憑證版) ---
+// --- 建立行程卡片 HTML (修復 prep 卡片崩潰問題) ---
 function createEventCard(event, dayIdx, evtIdx) {
     
-    // 時間與離開時間
+    // 共用邏輯：生成時間與離開時間 HTML
     let timeHtml = `<div class="font-bold text-xl text-gray-700 leading-none">${event.time}</div>`;
     if (event.leaveTime) {
         timeHtml += `<div class="text-[10px] text-red-500 font-bold mt-1 border border-red-200 px-1 rounded bg-red-50 whitespace-nowrap">~${event.leaveTime}</div>`;
     }
 
-    // ★ 新增：快速憑證按鈕 (顯示在未展開卡片上)
-    let quickVoucherBtn = '';
-    if (event.bookingInfo) {
-        const btnClass = "mt-2 w-full text-center bg-red-50 text-red-600 py-1.5 rounded-lg text-xs font-bold border border-red-100 hover:bg-red-100 transition pointer-events-auto flex items-center justify-center gap-1 shadow-sm";
+    // ★ 關鍵修正：準備事項 (prep) 卡片邏輯
+    if (event.type === 'prep') {
+        let rightSideHtml = '';
         
-        if (event.bookingInfo.driveLink) {
-            quickVoucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.driveLink}'); event.stopPropagation();" class="${btnClass}"><i class="fa-solid fa-file-pdf"></i> 預覽憑證 (PDF)</button>`;
-        } else if (event.bookingInfo.voucherImg) {
-            quickVoucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.voucherImg}'); event.stopPropagation();" class="${btnClass}"><i class="fa-solid fa-image"></i> 查看憑證圖片</button>`;
-        } else if (event.bookingInfo.pdfContent) {
-            quickVoucherBtn = `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}'); event.stopPropagation();" class="${btnClass}"><i class="fa-solid fa-file-lines"></i> 預覽憑證內容</button>`;
+        // 情況 A: 有出發時間 (例如: 早餐)
+        if (event.departureTime) {
+            rightSideHtml = `
+                <div class="text-right shrink-0 ml-2">
+                    <div class="text-xs text-gray-500">預計出發</div>
+                    <div class="text-2xl font-bold text-purple-900">${event.departureTime.split(' ')[0]}</div>
+                    <div class="text-xs text-purple-700">準時出發 🚗</div>
+                </div>`;
+        } 
+        // 情況 B: 有 APP 下載連結 (例如: 蝦蝦飯)
+        else if (event.appLink) {
+            rightSideHtml = `
+                <a href="${event.appLink.url}" target="_blank" class="shrink-0 ml-2 flex flex-col items-center text-purple-600 bg-white px-3 py-2 rounded-lg shadow-sm border border-purple-100 active:scale-95 transition">
+                    <i class="${event.appLink.icon} text-xl mb-1"></i>
+                    <span class="text-[10px] font-bold">${event.appLink.text}</span>
+                </a>`;
         }
+
+        return `
+            <div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center">
+                <div class="flex-1">
+                    <div class="font-bold text-xl text-purple-800">${event.time}</div>
+                    <div class="text-sm text-purple-600 font-bold">${event.title}</div>
+                    <div class="text-xs text-purple-500 mt-1 leading-relaxed">${event.guide}</div>
+                </div>
+                ${rightSideHtml}
+            </div>`;
     }
 
-    // 1. 左右滑動選擇 (二選一)
+    // 1. 左右滑動選擇 (例如：晚餐二選一)
     if (event.type === 'choice') {
         const choicesHtml = event.choices.map((c, cIdx) => {
             const targetUrl = c.navLink || c.link || `https://www.google.com/maps/search/?api=1&query=${c.title}+沖繩`;
+            
             let travelTimeHtml = '';
             if (c.travelTime) {
                 const icon = (c.travelTime.includes('步') || c.travelTime.includes('走')) ? 'fa-person-walking' : 'fa-car';
                 travelTimeHtml = `<span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-full border border-gray-200 shrink-0 flex items-center gap-1"><i class="fa-solid ${icon}"></i> ${c.travelTime}</span>`;
             }
+
             return `
             <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm relative flex flex-col" 
                  onclick="openDetailModal(${dayIdx}, ${evtIdx}, ${cIdx})">
@@ -1673,11 +1932,6 @@ function createEventCard(event, dayIdx, evtIdx) {
             </div>`;
     }
 
-    // 2. 準備事項
-    if (event.type === 'prep') {
-        return `<div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center"><div><div class="font-bold text-xl text-purple-800">${event.time}</div><div class="text-sm text-purple-600 font-bold">${event.title}</div><div class="text-xs text-purple-500 mt-1">${event.guide}</div></div><div class="text-right"><div class="text-xs text-gray-500">預計出發</div><div class="text-2xl font-bold text-purple-900">${event.departureTime.split(' ')[0]}</div><div class="text-xs text-purple-700">準時出發 🚗</div></div></div>`;
-    }
-
     // 3. 一般行程
     let previewContent = '';
     if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
@@ -1697,7 +1951,18 @@ function createEventCard(event, dayIdx, evtIdx) {
     
     let clickAction = (event.type === 'eat' || event.type === 'spot') ? `onclick="openDetailModal(${dayIdx}, ${evtIdx})"` : `onclick="toggleCard(this)"`;
     
-    // 導航按鈕
+    let voucherBtn = '';
+    if (event.bookingInfo) {
+        const btnClass = "mt-2 w-full text-center bg-red-50 text-red-600 py-1.5 rounded-lg text-xs font-bold border border-red-100 hover:bg-red-100 transition pointer-events-auto flex items-center justify-center gap-1 shadow-sm";
+        if (event.bookingInfo.driveLink) {
+            voucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.driveLink}'); event.stopPropagation();" class="${btnClass}"><i class="fa-solid fa-file-pdf"></i> 預覽憑證 (PDF)</button>`;
+        } else if (event.bookingInfo.voucherImg) {
+            voucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.voucherImg}'); event.stopPropagation();" class="${btnClass}"><i class="fa-solid fa-image"></i> 查看憑證圖片</button>`;
+        } else if (event.bookingInfo.pdfContent) {
+            voucherBtn = `<button onclick="openPdfModal('${encodeURIComponent(event.bookingInfo.pdfContent)}'); event.stopPropagation();" class="${btnClass}"><i class="fa-solid fa-file-lines"></i> 預覽憑證內容</button>`;
+        }
+    }
+
     let navIconBtn = '';
     if (['spot', 'hotel', 'eat'].includes(event.type)) {
         const targetUrl = event.navLink ? event.navLink : `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`;
@@ -1718,14 +1983,11 @@ function createEventCard(event, dayIdx, evtIdx) {
                     ${event.appLink ? `<a href="${event.appLink.url}" class="mt-2 inline-block bg-black text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}
                     <span class="text-xs px-2 py-1 rounded-full ${tagClass} block w-fit mt-1">${tagName}</span>
                     ${previewContent}
-                    
-                    <!-- ★ 按鈕顯示在這裡 (未展開區域) -->
-                    ${quickVoucherBtn}
+                    ${voucherBtn}
                 </div>
                 ${navIconBtn}
             </div>
 
-            <!-- 展開後的詳細內容 -->
             <div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">
                 ${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}
                 ${event.bookingInfo ? `<div class="ticket-box"><div class="text-sm opacity-70">預約憑證 / 訂單號</div><div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div><div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div></div>` : ''}
@@ -2078,6 +2340,7 @@ function adjustQty(delta) {
         function closeModal(id) { document.getElementById(id).classList.remove('open'); }
         function openPdfModal(encodedContent) { const content = decodeURIComponent(encodedContent); const modal = document.getElementById('modal-pdf'); const body = document.getElementById('pdf-content'); let html = `<div class="pdf-header border-b-2 border-gray-800 pb-2 mb-4 flex justify-between items-end"><h2 class="text-xl font-bold text-gray-800">BOOKING CONFIRMATION</h2><div class="text-right text-xs text-gray-500">2025/11/27</div></div>`; content.split('\n').forEach(line => { if(line.includes('：')) { const [key, val] = line.split('：'); html += `<div class="mb-2"><div class="text-[10px] text-gray-500 uppercase">${key}</div><div class="font-bold text-gray-900">${val}</div></div>`; } else if(line.trim() === '') html += `<div class="h-4"></div>`; else html += `<div class="text-sm text-gray-700 mb-1">${line}</div>`; }); body.innerHTML = html; modal.classList.add('open'); }
         function closePdfModal() { document.getElementById('modal-pdf').classList.remove('open'); }
+        function closeDetailModal() { document.getElementById('modal-detail').classList.remove('open'); }
         
         // --- 憑證預覽 (三層不重疊版) ---
         function openVoucherImage(imgSrc) {
@@ -2128,26 +2391,38 @@ function adjustQty(delta) {
     
     let highlightHtml = ''; 
     if(detail.highlights) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">✨ 必看亮點</h4><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${detail.highlights.map(h => `<li>${h}</li>`).join('')}</ul></div>`;
-    if(detail.menu) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">👩‍🍳 推薦菜單</h4><div class="grid grid-cols-1 gap-2">${detail.menu.map(m => `<div class="flex justify-between items-center bg-gray-50 p-2 rounded"><span class="font-bold text-gray-700 text-sm">${m.n}</span><span class="text-orange-500 text-sm font-bold">${m.p || ''}</span></div>`).join('')}</div></div>`;
+    
+    // ★ 修改處：菜單生成邏輯
+    let menuHtml = '';
+    if(detail.menu) {
+        const menuItems = detail.menu.map(m => {
+            // 判斷有無日文翻譯 (m.j)
+            const jpText = m.j ? m.j : m.n; 
+            const clickAction = `onclick="openOrderCard('${m.n}', '${jpText}')"`;
+            
+            return `
+            <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg active:bg-gray-200 transition cursor-pointer" ${clickAction}>
+                <div class="flex items-center gap-2 overflow-hidden">
+                    <i class="fa-regular fa-hand-pointer text-gray-300 text-xs shrink-0"></i>
+                    <span class="font-bold text-gray-700 text-sm truncate">${m.n}</span>
+                </div>
+                <span class="text-orange-500 text-sm font-bold shrink-0">${m.p || ''}</span>
+            </div>`;
+        }).join('');
+        
+        menuHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">👩‍🍳 推薦菜單 (點擊顯示日文)</h4><div class="grid grid-cols-1 gap-2">${menuItems}</div></div>`;
+    }
 
-    // 右側按鈕：Google 評論 (或導航)
+    // (以下按鈕邏輯保持原本的優化版本)
     const reviewUrl = event.reviewLink || event.navLink || `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`;
-    
-    // 左側按鈕：官方網站 / Tabelog (★ 修改：不再顯示 MapCode 按鈕)
     let infoBtnHtml = '';
-    
     if (event.link) {
         const isTabelog = event.link.includes('tabelog');
         const btnText = isTabelog ? 'Tabelog 食記' : '官方網站';
         const btnIcon = isTabelog ? 'fa-solid fa-utensils' : 'fa-solid fa-globe';
         const btnClasses = isTabelog ? 'bg-orange-500 text-white shadow-orange-200' : 'bg-gray-100 text-gray-700 border-gray-200';
-
-        infoBtnHtml = `
-            <a href="${event.link}" target="_blank" class="flex-1 ${btnClasses} py-3 rounded-xl font-bold shadow-lg active:scale-95 transition text-center flex items-center justify-center gap-2">
-                <i class="${btnIcon}"></i> ${btnText}
-            </a>`;
+        infoBtnHtml = `<a href="${event.link}" target="_blank" class="flex-1 ${btnClasses} py-3 rounded-xl font-bold shadow-lg active:scale-95 transition text-center flex items-center justify-center gap-2"><i class="${btnIcon}"></i> ${btnText}</a>`;
     } else {
-        // 如果沒有 link，就放一個隱藏的佔位符，讓右邊的按鈕保持在右邊
         infoBtnHtml = `<div class="flex-1"></div>`; 
     }
 
@@ -2157,19 +2432,18 @@ function adjustQty(delta) {
         <img src="${img}" class="detail-header-img shrink-0">
         <div class="detail-body">
             <div class="flex items-center gap-2 mb-1">
+                <span class="text-sm text-gray-400">${event.time || '詳細資訊'}</span>
                 ${tagsHtml}
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2>
             <p class="text-gray-600 text-sm leading-relaxed">${detail.desc || event.guide || '暫無詳細介紹'}</p>
             ${highlightHtml}
+            ${menuHtml} <!-- 插入新的菜單 HTML -->
         </div>
 
         <div class="p-4 bg-white border-t border-gray-100 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] safe-area-bottom z-20">
             <div class="flex gap-3">
-                <!-- 左側：資訊 (若無 link 則留白) -->
                 ${infoBtnHtml}
-                
-                <!-- 右側：Google 評論 -->
                 <a href="${reviewUrl}" target="_blank" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-center font-bold shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-comments"></i> Google 評論
                 </a>
@@ -2179,8 +2453,31 @@ function adjustQty(delta) {
     modal.classList.add('open');
 }
 
-function closeDetailModal() { 
-    document.getElementById('modal-detail').classList.remove('open'); 
+// --- 開啟點餐字卡 ---
+function openOrderCard(cnName, jpName) {
+    const modal = document.getElementById('modal-order-card');
+    const elCn = document.getElementById('card-cn');
+    const elJp = document.getElementById('card-jp');
+    
+    elCn.innerText = cnName;
+    // 如果沒有日文，就顯示中文 (或顯示提示)
+    elJp.innerText = jpName || cnName;
+    
+    // 如果日文太長，縮小字體
+    if (elJp.innerText.length > 10) {
+        elJp.classList.replace('text-3xl', 'text-2xl');
+    } else {
+        elJp.classList.replace('text-2xl', 'text-3xl');
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeOrderCard() {
+    const modal = document.getElementById('modal-order-card');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 // --- 更新天氣資訊 (修正版：解決時區與跨日問題) ---
