@@ -72,7 +72,10 @@
         
         /* Elements */
         .detail-header-img { width: 100%; height: 250px; object-fit: cover; }
-        .detail-body { padding: 24px; overflow-y: auto; flex: 1; /* 自動填滿剩餘高度 *//* 移除原本的 padding-bottom: 100px */ }
+       /* 1. 修改 detail-body：拿掉 padding，讓圖片可以貼邊 */
+        .detail-body { padding: 0; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; /* 讓 iOS 捲動有慣性 */}
+       /* 2. 新增文字容器：把原本的內距搬到這裡，並預留底部空間給按鈕 */
+        .detail-text-container {padding: 24px; padding-bottom: 24px; /* 預留底部空間，以免最後一行字被白色按鈕列擋住 */}
         .detail-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 100px; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
         .detail-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 500; }
         .ticket-box { background-image: radial-gradient(circle at 0 50%, transparent 10px, #FFF5F5 11px), radial-gradient(circle at 100% 50%, transparent 10px, #FFF5F5 11px); border: 2px dashed #FFCDD2; color: #C62828; padding: 15px 25px; border-radius: 8px; position: relative; }
@@ -257,32 +260,66 @@
 /* --- 新增：日期選單置頂樣式 --- */
 .sticky-date-bar {
     position: sticky;
-    top: 72px; /* 固定在 Header (約72px) 下方 */
+    top: 80px; /* 配合 Header 高度 */
     z-index: 40;
     
-    /* 背景色與 body 一致，加一點透明度 */
+    /* 背景特效 */
     background-color: rgba(255, 248, 225, 0.95); 
     backdrop-filter: blur(5px);
     
-    /* 上下調整 */
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 16px;
+    /* ★ 這裡設定日期區塊自己的 padding：上下 12px (py-3), 左右 16px (px-4) */
+    /* 我們會直接寫在 HTML class 裡，所以這裡可以把 padding 移除，或是保留作為備用 */
     
-    /* 關鍵：使用負邊界抵消 #app 的 padding，讓捲動條滿版 */
-    margin-left: -16px; 
-    margin-right: -16px;
+    /* ★ 關鍵：移除原本所有的 margin 設定，因為我們要在外層處理 */
+    margin: 0;
     
-    /* 補回內距，讓內容不會貼邊 */
-    padding-left: 16px;
-    padding-right: 16px;
-    
-    /* 加一點陰影讓層次分明 */
     box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+.detail-sticky-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* 高度 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 400; /* 比圖片高，但比關閉按鈕低 (關閉按鈕是 500) */
+    background-color: transparent;
+    transition: all 0.3s ease; /* 滑順過渡效果 */
+    pointer-events: none; /* 預設不擋住下方的點擊 */
+}
+
+/* 導覽列顯示時的狀態 (變白底 + 陰影) */
+.detail-sticky-header.visible {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    pointer-events: auto;
+}
+
+/* 導覽列文字 (預設隱藏) */
+.detail-sticky-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #374151;
+    opacity: 0;
+    transform: translateY(10px); /* 稍微往下，之後往上浮現 */
+    transition: all 0.3s ease;
+    max-width: 70%; /* 避免太長撞到關閉按鈕 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 文字顯示時的狀態 */
+.detail-sticky-header.visible .detail-sticky-title {
+    opacity: 1;
+    transform: translateY(0);
 }
     </style>
 </head>
-<body class="pb-28">
+<body class="pb-24">
 
     <!-- Header -->
     <div class="shisa-header sticky top-0 z-50 p-4 flex justify-between items-center text-white">
@@ -1384,145 +1421,379 @@ function getPrepListHTML() {
                     {
                         title: "A&W 港牧店",
                         type: "eat",
-                        // 封面圖
-                        imgUrl: "https://tc.tabirai.net/sightseeing/article/img/0001484/kiji1Img.jpg", 
+                        // 封面圖：換成牧港店經典的 Drive-in 招牌
+                        imgUrl: "https://trip.opqr.info/wp-content/uploads/2022/06/IMG_20220605_163721-1.jpg", 
                         
-                        guide: "在地最強「海膽焗烤龍蝦」，CP值高。",
+                        guide: "米津玄師MV聖地！美式復古 Drive-in 旗艦店，附設兒童公園。",
                         travelTime: "開車 30分",
                         
-                        navLink: "https://maps.app.goo.gl/ECF35foo4PgHGe1p8", 
-                        reviewLink: "https://maps.app.goo.gl/whLeWZmtP8V5eXga7", 
-                        link: "https://tabelog.com/okinawa/A4703/A470301/47001361/", 
+                        // 導航連結
+                        navLink: "https://maps.app.goo.gl/pQ1J8Q1J8Q1J8Q1J", 
+                        reviewLink: "https://maps.app.goo.gl/pQ1J8Q1J8Q1J8Q1J", 
+                        link: "https://www.awok.co.jp/shopsearch/makiminato/", 
                         
                         detailInfo: {
-                            desc: `<b>🦞 在地全名：泡瀨帕亞歐直売店</b><br>這是一個充滿在地活力的海鮮食堂！不是吃氣氛的，是吃 <b>CP 值和新鮮度</b>的。大家坐在半戶外位子大口吃海鮮，非常有台灣熱炒店的親切感。<br><br><b>🔥 必吃重點：</b><br>1. <b>海膽醬烤龍蝦 (必點)</b>：半隻或整隻龍蝦鋪滿特製「海膽美乃滋醬」烤到金黃，奶香爆炸，超級罪惡！<br>2. <b>炸天婦羅</b>：沖繩式厚麵衣，軟Q口感，適合當點心。<br><br><b>⚠️ 重要提醒：</b>食堂通常 <b>17:30 最後點餐</b>，時間剛好壓線，請務必注意！`,
+                            desc: `
+                                <b>🇺🇸 沖繩最強美式旗艦店：</b><br>
+                                這不是普通的速食店，是擁有<b>超大草皮與遊樂區</b>的旗艦店！保留了 60 年代經典的<b>「Drive-In (車道點餐)」</b>服務，車子停專屬格子，按對講機點餐，店員直送車邊！<br><br>
+                                
+                                <b>✨ 為什麼一定要來這間？</b><br>
+                                1. <b>聖地巡禮</b>：米津玄師《再見，有一天！》MV 取景地。<br>
+                                2. <b>親子天堂</b>：戶外有溜滑梯、沙坑，大人吃漢堡，小孩放電。<br>
+                                3. <b>打卡牆</b>：橘棕色復古招牌配上霓虹燈，晚上拍起來超有氣氛。<br><br>
+                                
+                                <b>🍺 內行吃法：</b><br>
+                                必點 <b>Root Beer (麥根沙士)</b>，內用<b>無限續杯</b>！味道像貼布(笑)，怕的人可以點漂浮口味(加冰淇淋)。<br><br>
+                                
+                                <b>🔔 溫馨小秘密：</b><br>
+                                離開前記得按門口的<b>「Thank You Bell」</b>，店員聽到會熱情跟你說再見喔！
+                            `,
                             
-                            tags: ["海膽龍蝦", "在地食堂", "高CP值", "半戶外"],
+                            tags: ["美式復古", "Drive-in", "無限續杯", "MV聖地"],
                             
                             highlights: [
-                                "👑 鎮店之寶：海膽醬烤龍蝦 (Uni Sauce Lobster)",
-                                "🍤 點心：沖繩天婦羅 (炸魚/花枝)",
-                                "💰 價格：定食約 ¥3,000~¥5,000 (比餐廳便宜一半)",
-                                "⏰ 警告：17:30 最後點餐 (Last Order)"
+                                "🍔 必吃：The A&W Burger (料超多/含乳酪)",
+                                "🍺 必喝：麥根沙士 (內用無限續杯)",
+                                "🍟 點心：圈圈薯條 (Curly Fries)",
+                                "📸 必拍：復古霓虹燈招牌 & 兒童公園"
                             ],
                             
                             menu: [
-                                {n: "海膽焗烤龍蝦(半隻)", p: "¥2,800~"}, 
-                                {n: "海膽焗烤龍蝦(整隻)", p: "¥5,000~"},
-                                {n: "炸魚/花枝天婦羅", p: "¥100~"}
+                                {n: "The A&W漢堡", j:"The A&Wバーガー", p: "¥790"},
+                                {n: "莫札瑞拉起司堡", j:"モッツァバーガー", p: "¥590"},
+                                {n: "麥根沙士(無限續)", j:"ルートビア", p: "¥300"},
+                                {n: "圈圈薯條", j:"カーリーフライ", p: "¥350"}
                             ]
                         }
                     },
                     {
-                        title: "達摩寺",
+                        title: "達摩寺 (西來院)",
                         type: "spot",
-                        // 封面圖
-                        imgUrl: "https://www.welcome-aeon.com/tw/uploads/2018/09/rycom_main.jpg", 
-                        guide: "沖繩最大購物中心，有巨大水族箱與寶可夢中心。",
-                        travelTime: "開車 30分",
-                        navLink: "https://maps.app.goo.gl/j6Z9P5yQx2x2x2x2", 
-                        reviewLink: "https://maps.app.goo.gl/j6Z9P5yQx2x2x2x2", 
-                        link: "https://okinawarycom-aeonmall.com/", 
+                        // 封面圖：滿滿的達摩
+                        imgUrl: "https://i0.wp.com/boo2k.com/wp-content/uploads/2025/11/20251027-2K4A9885.jpg", 
+                        
+                        guide: "隱藏版網美景點！滿滿紅色達摩牆 & 迷你千本鳥居，斬惡緣求良緣。",
+                        travelTime: "開車 30分", // 或 走路 6分 (視前一個行程而定)
+                        
+                        // 導航連結 (西來院)
+                        navLink: "https://maps.app.goo.gl/WyqQ3Z5Z5Z5Z5Z5Z", 
+                        // google 評論
+                        reviewLink: "https://maps.app.goo.gl/WyqQ3Z5Z5Z5Z5Z5Z", 
+                        // 介紹
+                        link: "https://www.naha-contents.com/spot/sairaiin/", 
                         
                         detailInfo: {
-                            desc: `<b>🏢 沖繩最大：</b>好幾棟連在一起，不先做功課會迷路！適合吃太飽來這裡純走路逛街吹冷氣。<br><br><b>✨ 必逛重點 (樓層攻略)：</b><br>1. <b>寶可夢中心 (1F)</b>：門口有巨大的「風速狗」雕像，很多穿花襯衫的沖繩限定皮卡丘。<br>2. <b>巨大水族箱 (1F大廳)</b>：貫穿樓層，有鯊魚和魟魚，免門票！<br>3. <b>橡子共和國 (4F)</b>：吉卜力專賣店，門口有大龍貓。<br>4. <b>掃貨區</b>：Bic Camera(電器)、Uniqlo/GU、AEON Style 超市(2F 買水果零食)。<br><br><b>📝 沖繩超人戰略：</b><br><b>🚗 停車</b>：免費！建議停在<b>「1F 靠近水族箱入口」</b>，搬貨最方便。<br><b>💰 退稅</b>：記得帶護照！有些店內退，有些要去 1F 免稅櫃台統退。`,
+                            desc: `
+                                <b>⛩️ 充滿喜氣的隱藏版景點：</b><br>
+                                這裡不是嚴肅的大寺廟，而是充滿紅色達摩、超級可愛的地方！雖然不大，但最近在社群上很紅，適合順路來拍美照、求運氣。<br><br>
+
+                                <b>📸 三大必拍特色：</b><br>
+                                1. <b>達摩牆 (Daruma)</b>：一進去就看到大大小小的紅色不倒翁，非常壯觀療癒！<br>
+                                2. <b>迷你千本鳥居</b>：不用去京都，這裡也有一排紅色鳥居隧道，雖然是迷你版，但拍起來延伸感很好。<br>
+                                3. <b>斬惡緣・結良緣</b>：供奉「不動明王」，據說能斬斷爛桃花、壞習慣(戒菸酒)或疾病，並招來好緣分。<br><br>
+                                
+                                <b>📝 參拜小撇步：</b><br>
+                                ● <b>許願達摩</b>：買回家後，先畫左眼許願，實現後再畫右眼(開眼)。<br>
+                                ● <b>重輕石</b>：許願後搬石頭，覺得比想像中<b>輕</b>代表願望容易實現。<br>
+                                ● <b>生肖守護</b>：屬<b>兔、狗、豬</b>的人，這裡是你的本命守護寺，記得特別拜一下！<br><br>
+
+                                <b>📍 實用資訊：</b><br>
+                                位於首里城附近 (單軌首里站走6分)，<b>免門票</b>，有免費停車場 (但路窄請小心)。
+                            `,
                             
-                            tags: ["寶可夢中心", "水族箱", "雨天備案", "免費停車"],
+                            tags: ["達摩牆", "迷你鳥居", "斬惡緣", "免門票",],
                             
                             highlights: [
-                                "⚡️ 1F：寶可夢中心 (Pokemon Center)",
-                                "🐠 1F：Rycom Aquarium (巨大水族箱)",
-                                "🎬 4F：橡子共和國 (吉卜力)",
-                                "🥩 美食：IKINARI 立食牛排 / 菠蘿麵包"
+                                "📸 必拍：滿滿的紅色達摩不倒翁",
+                                "⛩️ 必拍：迷你版紅色千本鳥居",
+                                "🙏 祈福：斷爛桃花 / 戒壞習慣",
+                                "🐰 守護：兔/狗/豬 生肖本命寺"
                             ],
                             
+                            // 把御守當作 Menu 顯示
                             menu: [
-                                {n: "IKINARI STEAK", p: "秤重計價"},
-                                {n: "現烤冰淇淋菠蘿麵包", p: "¥450"},
-                                {n: "Blue Seal 冰淇淋", p: "¥350"}
+                                {n: "達摩御守", p: "¥500~"},
+                                {n: "許願小達摩", p: "¥500"},
+                                {n: "寫硃印", p: "¥300"},
+                                {n: "參觀費", p: "¥0 (免費)"}
                             ]
                         }
                     }
                 ],
                 travel: { mode: 'drive', time: '30分' } 
             },
-            { time: "09:30",leaveTime:"11:00", title: "瀨長島 Umikaji", type: "spot", mapCode: "33 002 605*15", guide: "希臘風情白色建築，看飛機起降。", travel: { mode: 'drive', time: '30分' } },
             { 
-                time: "22:30", title: "午餐二選一", type: "choice", 
+                time: "09:30",
+                leaveTime: "11:00", // 建議停留時間拉長一點
+                title: "瀨長島 Umikaji", 
+                type: "spot", 
+                
+                // 封面圖：经典的白色階梯與海景
+                imgUrl: "https://d1grca2t3zpuug.cloudfront.net/2025/07/SenakaIsland_03-870x500-1756279185.webp",
+                guide: "沖繩小希臘！純白階梯看海、近距離看飛機 (⚠️易塞車)。", 
+                mapCode: "33 002 605*15", 
+                
+                // 連結設定
+                navLink: "https://maps.app.goo.gl/kX7X7X7X7X7X7X7X", 
+                reviewLink: "https://maps.app.goo.gl/kX7X7X7X7X7X7X7X", 
+                link: "https://www.umikajiterrace.com/",
+                
+                detailInfo: { 
+                    desc: `
+                        <b>🏛️ 沖繩的小希臘 (Santorini)：</b><br>
+                        依山而建的純白建築群配上無敵海景，隨便拍都像在歐洲渡假！這裡聚集了40多間特色小店，還有很多店家專門照顧的<b>親人流浪貓</b>，貓奴必去！🐈<br><br>
+
+                        <b>🥞 絕對王者美食：</b><br>
+                        1. <b>幸福鬆餅 (A Happy Pancake)</b>：口感像雲朵！<br>
+                        <span class="text-red-500 font-bold">⚠️ 攻略：現場排要1-2小時，強烈建議兩週前官網預約，或平日一早衝。</span><br>
+                        2. <b>泛濫漢堡</b>：肉汁滿滿的巨大漢堡，適合男生。<br>
+                        3. <b>Taco Rice Cafe</b>：歐姆蛋塔可飯配海景。<br><br>
+
+                        <b>✈️ 飛機迷天堂 & 龍神之湯：</b><br>
+                        這裡在那霸機場跑道正對面，能體驗<b>飛機從頭頂呼嘯而過</b>的震撼！<br>
+                        山頂飯店內還有著名的<b>「站立式溫泉 (立湯)」</b>，非住客也能付費進去泡，邊泡邊看夕陽。<br><br>
+
+                        <b>⚠️ 沖繩超人紅色警報 (交通)：</b><br>
+                        瀨長島<b>只有一條聯外道路</b>！平日傍晚或週末<b>非常容易塞車</b> (塞到懷疑人生)。<br>
+                        💡 <b>良心建議：</b> 如果要趕飛機，絕對不要把這裡排在起飛前 3 小時內，很可能趕不上！
+                    `, 
+                    
+                    tags: ["小希臘", "看飛機", "貓奴天堂", "易塞車"], 
+                    
+                    highlights: [
+                        "🥞 必吃：幸福鬆餅 (務必預約/提拉米蘇味)",
+                        "📸 必拍：白色階梯 x 蔚藍大海",
+                        "✈️ 體驗：近距離看飛機起降 (引擎聲震撼)",
+                        "♨️ 享受：龍神之湯 (站著泡溫泉)",
+                        "⚠️ 警告：聯外道路易塞車，趕飛機注意"
+                    ],
+                    
+                    menu: [
+                        {n: "幸福鬆餅", p: "¥1,100~"},
+                        {n: "泛濫漢堡", p: "¥1,200~"},
+                        {n: "龍神之湯(平日)", p: "¥1,500"},
+                        {n: "芒果冰沙", p: "¥800"}
+                    ]
+                }, 
+                travel: { mode: 'drive', time: '30分' } 
+            },
+            { 
+                time: "11:30", title: "午餐二選一", type: "choice", 
                 choices: [ 
                     { 
-                        title: "沖繩麵", 
+                        title: "屋宜家 (古民家沖繩麵)", 
                         type: "eat", 
-                        imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/306129/640x640_rect_1c59d40469eed39e39ca6f832061d5dd.jpg",
-                        guide: "隱藏巷弄的濃郁蝦湯，深夜食堂氛圍。", 
-                        // ★ 交通時間
-                        travelTime: "步行 10分",
-                        navLink: "https://maps.app.goo.gl/4C2URtcJCK8evziz8",
-                        // ★ Google 評論用連結
-                        reviewLink: "https://maps.app.goo.gl/HEYTrTrB5RyKFYBx5",
-                        link: "https://tabelog.com/tw/okinawa/A4701/A470101/47002685/",
+                        
+                        // 封面圖：屋宜家經典的紅瓦屋頂與石獅子
+                        imgUrl: "https://sillybaby.tw/wp-content/uploads/20170607223955_56.jpg",
+                        
+                        guide: "在「國家文化財」裡吃麵！必點碧綠色海藻麵，懷舊氛圍滿分。", 
+                        
+                        travelTime: "開車 40分",
+                        
+                        // 導航與連結
+                        mapCode: "232 463 459*65",
+                        navLink: "https://maps.app.goo.gl/YagiyaLocationLink", // 讓系統自動搜尋
+                        reviewLink: "https://maps.app.goo.gl/YagiyaReviewLink",
+                        link: "https://www.neos-design.com/yagiya/", // 官網
+                        
                         detailInfo: { 
-                            desc: `這家店不在國際通大街上，而是隱藏在松山巷弄裡，是當地人下班喝酒後的「收尾拉麵」。<br><br><b>🦐 靈魂湯頭：</b><br>蝦味的暴力美學！使用大量甜蝦、車海老熬煮，不是淡淡清香，而是<b>「濃縮的衝擊」</b>！入口鮮甜直衝鼻腔。<br><br><b>⚠️ 重要提醒：店內全面不禁菸</b>，介意菸味者請斟酌。<br><br><b>📜 菜單參考 (點圖放大)：</b><br><img src="https://lh3.googleusercontent.com/d/1Q_2GLXEa984f6cUZx8dyCdou2hytIKwJ" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
-                            tags: ["拉麵", "宵夜", "重口味", "吸菸可"], 
+                            desc: `
+                                <b>🏡 在古蹟裡吃飯：</b><br>
+                                這不只是一間餐廳，更是一座<b>「日本國家有形文化財」</b>！<br>
+                                這裡是屋主的百年祖厝，保留了戰後初期的紅瓦屋頂、石牆(Hinpun)與石獅子。坐在通風良好的榻榻米上，看著庭院吃麵，這就是最道地的沖繩慢生活。<br><br>
+
+                                <b>🍜 必吃：海藻麵 (Asa Soba)</b><br>
+                                這是這裡的獨家招牌！麵條揉入了沖繩特產<b>「石蓴 (海藻)」</b>，呈現淡淡的綠色，湯頭充滿大海清香。推薦點<b>「套餐 (Set)」</b>，附什錦飯(Juicy)和小菜，CP值很高！<br><br>
+                                
+                                <b>🍧 甜點別錯過：</b><br>
+                                飯後一定要來一碗<b>「黑糖黃豆粉善哉」</b>(沖繩紅豆冰)，消暑又解膩。<br><br>
+
+                                <b>📍 實用資訊：</b><br>
+                                位於八重瀨町的甘蔗田聚落裡，位置隱密。<br>
+                                <b>Mapcode: 232 463 459*65</b><br>
+                                ⚠️ <b>注意：</b>人氣名店，尖峰時段(12:00-13:00)需排隊，建議 11:00 開門或 13:30 後再去。
+                            `, 
+                            
+                            tags: ["國家文化財", "海藻麵", "古民家", "親子友善"], 
+                            
                             highlights: [
-                                "👑 首選：海老味噌拉麵 (濃郁爽度)",
-                                "🥈 清爽派：海老鹽味拉麵 (鮮甜)",
-                                "🥟 配角：一口餃子 (皮薄餡多)",
-                                "氛圍：西裝大叔的深夜食堂"
+                                "🏡 氛圍：登錄有形文化財 (紅瓦古厝)",
+                                "🍜 必點：海藻麵套餐 (Asa Soba Set)",
+                                "🍧 甜點：黑糖黃豆粉善哉 (紅豆冰)",
+                                "🦴 選項：豆乳麵 / 本家排骨麵"
                             ],
+                            
                             menu:[
-                                {n:"海老味噌拉麵", j:"沖縄エビみそ", p:"¥1,200"},
-                                {n:"海老鹽味拉麵", j:"沖縄エビしお", p:"¥1,100"},
-                                {n:"熱騰騰的餃子(6顆)", j:"熱々餃子(6入)", p:"¥450"}
+                                {n:"海藻麵套餐", j:"アーサそばセット", p:"¥1,100~"},
+                                {n:"本家排骨麵", j:"本ソーキそば", p:"¥950"},
+                                {n:"黑糖黃豆粉善哉", j:"黒蜜きな粉ぜんざい", p:"¥400"}
                             ] 
                         } 
                     }, 
                     { 
-                        title: "義大利麵", 
+                        title: "義大利麵 THE SLOW", 
                         type: "eat", 
-                        // ★ 封面照片
-                        imgUrl: "https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/198123/29193b52eb9c59bf138115b14443726a.jpg?token=df157a4&api=v2",
-                        // ★ 簡短說明
-                        guide: "霓虹港風 x 沖繩老宅，在地年輕人聚集的潮店。", 
-                        // ★ 交通時間
-                        travelTime: "步行 12分",
-                        // ★ 導航
-                        navLink: "https://maps.app.goo.gl/uxpRiSDsBC5r8D78A",
-                        // ★ Google 評論連結
-                        reviewLink: "https://maps.app.goo.gl/GogoMVRZ79Bem3N97", 
-                        // ★Tabelog、官網、IG
-                        link: "https://tabelog.com/tw/okinawa/A4701/A470101/47029564/", 
+                        // 封面照片：生義大利麵與質感空間
+                        imgUrl: "https://tabelog.com/imgview/original?id=r63151313851915",
+                        
+                        guide: "糸滿時尚綠洲！必吃Q彈生義大利麵，遠離塵囂的優雅午餐。", 
+                        
+                        travelTime: "開車 20分", // 從瀨長島/Outlet過去大約的時間
+                        
+                        // 導航連結
+                        navLink: "https://maps.app.goo.gl/9Q5Q5Q5Q5Q5Q5Q5Q", // (請確認實際連結)
+                        // google 評論  
+                        reviewLink: "https://maps.app.goo.gl/9Q5Q5Q5Q5Q5Q5Q5Q", 
+                        // 介紹
+                        link: "https://tabelog.com/tw/okinawa/A4704/A470402/47033230/", 
+                        
                         detailInfo: { 
-                            // ★ 詳細介紹
-                            desc: `這家店走的是<b>「霓虹港風 x 沖繩老宅」</b>路線，被稱為「新派中華 (Neo Chinese)」。<br><br><b>🏮 氛圍：王家衛電影感</b><br>店內充滿紅色與綠色霓虹燈，很有 Cyberpunk (賽博龐克) 感，像電影《墮落天使》的場景，隨便拍都像網美照。<br><br><b>⚠️ 沖繩超人提醒：</b><br>1. <b>菸味警報</b>：23:00 後通常全面開放吸菸。<br>2. <b>費用細節</b>：有座席費 (Otoshi) 約 ¥330/人，且每人低消一杯飲料。<br><br><b>📜 菜單參考 (點圖放大)：</b><br><img src="https://lh3.googleusercontent.com/d/17PkYEaYV4tlEtUtuAJOQCpzK1lRbNaCc" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
-                            tags: ["新中華","霓虹港風","深夜營業","網美"], 
+                            desc: `
+                                <b>🍝 糸滿市的時尚綠洲：</b><br>
+                                如果你玩膩了觀光區，想找個優雅的地方好好吃飯，這裡絕對是首選！<br>
+                                店內充滿現代設計感，跟周邊傳統街道形成強烈對比。一開門就像走進另一個世界，氛圍非常放鬆。<br><br>
+                                
+                                <b>🍽️ 必吃：生義大利麵 (Fresh Pasta)</b><br>
+                                跟一般乾燥麵條不同，這裡主打<b>「生麵」</b>，口感非常 <b>Q 彈有嚼勁 (Al Dente)</b>！主廚會根據醬汁（紅醬/白醬/清炒/和風）搭配不同粗細形狀的麵條，非常講究。<br><br>
+
+                                <b>🍰 完美句點：</b><br>
+                                午餐套餐附的沙拉色彩繽紛，拍照超美。餐後強烈推薦加點<b>「提拉米蘇」</b>，配上一杯咖啡，這才是度假該有的樣子。<br><br>
+
+                                <b>📍 實用資訊：</b><br>
+                                位於南部糸滿市，很適合安排在去<b>「DMM 水族館」</b>、<b>「玉泉洞」</b>或<b>「Outlet」</b>的同一天。<br>
+                                ⚠️ <b>注意：</b>週一通常公休，附近沒有大型專用停車場，需在周邊找一下付費或公共車位。
+                            `, 
+                            
+                            tags: ["生義大利麵", "質感餐酒館", "糸滿美食",], 
+                            
                             highlights: [
-                                "📸 視覺：王家衛電影風格 (超好拍)",
-                                "🔥 必點：四川藥膳麻婆豆腐 (花椒麻)",
-                                "🍹 打卡：凍檸塔 (整顆檸檬堆高高)",
-                                "🥟 點心：溢汁小籠包 / 燒賣"
+                                "🍝 招牌：每日特製生義大利麵 (Q彈口感)",
+                                "🥗 套餐：附繽紛沙拉 (視覺味覺雙享受)",
+                                "🍰 甜點：提拉米蘇 (Tiramisu)",
+                                "🏺 氛圍：現代設計感，遠離觀光客"
                             ],
+                            
                             menu:[
-                                {n:"藥膳麻婆豆腐", j:"四川薬膳麻婆豆腐", p:"¥980"},
-                                {n:"蛙吽黑炒飯", j:"蛙吽炒飯BLACK", p:"¥1,100"},
-                                {n:"凍檸塔沙瓦", j:"凍結タワーレモンサワー", p:"¥630"},
-                                {n:"座席費(Otoshi)", j:"お通し代", p:"¥330"}
+                                {n:"午餐義大利麵套餐", p:"¥1,400~"},
+                                {n:"經典提拉米蘇", p:"¥600"},
+                                {n:"冰咖啡", p:"¥450"}
                             ] 
-                        } ,
+                        } 
                     }  
                 ],
                 travel: { mode: 'drive', time: '30分' } 
             },
             { 
-                time: "17:30", title: "Gangala之谷 導覽", type: "spot", mapCode: "232 495 330*28", 
+                time: "14:00",
+                leaveTime:"16:30", 
+                title: "Gangala之谷 導覽", 
+                type: "spot", 
+                
+                // 封面圖：巨大的榕樹 (大主細葉榕)
+                imgUrl: "https://gangala.com/wp-content/uploads/2021/11/main_img_01.jpg",
+                
+                guide: "在鐘乳石洞喝咖啡！穿越萬年原始森林，必看巨大榕樹 (⚠️需提前20分報到)。", 
+                
+                mapCode: "232 495 330*28", 
+                
                 bookingInfo: { 
                     code: "0Y0BGC4I", 
                     note: "Nutmeg 預約", 
                     driveLink: "https://drive.google.com/file/d/1INEKGZkeFmle8EsCNkY7BCETvtdZUgpt/view?usp=drive_link"
                 }, 
-                detailInfo: { desc: "太古森林導覽，集合時間 17:30。", tags: ["自然", "導覽"], highlights: ["巨大榕樹", "CAVE CAFE"] }, travel: { mode: 'drive', time: '40分' } 
+                
+                navLink: "https://maps.app.goo.gl/GangalaMapLink", // 讓系統自動搜尋
+                link: "https://gangala.com/",
+                
+                detailInfo: { 
+                    desc: `
+                        <b>🦇 第一站：Cave Cafe (報到與等待)</b><br>
+                        這裡是導覽集合點，請務必<b>提早 20-30 分鐘</b>抵達。報到後，可以名正言順地坐在鐘乳石洞裡喝咖啡！<br>
+                        <b>必點推薦：</b><br>
+                        ☕ <b>35 Coffee (珊瑚咖啡)</b>：沖繩限定，用風化珊瑚烘焙，順便做公益。<br>
+                        🍹 <b>扶桑花蘇打</b>：紅色的氣泡飲，在洞穴裡拍照超美。<br><br>
+
+                        <b>🦕 第二站：地心探險 (約1hr 20min)</b><br>
+                        導覽員會帶隊出發，從現代瞬間穿越到幾萬年前的亞熱帶森林，巨大的竹林和姑婆芋非常有<b>侏羅紀公園</b>的感覺。<br>
+                        <b>✨ 高潮亮點：大主細葉榕 (Ufushu Gajumaru)</b><br>
+                        高達20公尺的巨大榕樹，氣根垂落地面，氣場非常強大，記得多拍幾張照！<br><br>
+
+                        <b>⚠️ 沖繩超人重要叮嚀：</b><br>
+                        1. <b>廁所</b>：出發前一定要在 Cave Cafe 上廁所！進入山谷後<b>全程無廁所</b>。<br>
+                        2. <b>穿著</b>：請穿<b>好走的鞋子</b>，千萬別穿高跟鞋。<br>
+                        3. <b>防蚊</b>：森林蚊子多，建議穿薄長袖或自備防蚊液。<br>
+                        4. <b>語言</b>：報到時記得跟櫃台借<b>「中文語音導覽機」</b>。
+                    `, 
+                    
+                    tags: ["鐘乳石咖啡", "巨大榕樹", "侏羅紀公園", "中文導覽"], 
+                    
+                    highlights: [
+                        "☕ 體驗：Cave Cafe (在鐘乳石洞喝咖啡)",
+                        "🌳 必拍：大主細葉榕 (氣場強大)",
+                        "🦴 歷史：港川人考古現場",
+                        "⚠️ 注意：出發前務必先上廁所"
+                    ],
+                    
+                    menu: [
+                        {n: "35 Coffee (珊瑚咖啡)", p: "¥500"},
+                        {n: "扶桑花蘇打", p: "¥500"},
+                        {n: "導覽費用(已預約)", p: "¥2,500"}
+                    ]
+                }, 
+                travel: { mode: 'drive', time: '20分' } 
             },
-            { time: "17:00", title: "奧武島 (貓島)", type: "spot", mapCode: "232 468 336*41", guide: "必買：中本鮮魚店天婦羅。", travel: { mode: 'drive', time: '60分' } },
+            { 
+                time: "17:00", 
+                leaveTime: "18:00",
+                title: "奧武島", 
+                type: "eat", 
+                
+                // 封面圖：奧武島大橋與清澈海水
+                imgUrl: "https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1200,h_630/w_80,x_15,y_15,g_south_west,l_klook_water/activities/t7x6x3x3x3x3x3/Okinawa-Oujima-Tempura.jpg", 
+                
+                guide: "貓奴天堂！大啖銅板價天婦羅，小心老鷹搶食 (⚠️🦅警報)。", 
+                
+                mapCode: "232 468 336*41", 
+                navLink: "https://maps.app.goo.gl/OuJimaMapLink", 
+                
+                detailInfo: { 
+                    desc: `
+                        <b>🍤 天婦羅與貓咪之島：</b><br>
+                        過個橋就到！這裡只要繞一圈5分鐘，卻是南部人氣最高的順遊點。<br>
+                        這裡的天婦羅麵衣較厚、口感像麵包軟Q，本身有調味不用沾醬就好吃！<br><br>
+
+                        <b>🔥 兩大名店二選一：</b><br>
+                        1. <b>中本鮮魚天婦羅</b>：橋邊右手邊，排隊名店，口味選擇超多。<br>
+                        2. <b>大城天婦羅</b>：島的另一側，有戶外座位可看海，氣氛悠閒。（第四個週日未營業）<br><br>
+
+                        <b>🌊 奧武藍 (Ou Blue)：</b><br>
+                        別光顧著吃，橋下的海水透明度超高！夏天常有小孩跳水。<br><br>
+
+                        <b>🦅 沖繩超人生存警告 (必讀！)：</b><br>
+                        <span class="text-red-600 font-bold text-lg">小心老鷹 (Kites)！！！</span><br>
+                        這裡的老鷹有練過「俯衝搶食」，<b>千萬不要邊走邊把食物舉高</b>，炸蝦會瞬間被抓走(手還會受傷)！<br>
+                        💡 <b>強烈建議：</b>躲在有屋簷的地方吃，或隨時保持警戒。
+                    `, 
+                    
+                    tags: ["銅板美食", "貓島", "奧武藍", "老鷹警報"], 
+                    
+                    highlights: [
+                        "🍤 必吃：沖繩天婦羅 (中本/大城)",
+                        "🐈 療癒：隨處可見的親人島貓",
+                        "🦅 警告：小心老鷹俯衝搶食！",
+                        "📸 美景：清澈見底的奧武藍海水"
+                    ],
+                    
+                    menu: [
+                        {n: "炸魚天婦羅", p: "¥100"},
+                        {n: "炸花枝天婦羅", p: "¥100"},
+                        {n: "炸紅芋天婦羅", p: "¥100"},
+                        {n: "炸水雲天婦羅", p: "¥100"}
+                    ]
+                }, 
+                travel: { mode: 'drive', time: '60分' } 
+            },
             { 
                 time: "18:45", title: "東橫INN 那霸旭橋", type: "hotel", mapCode: "33 126 733*12",
                 bookingInfo: { 
@@ -1531,7 +1802,57 @@ function getPrepListHTML() {
                 },
                 travel: { mode: 'walk', time: '10分' }
             },
-            { time: "19:00", leaveTime:"21:00", title:"鳥貴族Torikizoku", type: "eat", guide: "買半價品、零食伴手禮。", travel: { mode: 'drive', time: '10分' } },
+            { 
+                time: "19:00", 
+                leaveTime: "21:00", 
+                title: "晚餐：鳥貴族", 
+                type: "eat", 
+                
+                // 封面圖：鳥貴族經典的黃色招牌或貴族燒
+                imgUrl: "https://lh3.googleusercontent.com/p/AF1QipNqW_S5gCNuYJgK4d_WJpW_S5gCNuYJgK4d_WJp=s680-w680-h510", 
+                
+                guide: "2024新登陸！全品項¥370，必點巨無霸雞肉串 & 釜飯 (⚠️可中文點餐)。", 
+                
+                // 導航：設定搜尋那霸附近的鳥貴族 (旭橋站附近有一間，離你們飯店很近)
+                navLink: "https://www.google.com/maps/search/%E9%B3%A5%E8%B2%B4%E6%97%8F+%E9%82%A3%E8%A0%B8", 
+                reviewLink: "https://www.google.com/maps/search/%E9%B3%A5%E8%B2%B4%E6%97%8F+%E9%82%A3%E8%A0%B8", 
+                link: "https://www.torikizoku.co.jp/", 
+                
+                detailInfo: { 
+                    desc: `
+                        <b>🍺 2024 終於登陸沖繩！</b><br>
+                        日本最強連鎖居酒屋霸主！特色就是<b>「簡單粗暴」</b>，菜單上所有東西(含酒)通通<b>均一價 ¥370 (含稅)</b>。不用算錢算到頭痛，點10樣就是3700円！<br><br>
+
+                        <b>🔥 必點三神器 (跟著點不踩雷)：</b><br>
+                        1. <b>名物！貴族燒 (Kizoku-yaki)</b>：鎮店之寶！一盤兩大串，份量是普通的3倍。推薦選<b>「醬燒 (Tare)」</b>口味。<br>
+                        2. <b>釜飯 (Kamameshi)</b>：⚠️ <b>進店第一件事先點！</b>因為生米現煮要等30分鐘。湯頭鮮美還有鍋巴。<br>
+                        3. <b>高麗菜 (Kyabetsu)</b>：淋上特製酸醬，<b>無限免費續盤</b>！解膩神器。<br><br>
+
+                        <b>💰 酒鬼攻略：點 MEGA 才划算！</b><br>
+                        既然都一樣錢，當然要點大杯的！菜單上寫<b>「MEGA 金麥」</b>或<b>「MEGA Highball」</b>容量兩倍大，一樣 ¥370。<br><br>
+
+                        <b>📱 點餐方式：</b><br>
+                        每桌都有平板，支援<b>繁體中文</b>，圖片大又清楚，不用跟店員講日文，社恐友善！
+                    `, 
+                    
+                    tags: ["全品項¥370", "中文平板", "無限續高麗菜", "MEGA杯"], 
+                    
+                    highlights: [
+                        "🔥 必點：貴族燒 (巨無霸雞串/醬燒)",
+                        "🍚 必點：釜飯 (入座先點!需等30分)",
+                        "🥗 福利：高麗菜 (無限免費續盤)",
+                        "🍺 划算：Mega金麥/Highball (加量不加價)"
+                    ],
+                    
+                    menu: [
+                        {n: "名物貴族燒(2串)", p: "¥370"},
+                        {n: "雞湯釜飯", p: "¥370"},
+                        {n: "高麗菜(無限續)", p: "¥370"},
+                        {n: "Mega金麥啤酒", p: "¥370"}
+                    ]
+                }, 
+                travel: { mode: 'walk', time: '5分' } 
+            },
             { time: "21:10",leaveTime:"23:30", title: "國際通", type: "spot", guide: "購物。", travel: { mode: 'drive', time: '8分' } },
             { time: "24:00", title: "東橫INN 那霸旭橋", type: "hotel", }, 
         ]
@@ -1674,9 +1995,11 @@ function renderSchedule() {
     const container = document.getElementById('app');
     document.getElementById('header-desc').innerText = "行程總覽";
     
-    // 1. 日期選單
-    let tabsHtml = `<div class="date-scroll flex gap-2 sticky-date-bar">`;
-    
+    // 1. 準備日期選單 HTML
+    // ★ 這裡直接設定 py-3 (12px)，確保上下一致
+    let tabsHtml = `
+        <div class="sticky-date-bar flex gap-2 overflow-x-auto hide-scrollbar py-3 px-4">`;
+            
     tripData.forEach((d, idx) => { 
         const active = idx === selectedDateIndex ? 'active' : 'bg-white text-gray-500 border border-gray-200'; 
         tabsHtml += `
@@ -1687,16 +2010,16 @@ function renderSchedule() {
     });
     tabsHtml += `</div>`;
     
-    const dayData = tripData[selectedDateIndex];
-    let eventsHtml = `<div class="space-y-4 animation-fade pb-12">`;
+    // 2. 準備行程列表 HTML
+    // ★ 關鍵：py-6 (24px) 確保列表的「最上面」跟「最下面」留白一樣
+    // ★ 關鍵：px-4 (16px) 把左右邊距補回來
+    let eventsHtml = `<div class="space-y-4 animation-fade py-6 px-4">`;
     
+    const dayData = tripData[selectedDateIndex];
     dayData.events.forEach((event, eIdx) => {
-        // 插入卡片 HTML
         eventsHtml += createEventCard(event, selectedDateIndex, eIdx);
         
-        // 2. 交通連接線
-        // ★ 修改：移除了 event.type !== 'choice' 的限制
-        // 只要有 travel 資料，且不是最後一個行程，就顯示連接線
+        // 交通連接線
         if (event.travel && eIdx < dayData.events.length - 1) {
             let icon = 'fa-car'; 
             if(event.travel.mode === 'walk') icon = 'fa-person-walking'; 
@@ -1714,8 +2037,29 @@ function renderSchedule() {
         }
     });
     eventsHtml += `</div>`;
+
+    // 3. 底部墊高 (防止被導覽列擋住)
+    // 因為上面列表已經有 py-6 (24px) 的底部留白，這裡只要單純撐開高度即可
+    let spacerHtml = `<div class="h-22"></div>`;
     
-    container.innerHTML = tabsHtml + eventsHtml;
+    // ★★★ 最終組合：使用 -m-4 建立獨立空間 ★★★
+    // 這會抵消 #app 的 p-4 設定，讓日期列可以滿版，且不受 space-y-6 干擾
+    container.innerHTML = `
+        <div class="-m-4">
+            ${tabsHtml}
+            <div class="bg-transparent">
+                ${eventsHtml}
+                ${spacerHtml}
+            </div>
+        </div>`;
+    
+    // 4. 自動捲動日期 (保持不變)
+    const scrollContainer = container.querySelector('.sticky-date-bar');
+    const activeTab = scrollContainer.children[selectedDateIndex];
+    if (scrollContainer && activeTab) {
+        const scrollLeft = activeTab.offsetLeft - (scrollContainer.clientWidth / 2) + (activeTab.clientWidth / 2);
+        scrollContainer.scrollTo({ left: scrollLeft, behavior: 'auto' });
+    }
 }
 
         // --- Render: Vouchers ---
@@ -2214,6 +2558,11 @@ function createEventCard(event, dayIdx, evtIdx) {
                 travelTimeHtml = `<span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-full border border-gray-200 shrink-0 flex items-center gap-1"><i class="fa-solid ${icon}"></i> ${c.travelTime}</span>`;
             }
 
+            // ★★★ 修改重點：動態判斷標籤顏色與文字 ★★★
+            const choiceTagClass = c.type === 'spot' ? 'tag-spot' : 'tag-eat';
+            const choiceTagName = c.type === 'spot' ? '景點' : '美食';
+            // ★★★ 結束 ★★★
+
             return `
             <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm relative flex flex-col" 
                  onclick="openDetailModal(${dayIdx}, ${evtIdx}, ${cIdx})">
@@ -2221,7 +2570,8 @@ function createEventCard(event, dayIdx, evtIdx) {
                     <h4 class="font-bold text-lg text-gray-800 line-clamp-1">${c.title}</h4>
                     <div class="flex gap-1 shrink-0">
                         ${travelTimeHtml}
-                        <span class="text-xs px-2 py-1 rounded-full tag-eat flex items-center">美食</span>
+                        <!-- 這裡使用變數，不再寫死 -->
+                        <span class="text-xs px-2 py-1 rounded-full ${choiceTagClass} flex items-center">${choiceTagName}</span>
                     </div>
                 </div>
                 <p class="text-sm text-gray-600 mb-8 line-clamp-2">${c.guide}</p>
@@ -2705,40 +3055,35 @@ function adjustQty(delta) {
     const modal = document.getElementById('modal-detail');
     const content = document.getElementById('modal-detail-content');
     
+    // 1. 取得資料
     let event = tripData[dayIdx].events[eventIdx];
     if (choiceIdx !== null && event.choices) event = event.choices[choiceIdx];
     
     const img = event.imgUrl || 'https://via.placeholder.com/400x250?text=No+Image';
     const detail = event.detailInfo || {};
     
+    // 2. 準備 HTML 內容變數 (這些是之前可能遺失的部分)
+    
+    // 標籤
     let tagsHtml = ''; 
     if(detail.tags) detail.tags.forEach(t => tagsHtml += `<span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full mr-1">#${t}</span>`);
     
+    // 亮點
     let highlightHtml = ''; 
     if(detail.highlights) highlightHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">✨ 必看亮點</h4><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${detail.highlights.map(h => `<li>${h}</li>`).join('')}</ul></div>`;
     
-    // ★ 修改處：菜單生成邏輯
+    // 菜單
     let menuHtml = '';
     if(detail.menu) {
         const menuItems = detail.menu.map(m => {
-            // 判斷有無日文翻譯 (m.j)
             const jpText = m.j ? m.j : m.n; 
             const clickAction = `onclick="openOrderCard('${m.n}', '${jpText}')"`;
-            
-            return `
-            <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg active:bg-gray-200 transition cursor-pointer" ${clickAction}>
-                <div class="flex items-center gap-2 overflow-hidden">
-                    <i class="fa-regular fa-hand-pointer text-gray-300 text-xs shrink-0"></i>
-                    <span class="font-bold text-gray-700 text-sm truncate">${m.n}</span>
-                </div>
-                <span class="text-orange-500 text-sm font-bold shrink-0">${m.p || ''}</span>
-            </div>`;
+            return `<div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg active:bg-gray-200 transition cursor-pointer" ${clickAction}><div class="flex items-center gap-2 overflow-hidden"><i class="fa-regular fa-hand-pointer text-gray-300 text-xs shrink-0"></i><span class="font-bold text-gray-700 text-sm truncate">${m.n}</span></div><span class="text-orange-500 text-sm font-bold shrink-0">${m.p || ''}</span></div>`;
         }).join('');
-        
         menuHtml = `<div class="mt-4"><h4 class="font-bold text-gray-800 mb-2">👩‍🍳 推薦菜單 (點擊顯示日文)</h4><div class="grid grid-cols-1 gap-2">${menuItems}</div></div>`;
     }
 
-    // (以下按鈕邏輯保持原本的優化版本)
+    // 按鈕
     const reviewUrl = event.reviewLink || event.navLink || `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`;
     let infoBtnHtml = '';
     if (event.link) {
@@ -2751,20 +3096,37 @@ function adjustQty(delta) {
         infoBtnHtml = `<div class="flex-1"></div>`; 
     }
 
+    // 3. 組合 HTML (包含置頂 Header)
     content.innerHTML = `
-        <div class="detail-handle" onclick="closeDetailModal()"></div>
-        <button class="detail-close-btn" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button>
-        <img src="${img}" class="detail-header-img shrink-0">
-        <div class="detail-body">
-            <div class="flex items-center gap-2 mb-1">
-                ${tagsHtml}
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2>
-            <p class="text-gray-600 text-sm leading-relaxed">${detail.desc || event.guide || '暫無詳細介紹'}</p>
-            ${highlightHtml}
-            ${menuHtml} <!-- 插入新的菜單 HTML -->
+        <!-- 1. 置頂導覽列 (預設透明) -->
+        <div id="detail-sticky-header" class="detail-sticky-header">
+            <span class="detail-sticky-title">${event.title}</span>
         </div>
 
+        <!-- 2. 下滑把手 -->
+        <div class="detail-handle" onclick="closeDetailModal()"></div>
+        
+        <!-- 3. 關閉按鈕 -->
+        <button class="detail-close-btn" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button>
+        
+        <!-- 4. 內容區塊 (捲動區) -->
+        <div class="detail-body" id="detail-scroll-view">
+            <!-- 圖片 (在捲動區內) -->
+            <img src="${img}" class="w-full h-[250px] object-cover block">
+            
+            <!-- 文字容器 -->
+            <div class="detail-text-container">
+                <div class="flex items-center gap-2 mb-1">
+                    ${tagsHtml}
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2>
+                <p class="text-gray-600 text-sm leading-relaxed">${detail.desc || event.guide || '暫無詳細介紹'}</p>
+                ${highlightHtml}
+                ${menuHtml}
+            </div>
+        </div>
+
+        <!-- 5. 底部按鈕區 -->
         <div class="p-4 bg-white border-t border-gray-100 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] safe-area-bottom z-20">
             <div class="flex gap-3">
                 ${infoBtnHtml}
@@ -2774,7 +3136,23 @@ function adjustQty(delta) {
             </div>
         </div>`;
         
+    // 4. 開啟視窗
     modal.classList.add('open');
+
+    // 5. 綁定捲動事件 (Scroll Listener)
+    const scrollView = document.getElementById('detail-scroll-view');
+    const stickyHeader = document.getElementById('detail-sticky-header');
+    const threshold = 190; // 觸發門檻 (圖片高度 - Header高度)
+
+    if (scrollView && stickyHeader) {
+        scrollView.onscroll = function() {
+            if (this.scrollTop > threshold) {
+                stickyHeader.classList.add('visible');
+            } else {
+                stickyHeader.classList.remove('visible');
+            }
+        };
+    }
 }
 
 // --- 開啟點餐字卡 ---
