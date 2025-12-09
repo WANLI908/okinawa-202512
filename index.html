@@ -250,21 +250,6 @@
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 
-/* 請確保 .pdf-sheet 是這樣設定的 */
-.pdf-sheet { 
-    background: #fff; 
-    width: 100%;
-    height: 95vh; /* 拉高一點，佔據更多螢幕 */
-    border-radius: 16px 16px 0 0; 
-    padding: 0;
-    position: absolute; 
-    bottom: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    /* 確保沒有其他 padding 干擾 */
-}
-
 /* 底部安全區 (如果之前沒加，請加上) */
 .safe-area-bottom {
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
@@ -460,7 +445,7 @@
         let currentStoreFilter = 'all';
 
         // Keys
-        const PACKING_KEY = 'okinawa_packing_v3'; 
+        const PACKING_KEY = 'okinawa_packing_v4'; 
         const SHOPPING_KEY = 'okinawa_shop_local_v6'; 
         const EXPENSE_KEY = 'okinawa_expenses_local_v2';
 
@@ -487,10 +472,33 @@
         } catch (e) { console.error("Firebase Init Error", e); }
 
         // --- 3. 資料定義 ---
-        const defaultPackingList = [
-            { id: 'imp1', text: "護照 (效期6個月以上)", category: "重要", done: false }, { id: 'imp2', text: "駕照 + 中文譯本", category: "重要", done: false }, { id: 'imp3', text: "登機證 (電子/紙本)", category: "重要", done: false }, { id: 'imp4', text: "錢包 (卡/日幣/台幣)", category: "重要", done: false }, { id: 'imp5', text: "SIM 卡 (4張)", category: "重要", done: false }, { id: 'imp6', text: "鑰匙", category: "重要", done: false },
-            { id: 't1', text: "牙刷、牙膏、牙線", category: "盥洗", done: false }, { id: 't2', text: "洗沐護髮、洗面乳", category: "盥洗", done: false }, { id: 't3', text: "髮油、梳子、鯊魚夾", category: "盥洗", done: false }, { id: 't4', text: "毛巾、浴巾", category: "盥洗", done: false }, { id: 't5', text: "化妝品、保養品", category: "盥洗", done: false }, { id: 't6', text: "隱形眼鏡、水盒", category: "盥洗", done: false },
-            { id: 'c1', text: "外出衣服 (5天)", category: "衣物", done: false }, { id: 'c2', text: "內衣褲、襪子", category: "衣物", done: false }, { id: 'c3', text: "睡衣、拖鞋", category: "衣物", done: false }, { id: 'c4', text: "外套、帽子、墨鏡", category: "衣物", done: false }, { id: 'e1', text: "充電器、線、行充", category: "電子", done: false }, { id: 'e2', text: "導航手機架", category: "電子", done: false }, { id: 'o1', text: "隨身包、環保袋", category: "雜項", done: false }, { id: 'o2', text: "雨傘、水壺", category: "雜項", done: false }, { id: 'o3', text: "防蚊液、防曬", category: "雜項", done: false }, { id: 'o4', text: "個人藥品", category: "雜項", done: false }, { id: 'o5', text: "貓條", category: "雜項", done: false }
+        const defaultPackingList = 
+        [
+            { id: 'imp1', text: "護照 (效期6個月以上)", category: "重要", done: false },
+            { id: 'imp2', text: "標籤貼 (貼在登錄許可證那一頁上)", category: "重要", done: false }, 
+            { id: 'imp3', text: "駕照 + 中文譯本", category: "重要", done: false }, 
+            { id: 'imp4', text: "登機證 (電子/紙本)", category: "重要", done: false }, 
+            { id: 'imp5', text: "錢包 (卡/日幣/台幣)", category: "重要", done: false }, 
+            { id: 'imp6', text: "SIM 卡 (4張)", category: "重要", done: false }, 
+            { id: 'imp7', text: "鑰匙", category: "重要", done: false },
+            { id: 'imp8', text: "一套不怕髒的衣服（吃烤肉穿）", category: "重要", done: false },
+            { id: 't1', text: "牙刷、牙膏、牙線", category: "盥洗", done: false }, 
+            { id: 't2', text: "洗沐護髮、洗面乳", category: "盥洗", done: false }, 
+            { id: 't3', text: "髮油、梳子、鯊魚夾", category: "盥洗", done: false }, 
+            { id: 't4', text: "毛巾、浴巾", category: "盥洗", done: false }, 
+            { id: 't5', text: "化妝品、保養品", category: "盥洗", done: false }, 
+            { id: 't6', text: "隱形眼鏡、水盒", category: "盥洗", done: false },
+            { id: 'c1', text: "外出衣服 (5天)", category: "衣物", done: false }, 
+            { id: 'c2', text: "內衣褲、襪子", category: "衣物", done: false }, 
+            { id: 'c3', text: "睡衣、拖鞋", category: "衣物", done: false }, 
+            { id: 'c4', text: "薄外套、帽子、墨鏡", category: "衣物", done: false }, 
+            { id: 'e1', text: "充電器、線、行充", category: "電子", done: false }, 
+            { id: 'e2', text: "導航手機架", category: "電子", done: false }, 
+            { id: 'o1', text: "隨身包、環保袋", category: "雜項", done: false }, 
+            { id: 'o2', text: "雨傘、水壺", category: "雜項", done: false }, 
+            { id: 'o3', text: "防蚊液、防曬", category: "雜項", done: false }, 
+            { id: 'o4', text: "個人藥品", category: "雜項", done: false }, 
+            { id: 'o5', text: "貓條", category: "雜項", done: false },
         ];
         
         // --- 事前準備清單資料 ---
@@ -636,7 +644,7 @@ function getPrepListHTML() {
                         reviewLink: "https://maps.app.goo.gl/HEYTrTrB5RyKFYBx5",
                         link: "https://tabelog.com/tw/okinawa/A4701/A470101/47002685/",
                         detailInfo: { 
-                            desc: `這家店不在國際通大街上，而是隱藏在松山巷弄裡，是當地人下班喝酒後的「收尾拉麵」。<br><br><b>🦐 靈魂湯頭：</b><br>蝦味的暴力美學！使用大量甜蝦、車海老熬煮，不是淡淡清香，而是<b>「濃縮的衝擊」</b>！入口鮮甜直衝鼻腔。<br><br><b>⚠️ 重要提醒：店內全面不禁菸</b>，介意菸味者請斟酌。`, 
+                            desc: `這家店不在國際通大街上，而是隱藏在松山巷弄裡，是當地人下班喝酒後的「收尾拉麵」。<br><br><b>🦐 靈魂湯頭：</b><br>蝦味的暴力美學！使用大量甜蝦、車海老熬煮，不是淡淡清香，而是<b>「濃縮的衝擊」</b>！入口鮮甜直衝鼻腔。<br><br><b>⚠️ 重要提醒：店內全面不禁菸</b>，介意菸味者請斟酌。<br><br><b>📜 菜單參考 (點圖放大)：</b><br><img src="https://lh3.googleusercontent.com/d/1Q_2GLXEa984f6cUZx8dyCdou2hytIKwJ" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
                             tags: ["拉麵", "宵夜", "重口味", "吸菸可"], 
                             highlights: [
                                 "👑 首選：海老味噌拉麵 (濃郁爽度)",
@@ -645,9 +653,9 @@ function getPrepListHTML() {
                                 "氛圍：西裝大叔的深夜食堂"
                             ],
                             menu:[
-                                {n:"海老味噌拉麵", j:"海老味噌ラーメン", p:"¥980"},
-                                {n:"海老鹽味拉麵", j:"海老塩ラーメン", p:"¥980"},
-                                {n:"一口餃子", j:"一口餃子", p:"¥400"}
+                                {n:"海老味噌拉麵", j:"沖縄エビみそ", p:"¥1,200"},
+                                {n:"海老鹽味拉麵", j:"沖縄エビしお", p:"¥1,100"},
+                                {n:"熱騰騰的餃子(6顆)", j:"熱々餃子(6入)", p:"¥450"}
                             ] 
                         } 
                     }, 
@@ -668,7 +676,7 @@ function getPrepListHTML() {
                         link: "https://tabelog.com/tw/okinawa/A4701/A470101/47029564/", 
                         detailInfo: { 
                             // ★ 詳細介紹
-                            desc: `這家店走的是<b>「霓虹港風 x 沖繩老宅」</b>路線，被稱為「新派中華 (Neo Chinese)」。<br><br><b>🏮 氛圍：王家衛電影感</b><br>店內充滿紅色與綠色霓虹燈，很有 Cyberpunk (賽博龐克) 感，像電影《墮落天使》的場景，隨便拍都像網美照。<br><br><b>⚠️ 沖繩超人提醒：</b><br>1. <b>菸味警報</b>：23:00 後通常全面開放吸菸。<br>2. <b>費用細節</b>：有座席費 (Otoshi) 約 ¥330/人，且每人低消一杯飲料。`, 
+                            desc: `這家店走的是<b>「霓虹港風 x 沖繩老宅」</b>路線，被稱為「新派中華 (Neo Chinese)」。<br><br><b>🏮 氛圍：王家衛電影感</b><br>店內充滿紅色與綠色霓虹燈，很有 Cyberpunk (賽博龐克) 感，像電影《墮落天使》的場景，隨便拍都像網美照。<br><br><b>⚠️ 沖繩超人提醒：</b><br>1. <b>菸味警報</b>：23:00 後通常全面開放吸菸。<br>2. <b>費用細節</b>：有座席費 (Otoshi) 約 ¥330/人，且每人低消一杯飲料。<br><br><b>📜 菜單參考 (點圖放大)：</b><br><img src="https://lh3.googleusercontent.com/d/17PkYEaYV4tlEtUtuAJOQCpzK1lRbNaCc" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
                             tags: ["新中華","霓虹港風","深夜營業","網美"], 
                             highlights: [
                                 "📸 視覺：王家衛電影風格 (超好拍)",
@@ -677,15 +685,80 @@ function getPrepListHTML() {
                                 "🥟 點心：溢汁小籠包 / 燒賣"
                             ],
                             menu:[
-                                {n:"藥膳麻婆豆腐", j:"四川薬膳麻婆豆腐", p:"¥960"},
-                                {n:"蛙吽黑炒飯", j:"蛙吽黒炒飯", p:"¥930"},
+                                {n:"藥膳麻婆豆腐", j:"四川薬膳麻婆豆腐", p:"¥980"},
+                                {n:"蛙吽黑炒飯", j:"蛙吽炒飯BLACK", p:"¥1,100"},
                                 {n:"凍檸塔沙瓦", j:"凍結タワーレモンサワー", p:"¥630"},
                                 {n:"座席費(Otoshi)", j:"お通し代", p:"¥330"}
                             ] 
                         } 
                     }  
                 ] 
+            },
+            { 
+                time: "23:30", title: "其他點心", type: "choice", 
+                choices: [ 
+                    { 
+                        title: "章魚燒", 
+                        type: "eat", 
+                        imgUrl: "https://ximg.retty.me/crop/s400x400/q80/das/-/retty/img_repo/2l/01/35788265.jpg",
+                        guide: "超高CP值「千元買醉」，正宗大阪章魚燒。", 
+                        // ★ 交通時間
+                        travelTime: "步行 10分",
+                        navLink: "https://maps.app.goo.gl/X9wos1NXcCqgYVNx6",
+                        // ★ Google 評論用連結
+                        reviewLink: "https://maps.app.goo.gl/HEYTrTrB5RyKFYBx5",
+                        link: "https://tabelog.com/tw/okinawa/A4701/A470101/47015126//",
+                        detailInfo: { 
+                            desc: `<b>🍻 千元買醉 (Senbero) 聖地：</b><br>這家店最受歡迎的就是「Senbero Set」！<b>3杯酒 + 1道下酒菜，只要約 ¥1,200。<br><br><b>🐙 必吃粉物 (正宗大阪味)：</b><br>1. <b>章魚燒</b>：外皮微酥、內餡軟嫩 (Melty)，推薦「蔥花橘醋」口味。<br>2. <b>花枝燒</b>：鐵板壓烤，口感Q彈充滿蛋香。<br><br><b>🏠 氛圍：</b>半開放式路邊店，掛著紅燈籠，氣氛熱鬧隨興，白天就有在地人在喝。<br><br><b>⚠️ 重要提醒：</b>這類店家通常以<b>現金交易</b>為主，請準備好零錢。`, 
+                            tags: ["千元買醉", "章魚燒", "居酒屋", "現金交易"],  
+                            highlights: [
+                                "🍺 必點：Senbero Set (3酒+1菜)",
+                                "🐙 必吃：章魚燒 (蔥花橘醋口味)",
+                                "🦑 推薦：花枝燒 (Ikayaki)",
+                                "🕒 營業：下午就開喝，直到深夜"
+                            ],
+                            menu:[
+                                {n:"千元買醉套餐", j:"せんべろセット", p:"¥1,100"},
+                                {n:"章魚燒(6顆)", j:"たこ焼き", p:"¥500~"},
+                                {n:"花枝燒", j:"いか焼き", p:"¥400"}
+                            ] 
+                        } 
+                    }, 
+                    { 
+                        title: "半夜的舒芙蕾", 
+                        type: "eat", 
+                        // ★ 封面照片
+                        imgUrl: "https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img,w_650,h_488/https://slowlifeinokinawa.com/wp-content/uploads/2024/06/IMG_1221-650x488.jpg",
+                        // ★ 簡短說明
+                        guide: "半夜也能吃到的蓬鬆舒芙蕾，最後的甜點救贖。", 
+                        // ★ 交通時間
+                        travelTime: "步行 12分",
+                        // ★ 導航
+                        navLink: "https://maps.app.goo.gl/uxpRiSDsBC5r8D78A",
+                        // ★ Google 評論連結
+                        reviewLink: "https://maps.app.goo.gl/moC25RCgRjg7yZ677", 
+                        // ★Tabelog、官網、IG
+                        link: "https://fgblog.fashionguide.com.tw/8433/posts/450077", 
+                        detailInfo: { 
+                            // ★ 詳細介紹
+                            desc:  `<b>🌙 深夜的罪惡救贖：</b><br>逛完國際通嘴巴寂寞？這家店開到凌晨！主打<b>現點現做</b>的舒芙蕾鬆餅，口感像雲朵一樣蓬鬆濕潤，入口即化。<br><br><b>⚠️ 食用前注意 (必看！)：</b><br>1. <b>低消限制</b>：內用規定<b>「一人一品項」</b>(飲料或鬆餅皆可)，不能多人分食一份。<br>2. <b>等待時間</b>：現做需等 <b>20-30 分鐘</b>，趕時間者請勿嘗試。<br>3. <b>油煙味</b>：開放式廚房，身上可能會沾點甜甜的味道。`, 
+                            tags: ["舒芙蕾", "深夜甜點", "現點現做", "低消限制"], 
+                            highlights: [
+                                "🥞 經典：原味舒芙蕾 (蛋香濃郁)",
+                                "💜 限定：沖繩紅芋舒芙蕾 (必拍)",
+                                "🍦 選項：不想等可買義式冰淇淋",
+                                "⏳ 警告：現做需等20分鐘以上"
+                            ],
+                            menu:[
+                                {n:"經典原味舒芙蕾", j:"クラシックパンケーキ", p:"¥1,000"},
+                                {n:"沖繩紫薯舒芙蕾", j:"紅芋パンケーキ", p:"¥1,500"},
+                                {n:"義式冰淇淋", j:"ジェラートダブル", p:"¥700"}
+                            ] 
+                        } 
+                    }  
+                ] 
             }
+            
         ]
     },
     {
@@ -854,11 +927,11 @@ function getPrepListHTML() {
                         "💡 提醒：進店先抽號碼牌"
                     ],
                     
-                    menu: [
-                        {n: "伊拉布查(青衣魚)", p: "時價"},
-                        {n: "沖繩縣產鮪魚", p: "¥280~"},
-                        {n: "炸魚天婦羅", p: "¥190"}
-                    ] 
+                    menu:[
+                                {n:"沖繩魚三味 (縣產魚/縣產花枝/縣產鮪魚)", j:"No.95 沖縄ざんまい (沖繩三味)", p:"¥520"},
+                                {n:"炙燒石垣牛握壽司", j:"No.87 紅芋パンケーキ", p:"¥460"},
+                                {n:"生鮪魚中腹握壽司", j:"No.71 ジェラートダブル", p:"¥320"}
+                        ] 
                 }, 
                 
                 travel: { mode: 'drive', time: '10分' } 
@@ -916,7 +989,7 @@ function getPrepListHTML() {
                         link: "https://okinawarycom-aeonmall.com/", 
                         
                         detailInfo: {
-                            desc: `<b>🏢 沖繩最大：</b>好幾棟連在一起，不先做功課會迷路！適合吃太飽來這裡純走路逛街吹冷氣。<br><br><b>✨ 必逛重點 (樓層攻略)：</b><br>1. <b>寶可夢中心 (1F)</b>：門口有巨大的「風速狗」雕像，很多穿花襯衫的沖繩限定皮卡丘。<br>2. <b>巨大水族箱 (1F大廳)</b>：貫穿樓層，有鯊魚和魟魚，免門票！<br>3. <b>橡子共和國 (4F)</b>：吉卜力專賣店，門口有大龍貓。<br>4. <b>掃貨區</b>：Bic Camera(電器)、Uniqlo/GU、AEON Style 超市(2F 買水果零食)。<br><br><b>📝 沖繩超人戰略：</b><br><b>🚗 停車</b>：免費！建議停在<b>「1F 靠近水族箱入口」</b>，搬貨最方便。<br><b>💰 退稅</b>：記得帶護照！有些店內退，有些要去 1F 免稅櫃台統退。`,
+                            desc: `<b>🏢 沖繩最大：</b>好幾棟連在一起，不先做功課會迷路！適合吃太飽來這裡純走路逛街吹冷氣。<br><br><b>✨ 必逛重點 (樓層攻略)：</b><br>1. <b>寶可夢中心 (1F)</b>：門口有巨大的「風速狗」雕像，很多穿花襯衫的沖繩限定皮卡丘。<br>2. <b>巨大水族箱 (1F大廳)</b>：貫穿樓層，有鯊魚和魟魚，免門票！<br>3. <b>橡子共和國 (4F)</b>：吉卜力專賣店，門口有大龍貓。<br>4. <b>掃貨區</b>：Bic Camera(電器)、Uniqlo/GU、AEON Style 超市(2F 買水果零食)。<br><br><b>📝 沖繩超人戰略：</b><br><b>🚗 停車</b>：免費！建議停在<b>「1F 靠近水族箱入口」</b>，搬貨最方便。<br><b>💰 退稅</b>：記得帶護照！（可以在登錄許可證那一頁貼小貼紙）有些店內退，有些要去 1F 免稅櫃台統退。`,
                             
                             tags: ["寶可夢中心", "水族箱", "雨天備案", "免費停車"],
                             
@@ -935,7 +1008,6 @@ function getPrepListHTML() {
                         }
                     }
                 ],
-                // ★ 修改處：交通時間改為 10分
                 travel: { mode: 'drive', time: '10分' } 
             },
             { 
@@ -989,21 +1061,39 @@ function getPrepListHTML() {
             },
             { 
                 time: "20:10", 
-                leaveTime:"21:00", 
+                leaveTime: "21:00", 
                 title: "美國村", 
                 type: "spot", 
                 mapCode: "33 526 450*63", 
+                // 封面圖：美國村夜景
+                imgUrl: "https://www.okinawastory.jp/feature/illumination/images/spot02_img01.jpg",
+                
                 guide: "摩天輪拍照、藥妝店補貨、聖誕燈飾。", 
+                
                 // 導航
                 navLink: "https://maps.app.goo.gl/3J3J3J3J3J3J3J3J", 
-                 // google評論
+                // google評論
                 reviewLink: "https://maps.app.goo.gl/nfRWvwG4nLVuNUhC6",
-                 // 官網或介紹
-                link: "https://tabelog.com/tw/okinawa/A4703/A470304/47029667/",
+                // 官網或介紹 (連結到 Depot Island)
+                link: "https://www.depot-island.co.jp/",
+                
                 detailInfo: {
-                    desc: "充滿美式風情的購物區，聖誕節期間燈飾非常漂亮。有很多個性小店、古著店和大國藥妝。",
+                    desc: `<b>🎡 充滿美式風情的購物區：</b><br>這裡是以前美軍基地改建的，充滿異國情調。聖誕節期間（11月中~3月中）整個園區會有超美的燈飾，隨便拍都好看。<br><br><b>🛍️ 必逛攻略：</b><br>1. <b>Depot Island</b>：有很多個性小店、古著店。<br>2. <b>大國藥妝 (Daikoku Drug)</b>：摩天輪下方那間是全沖繩最便宜的藥妝店之一，要補貨來這！<br>3. <b>Christmas Land</b>：專賣聖誕飾品的小店，一年365天都在過聖誕。<br><br><b>📸 拍照點：</b><br>雖然摩天輪已經拆除，但原本的位置現在是新的打卡地標，加上運河邊的夜景非常浪漫。`,
+                    
                     tags: ["夜景", "購物", "聖誕燈飾", "大國藥妝"],
-                    highlights: ["🎡 摩天輪夜景 (已拆除但仍是地標)", "💊 大國藥妝 (最便宜)", "🎄 聖誕燈飾街景"]
+                    
+                    highlights: [
+                        "💊 必買：大國藥妝 (價格很有競爭力)",
+                        "🎄 必看：冬季限定聖誕燈飾",
+                        "📸 必拍：運河步道夜景",
+                        "🍦 必吃：Blue Seal 冰淇淋"
+                    ],
+                    
+                    menu: [
+                        {n: "Blue Seal 冰淇淋", p: "¥350"},
+                        {n: "PoKe's 豬肉蛋飯糰", p: "¥400"},
+                        {n: "Benson's 熱狗", p: "¥500"}
+                    ]
                 },
                 travel: { mode: 'walk', time: '5分' }
             },
@@ -1130,15 +1220,42 @@ function getPrepListHTML() {
             },
             { 
                 time: "11:00", 
-                title: "午餐：蝦蝦飯", 
+                title: "午餐：古宇利蝦蝦飯", 
                 type: "eat", 
+                
+                // ★ 封面圖：招牌蝦蝦飯
+                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/110595/640x640_rect_110595333.jpg",
+                
+                guide: "古宇利島必吃大魔王，大蒜奶油蝦配無敵海景。", 
+                
                 mapCode: "485 692 167*55", 
+                
+                // ★ 正確的 Google Maps 連結
+                navLink: "https://maps.app.goo.gl/8y8y8y8y8y8y8y8", // (請確認連結有效，或讓系統自動搜尋)
+                reviewLink: "https://maps.app.goo.gl/2Q2Q2Q2Q2Q2Q2Q2",
+                
+                link: "https://kouri-shrimp.com/",
+                
                 detailInfo: { 
-                    desc: "古宇利島必吃！建議先找座位。", 
-                    tags: ["海景", "蝦飯"], 
-                    menu: [{n:"原味大蒜蝦飯", p:"¥1,400"}] 
+                    desc: `<b>🍤 沖繩必吃大魔王：</b><br>源自夏威夷的經典美食！用大量<b>大蒜奶油</b>爆炒鮮蝦，香氣極度濃郁（吃完不能約會XD）。蝦子已貼心去背去腸，殼炸得酥脆。<br><br><b>🏠 粉紅建築 x 古宇利藍：</b><br>從餐車進化成粉紅建築！一樓點餐機點餐（有中文），二樓/三樓半戶外區可眺望古宇利大橋美景。<br><br><b>🦸‍♂️ 沖繩超人攻略：</b><br>1. <b>避開尖峰</b>：建議 11:00 開門就去，或 15:00 後當下午茶。<br>2. <b>停車</b>：停在店旁的<b>專屬停車場</b>，不要亂停路邊。<br>3. <b>必拍</b>：門口的經典餐車記得合照！`, 
+                    
+                    tags: ["古宇利島", "海景", "蝦飯", "排隊美食", "中文點餐機"], 
+                    
+                    highlights: [
+                        "🍤 經典：原味蒜香 (奶油蒜味平衡)",
+                        "🌶️ 推薦：辣味蒜香 (開胃重口味)",
+                        "🥩 豪華：蝦牛雙拼 (一次滿足)",
+                        "📸 景色：二樓看海座位 & 門口餐車"
+                    ], 
+                    menu: [
+                        {n:"原味大蒜蝦飯", j:"オリジナルガーリックシュリンプ", p:"¥1,400"},
+                        {n:"辣味大蒜蝦飯", j:"スパイシーガーリックシュリンプ", p:"¥1,500"},
+                        {n:"檸檬奶油蝦飯", j:"バターレモンガーリックシュリンプ", p:"¥1,500"},
+                        {n:"蝦牛雙拼組合", j:"シュリンプ＆ビーフ", p:"¥2,000"}
+                    ] 
                 }, 
-            travel: { mode: 'drive', time: '15分' } 
+                
+                travel: { mode: 'drive', time: '15分' } 
             },
             { 
                 time: "12:30",
@@ -1167,7 +1284,7 @@ function getPrepListHTML() {
                 title_detail: "Obaa no Ya (名護燒肉)", 
                 
                 // ★ 封面圖：炭火七輪與燒肉
-                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/13637/640x640_rect_13637483.jpg",
+                imgUrl: "https://imgfp.hotp.jp/IMGH/79/14/P034627914/P034627914_238.jpg",
                 
                 guide: "百年古民家炭火燒肉，最有沖繩靈魂的店 (⚠️煙很大)。", 
                 
@@ -1205,19 +1322,197 @@ function getPrepListHTML() {
                 
                 travel: { mode: 'drive', time: '40分' } 
             },
-            { time: "20:00", title: "美國村煙火", type: "spot", guide: "週六限定！觀賞點：北谷日落步道。" }
+            { 
+                time: "20:00", 
+                title: "美國村煙火", 
+                type: "spot", 
+                
+                // 封面圖：美麗的煙火
+                imgUrl: "https://www.okinawa-americanvillage.com/wp/wp-content/uploads/2021/11/fireworks_01.jpg",
+                
+                guide: "週六限定 3分鐘煙火！(⚠️18:30 必須從燒肉店離開)",
+                
+                // ★ 導航設定：北谷公園停車場 (避開塞車區)
+                navLink: "https://maps.app.goo.gl/K9V7V7V7V7V7V7V7", // (示意連結，實際點擊會搜尋 Chatan Park Parking)
+                
+                reviewLink: "https://maps.app.goo.gl/3J3J3J3J3J3J3J3J",
+                link: "https://www.okinawa-americanvillage.com/?p=4082",
+                
+                detailInfo: {
+                    desc: `
+                        <b>🔥 趕場生死戰 (必讀！)：</b><br>
+                        <b>18:30 準時上車，發動引擎！</b><br>
+                        這是關鍵死線，晚了就只能在車上看煙火了。<br><br>
+                        
+                        <b>🛣️ 移動路徑 (Route)：</b><br>
+                        1. <b>18:30</b> 從燒肉店出發，前往 <b>許田 IC</b>。<br>
+                        2. <b>必走高速公路！</b> (許田 IC ⮕ 沖繩南 IC)。千萬別走 58 號省道。<br>
+                        3. 下交流道後往北谷方向，最後一段路車多請耐心。<br><br>
+
+                        <b>🅿️ 停車攻略 (不要停 Depot Island！)：</b><br>
+                        千萬不要貪心想停很近，那是塞車黑洞！<br>
+                        推薦 <b>P1：北谷公園駐車場</b> (進出較不塞，走5-8分到海邊)。<br>
+                        推薦 <b>P2：AEON 北谷店</b> (買東西方便，走10分)。<br><br>
+
+                        <b>🎆 Plan B (塞車備案)：</b><br>
+                        如果 19:55 還在路上，別慌！在 <b>58 號公路</b> 或 <b>安良波海灘</b> 附近，搖下車窗往海邊看也看得到！
+                    `,
+                    
+                    tags: ["煙火", "週六限定", "停車攻略"],
+                    
+                    highlights: [
+                        "⏰ 死線：18:30 準時發動引擎",
+                        "🛣️ 路線：許田 IC ⮕ 沖繩南 IC (走高速!)",
+                        "🅿️ 停車：北谷公園駐車場 (避開塞車黑洞)",
+                        "🎆 備案：來不及就在 58號公路上看"
+                    ],
+                }
+            }
         ]
     },
     {
         date: "12/28", fullDate: "2025/12/28", day: "週日", weather: "🌧️ 20°C",
         events: [
             { time: "06:00", title: "起床 & 退房", type: "prep", guide: "11:00 前退房。", departureTime: "07:30 出發", travel: { mode: 'drive', time: '30分' } },
-            { time: "08:00", title: "早餐：A&W 漢堡", type: "eat", mapCode: "33 341 602*66", guide: "必點 Root Beer (沙士)。", travel: { mode: 'drive', time: '30分' } },
-            { time: "09:30", title: "瀨長島 Umikaji", type: "spot", mapCode: "33 002 605*15", guide: "希臘風情白色建築，看飛機起降。", travel: { mode: 'drive', time: '30分' } },
-            { time: "11:30", title: "午餐：沖繩麵 / 義大利麵", type: "eat", guide: "Yagiya (沖繩麵) 或 The Slow (義大利麵)。", travel: { mode: 'drive', time: '20分' } },
-            { time: "12:30", title: "Shinmei Coffee", type: "eat", guide: "古民家咖啡，推薦黑糖拿鐵。", travel: { mode: 'drive', time: '20分' } },
-            { time: "14:00", title: "玉泉洞 (王國村)", type: "spot", mapCode: "232 495 330*28", guide: "鐘乳石洞，出來看太鼓表演。", travel: { mode: 'drive', time: '20分' } },
-            { time: "17:00", title: "奧武島 (貓島)", type: "spot", mapCode: "232 468 336*41", guide: "必買：中本鮮魚店天婦羅。", travel: { mode: 'drive', time: '15分' } },
+            { 
+                // ★ 行程二選一 (A&W港牧店 vs 達摩寺)
+                time: "08:00",
+                leaveTime: "09:00", 
+                title: "行程二選一", 
+                type: "choice", 
+                choices: [
+                    {
+                        title: "A&W 港牧店",
+                        type: "eat",
+                        // 封面圖
+                        imgUrl: "https://tc.tabirai.net/sightseeing/article/img/0001484/kiji1Img.jpg", 
+                        
+                        guide: "在地最強「海膽焗烤龍蝦」，CP值高。",
+                        travelTime: "開車 30分",
+                        
+                        navLink: "https://maps.app.goo.gl/ECF35foo4PgHGe1p8", 
+                        reviewLink: "https://maps.app.goo.gl/whLeWZmtP8V5eXga7", 
+                        link: "https://tabelog.com/okinawa/A4703/A470301/47001361/", 
+                        
+                        detailInfo: {
+                            desc: `<b>🦞 在地全名：泡瀨帕亞歐直売店</b><br>這是一個充滿在地活力的海鮮食堂！不是吃氣氛的，是吃 <b>CP 值和新鮮度</b>的。大家坐在半戶外位子大口吃海鮮，非常有台灣熱炒店的親切感。<br><br><b>🔥 必吃重點：</b><br>1. <b>海膽醬烤龍蝦 (必點)</b>：半隻或整隻龍蝦鋪滿特製「海膽美乃滋醬」烤到金黃，奶香爆炸，超級罪惡！<br>2. <b>炸天婦羅</b>：沖繩式厚麵衣，軟Q口感，適合當點心。<br><br><b>⚠️ 重要提醒：</b>食堂通常 <b>17:30 最後點餐</b>，時間剛好壓線，請務必注意！`,
+                            
+                            tags: ["海膽龍蝦", "在地食堂", "高CP值", "半戶外"],
+                            
+                            highlights: [
+                                "👑 鎮店之寶：海膽醬烤龍蝦 (Uni Sauce Lobster)",
+                                "🍤 點心：沖繩天婦羅 (炸魚/花枝)",
+                                "💰 價格：定食約 ¥3,000~¥5,000 (比餐廳便宜一半)",
+                                "⏰ 警告：17:30 最後點餐 (Last Order)"
+                            ],
+                            
+                            menu: [
+                                {n: "海膽焗烤龍蝦(半隻)", p: "¥2,800~"}, 
+                                {n: "海膽焗烤龍蝦(整隻)", p: "¥5,000~"},
+                                {n: "炸魚/花枝天婦羅", p: "¥100~"}
+                            ]
+                        }
+                    },
+                    {
+                        title: "達摩寺",
+                        type: "spot",
+                        // 封面圖
+                        imgUrl: "https://www.welcome-aeon.com/tw/uploads/2018/09/rycom_main.jpg", 
+                        guide: "沖繩最大購物中心，有巨大水族箱與寶可夢中心。",
+                        travelTime: "開車 30分",
+                        navLink: "https://maps.app.goo.gl/j6Z9P5yQx2x2x2x2", 
+                        reviewLink: "https://maps.app.goo.gl/j6Z9P5yQx2x2x2x2", 
+                        link: "https://okinawarycom-aeonmall.com/", 
+                        
+                        detailInfo: {
+                            desc: `<b>🏢 沖繩最大：</b>好幾棟連在一起，不先做功課會迷路！適合吃太飽來這裡純走路逛街吹冷氣。<br><br><b>✨ 必逛重點 (樓層攻略)：</b><br>1. <b>寶可夢中心 (1F)</b>：門口有巨大的「風速狗」雕像，很多穿花襯衫的沖繩限定皮卡丘。<br>2. <b>巨大水族箱 (1F大廳)</b>：貫穿樓層，有鯊魚和魟魚，免門票！<br>3. <b>橡子共和國 (4F)</b>：吉卜力專賣店，門口有大龍貓。<br>4. <b>掃貨區</b>：Bic Camera(電器)、Uniqlo/GU、AEON Style 超市(2F 買水果零食)。<br><br><b>📝 沖繩超人戰略：</b><br><b>🚗 停車</b>：免費！建議停在<b>「1F 靠近水族箱入口」</b>，搬貨最方便。<br><b>💰 退稅</b>：記得帶護照！有些店內退，有些要去 1F 免稅櫃台統退。`,
+                            
+                            tags: ["寶可夢中心", "水族箱", "雨天備案", "免費停車"],
+                            
+                            highlights: [
+                                "⚡️ 1F：寶可夢中心 (Pokemon Center)",
+                                "🐠 1F：Rycom Aquarium (巨大水族箱)",
+                                "🎬 4F：橡子共和國 (吉卜力)",
+                                "🥩 美食：IKINARI 立食牛排 / 菠蘿麵包"
+                            ],
+                            
+                            menu: [
+                                {n: "IKINARI STEAK", p: "秤重計價"},
+                                {n: "現烤冰淇淋菠蘿麵包", p: "¥450"},
+                                {n: "Blue Seal 冰淇淋", p: "¥350"}
+                            ]
+                        }
+                    }
+                ],
+                travel: { mode: 'drive', time: '30分' } 
+            },
+            { time: "09:30",leaveTime:"11:00", title: "瀨長島 Umikaji", type: "spot", mapCode: "33 002 605*15", guide: "希臘風情白色建築，看飛機起降。", travel: { mode: 'drive', time: '30分' } },
+            { 
+                time: "22:30", title: "午餐二選一", type: "choice", 
+                choices: [ 
+                    { 
+                        title: "沖繩麵", 
+                        type: "eat", 
+                        imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/306129/640x640_rect_1c59d40469eed39e39ca6f832061d5dd.jpg",
+                        guide: "隱藏巷弄的濃郁蝦湯，深夜食堂氛圍。", 
+                        // ★ 交通時間
+                        travelTime: "步行 10分",
+                        navLink: "https://maps.app.goo.gl/4C2URtcJCK8evziz8",
+                        // ★ Google 評論用連結
+                        reviewLink: "https://maps.app.goo.gl/HEYTrTrB5RyKFYBx5",
+                        link: "https://tabelog.com/tw/okinawa/A4701/A470101/47002685/",
+                        detailInfo: { 
+                            desc: `這家店不在國際通大街上，而是隱藏在松山巷弄裡，是當地人下班喝酒後的「收尾拉麵」。<br><br><b>🦐 靈魂湯頭：</b><br>蝦味的暴力美學！使用大量甜蝦、車海老熬煮，不是淡淡清香，而是<b>「濃縮的衝擊」</b>！入口鮮甜直衝鼻腔。<br><br><b>⚠️ 重要提醒：店內全面不禁菸</b>，介意菸味者請斟酌。<br><br><b>📜 菜單參考 (點圖放大)：</b><br><img src="https://lh3.googleusercontent.com/d/1Q_2GLXEa984f6cUZx8dyCdou2hytIKwJ" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
+                            tags: ["拉麵", "宵夜", "重口味", "吸菸可"], 
+                            highlights: [
+                                "👑 首選：海老味噌拉麵 (濃郁爽度)",
+                                "🥈 清爽派：海老鹽味拉麵 (鮮甜)",
+                                "🥟 配角：一口餃子 (皮薄餡多)",
+                                "氛圍：西裝大叔的深夜食堂"
+                            ],
+                            menu:[
+                                {n:"海老味噌拉麵", j:"沖縄エビみそ", p:"¥1,200"},
+                                {n:"海老鹽味拉麵", j:"沖縄エビしお", p:"¥1,100"},
+                                {n:"熱騰騰的餃子(6顆)", j:"熱々餃子(6入)", p:"¥450"}
+                            ] 
+                        } 
+                    }, 
+                    { 
+                        title: "義大利麵", 
+                        type: "eat", 
+                        // ★ 封面照片
+                        imgUrl: "https://tblg.k-img.com/resize/660x370c/restaurant/images/Rvw/198123/29193b52eb9c59bf138115b14443726a.jpg?token=df157a4&api=v2",
+                        // ★ 簡短說明
+                        guide: "霓虹港風 x 沖繩老宅，在地年輕人聚集的潮店。", 
+                        // ★ 交通時間
+                        travelTime: "步行 12分",
+                        // ★ 導航
+                        navLink: "https://maps.app.goo.gl/uxpRiSDsBC5r8D78A",
+                        // ★ Google 評論連結
+                        reviewLink: "https://maps.app.goo.gl/GogoMVRZ79Bem3N97", 
+                        // ★Tabelog、官網、IG
+                        link: "https://tabelog.com/tw/okinawa/A4701/A470101/47029564/", 
+                        detailInfo: { 
+                            // ★ 詳細介紹
+                            desc: `這家店走的是<b>「霓虹港風 x 沖繩老宅」</b>路線，被稱為「新派中華 (Neo Chinese)」。<br><br><b>🏮 氛圍：王家衛電影感</b><br>店內充滿紅色與綠色霓虹燈，很有 Cyberpunk (賽博龐克) 感，像電影《墮落天使》的場景，隨便拍都像網美照。<br><br><b>⚠️ 沖繩超人提醒：</b><br>1. <b>菸味警報</b>：23:00 後通常全面開放吸菸。<br>2. <b>費用細節</b>：有座席費 (Otoshi) 約 ¥330/人，且每人低消一杯飲料。<br><br><b>📜 菜單參考 (點圖放大)：</b><br><img src="https://lh3.googleusercontent.com/d/17PkYEaYV4tlEtUtuAJOQCpzK1lRbNaCc" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
+                            tags: ["新中華","霓虹港風","深夜營業","網美"], 
+                            highlights: [
+                                "📸 視覺：王家衛電影風格 (超好拍)",
+                                "🔥 必點：四川藥膳麻婆豆腐 (花椒麻)",
+                                "🍹 打卡：凍檸塔 (整顆檸檬堆高高)",
+                                "🥟 點心：溢汁小籠包 / 燒賣"
+                            ],
+                            menu:[
+                                {n:"藥膳麻婆豆腐", j:"四川薬膳麻婆豆腐", p:"¥980"},
+                                {n:"蛙吽黑炒飯", j:"蛙吽炒飯BLACK", p:"¥1,100"},
+                                {n:"凍檸塔沙瓦", j:"凍結タワーレモンサワー", p:"¥630"},
+                                {n:"座席費(Otoshi)", j:"お通し代", p:"¥330"}
+                            ] 
+                        } ,
+                    }  
+                ],
+                travel: { mode: 'drive', time: '30分' } 
+            },
             { 
                 time: "17:30", title: "Gangala之谷 導覽", type: "spot", mapCode: "232 495 330*28", 
                 bookingInfo: { 
@@ -1227,14 +1522,18 @@ function getPrepListHTML() {
                 }, 
                 detailInfo: { desc: "太古森林導覽，集合時間 17:30。", tags: ["自然", "導覽"], highlights: ["巨大榕樹", "CAVE CAFE"] }, travel: { mode: 'drive', time: '40分' } 
             },
+            { time: "17:00", title: "奧武島 (貓島)", type: "spot", mapCode: "232 468 336*41", guide: "必買：中本鮮魚店天婦羅。", travel: { mode: 'drive', time: '60分' } },
             { 
-                time: "20:00", title: "東橫INN 那霸旭橋", type: "hotel", mapCode: "33 126 733*12",
+                time: "18:45", title: "東橫INN 那霸旭橋", type: "hotel", mapCode: "33 126 733*12",
                 bookingInfo: { 
                     code: "5892799 / 5892800", 
                     note: "會員卡 (現場付)" 
-                } 
+                },
+                travel: { mode: 'walk', time: '10分' }
             },
-            { time: "21:00", title: "AEON 超市 / 國際通", type: "spot", guide: "買半價品、零食伴手禮。" }
+            { time: "19:00", leaveTime:"21:00", title:"鳥貴族Torikizoku", type: "eat", guide: "買半價品、零食伴手禮。", travel: { mode: 'drive', time: '10分' } },
+            { time: "21:10",leaveTime:"23:30", title: "國際通", type: "spot", guide: "購物。", travel: { mode: 'drive', time: '8分' } },
+            { time: "24:00", title: "東橫INN 那霸旭橋", type: "hotel", }, 
         ]
     },
     {
@@ -1597,6 +1896,19 @@ function renderVouchers() {
                 loadData(localData); 
             }
         }
+
+        // --- 補上遺失的篩選功能 ---
+function updateFilter(type, value) {
+    // 1. 更新全域變數
+    if (type === 'category') {
+        currentCategoryFilter = value;
+    } else if (type === 'store') {
+        currentStoreFilter = value;
+    }
+    
+    // 2. 重新渲染購物清單 (這時候 renderShopping 會去讀取更新後的變數)
+    renderShopping();
+}
 
         // 2. 切換分頁函式 (這就是按鈕點擊後要執行的功能)
 function switchBudgetTab(tab) {
@@ -2031,7 +2343,20 @@ function createEventCard(event, dayIdx, evtIdx) {
 
         function renderShopModalHTML(key, item = {}) {
             const modalSheet = document.querySelector('#modal-shopping .modal-sheet');
-            modalSheet.innerHTML = `<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gray-700" id="shop-modal-title">${key ? '編輯商品' : '新增必買 & 比價'}</h3><button onclick="closeModal('modal-shopping')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><input type="hidden" id="in-shop-key" value="${key || ''}"><input id="in-shop-img" placeholder="圖片連結 URL 或 檔名 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm mb-2" value="${item.imgUrl || ''}"><div class="grid grid-cols-3 gap-2 mb-2"><select id="in-shop-cat" class="p-3 bg-white rounded-xl border border-orange-200 font-bold text-gray-700">${['藥妝','零食','門票','電器','衣物','雜貨'].map(c => `<option value="${c}" ${item.category===c?'selected':''}>${c}</option>`).join('')}</select><input id="in-shop-store" placeholder="商店 (如: 大國)" class="col-span-2 p-3 bg-gray-50 rounded-xl border border-gray-200" value="${item.store || ''}"></div><input id="in-shop-item" placeholder="品名 (如: 合利他命)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${item.item || ''}"><div class="grid grid-cols-2 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100 mb-2"><div><label class="text-xs text-gray-500 font-bold">🇹🇼 台灣售價</label><input id="in-shop-tw" type="number" placeholder="NT$" class="w-full p-2 bg-white rounded border border-blue-200 mt-1" value="${item.priceTw || ''}"></div><div><label class="text-xs text-gray-500 font-bold">🇯🇵 日本售價</label><input id="in-shop-jp" type="number" placeholder="¥" class="w-full p-2 bg-white rounded border border-blue-200 mt-1" value="${item.priceJp || ''}"></div><div class="col-span-2 text-center text-xs text-blue-500 pt-1">輸入日本價格自動計算匯率 (${JPY_RATE})</div></div><textarea id="in-shop-note" placeholder="備註：規格、代買人、細節 (不會顯示在卡片上)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm h-20 mb-2 resize-none">${item.note || ''}</textarea><button onclick="saveShopItem()" class="w-full bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">儲存</button>`;
+            modalSheet.innerHTML = `<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gray-700" id="shop-modal-title">${key ? '編輯商品' : '新增必買 & 比價'}</h3><button onclick="closeModal('modal-shopping')" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><input type="hidden" id="in-shop-key" value="${key || ''}"><input id="in-shop-img" placeholder="圖片連結 URL 或 檔名 (選填)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm mb-2" value="${item.imgUrl || ''}"><div class="grid grid-cols-3 gap-2 mb-2">
+            <select id="in-shop-cat" class="p-3 bg-white rounded-xl border border-orange-200 font-bold text-gray-700">
+                ${['💊藥妝','🍪零食','🎟️門票','🔌電器','👚衣物','🧺雜貨'].map(c => `<option value="${c}" ${item.category===c?'selected':''}>${c}</option>`).join('')}
+            </select>
+            
+            <div class="col-span-2 relative">
+                <!-- 商店圖示 -->
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <!-- 輸入框 (加上 pl-10 留位置給圖示) -->
+                <input id="in-shop-store" placeholder="商店 (如: 大國)" class="w-full p-3 pl-10 bg-gray-50 rounded-xl border border-gray-200" value="${item.store || ''}">
+            </div>
+        </div><input id="in-shop-item" placeholder="品名 (如: 合利他命)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 mb-2" value="${item.item || ''}"><div class="grid grid-cols-2 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100 mb-2"><div><label class="text-xs text-gray-500 font-bold">🇹🇼 台灣售價</label><input id="in-shop-tw" type="number" placeholder="NT$" class="w-full p-2 bg-white rounded border border-blue-200 mt-1" value="${item.priceTw || ''}"></div><div><label class="text-xs text-gray-500 font-bold">🇯🇵 日本售價</label><input id="in-shop-jp" type="number" placeholder="¥" class="w-full p-2 bg-white rounded border border-blue-200 mt-1" value="${item.priceJp || ''}"></div><div class="col-span-2 text-center text-xs text-blue-500 pt-1">輸入日本價格自動計算匯率 (${JPY_RATE})</div></div><textarea id="in-shop-note" placeholder="備註：規格、代買人、細節 (不會顯示在卡片上)" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm h-20 mb-2 resize-none">${item.note || ''}</textarea><button onclick="saveShopItem()" class="w-full bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg mt-2">儲存</button>`;
         }
 
         function saveShopItem() {
@@ -2432,7 +2757,6 @@ function adjustQty(delta) {
         <img src="${img}" class="detail-header-img shrink-0">
         <div class="detail-body">
             <div class="flex items-center gap-2 mb-1">
-                <span class="text-sm text-gray-400">${event.time || '詳細資訊'}</span>
                 ${tagsHtml}
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2>
