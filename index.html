@@ -129,21 +129,19 @@
         /* 新增：置頂容器樣式 */
 .sticky-filters {
     position: sticky;
-    top: 72px; /* 配合 Header 高度 (約 70~80px)，固定在它下方 */
+    /* ★ 配合 Header 高度，跟行程表一樣設為 80px (或 84px) */
+    top: 80px; 
     z-index: 40;
     
-    /* 背景色與 body 一致，加一點透明度與模糊 */
     background-color: rgba(255, 248, 225, 0.95); 
     backdrop-filter: blur(5px);
     
-    /* 上下各留 20px，左右補回內距 */
-    padding: 20px 16px; 
+    /* ★ 設定內距：上下 12px, 左右 16px (跟日期選單一致) */
+    padding: 12px 16px; 
     
-    /* 關鍵：使用負邊界抵消原本 #app 的 padding，讓背景滿版 */
-    margin-left: -16px; 
-    margin-right: -16px;
+    /* ★ 關鍵：把原本的 margin-left/right 負值拿掉，設為 0 */
+    margin: 0;
     
-    /* 輕微陰影讓層次分明 */
     box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.05);
 }
 
@@ -212,9 +210,9 @@
 }
 .chart-container {
     position: relative; 
-    height: 250px; 
+    height: 200px; 
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 }
 .person-card {
     background: white;
@@ -230,7 +228,7 @@
     padding: 4px;
     border-radius: 12px;
     display: flex;
-    margin-bottom: 16px;
+    margin-bottom: 0;
 }
 .budget-tab-btn {
     flex: 1;
@@ -2109,137 +2107,149 @@ function renderVouchers() {
 
         // --- Render: Shopping ---
         function renderShopping() {
-            document.getElementById('header-desc').innerText = "購物清單";
-            const container = document.getElementById('app');
+    document.getElementById('header-desc').innerText = "購物清單";
+    const container = document.getElementById('app');
+    
+    // ★★★ 結構重構：使用 -m-4 建立滿版空間 ★★★
+    container.innerHTML = `
+        <div class="-m-4 relative">
+            <!-- 1. 懸浮按鈕 (FAB) -->
+            <button onclick="openEditShopModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
             
-            let html = `
-                <button onclick="openEditShopModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
-                <div id="shopping-controls" class="sticky-filters"></div>
-                <div id="shopping-list-container" class="space-y-4 pb-24">
-                    <div class="text-center text-gray-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
-                </div>`;
-            container.innerHTML = html;
+            <!-- 2. 置頂篩選器 (Sticky Header) -->
+            <!-- 內容會由 loadData 動態填入 -->
+            <div id="shopping-controls" class="sticky-filters"></div>
+            
+            <!-- 3. 列表內容 (Content) -->
+            <!-- px-4 補回左右邊距，pb-32 預留底部空間 -->
+            <div id="shopping-list-container" class="space-y-4 px-4 py-4 pb-30">
+                <div class="text-center text-gray-400 py-10"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
+            </div>
+        </div>`;
 
-            const loadData = (data) => {
-                const listContainer = document.getElementById('shopping-list-container');
-                const controlsContainer = document.getElementById('shopping-controls');
+    const loadData = (data) => {
+        const listContainer = document.getElementById('shopping-list-container');
+        const controlsContainer = document.getElementById('shopping-controls');
 
-                if(!data) { 
-                    controlsContainer.style.display = 'none';
-                    listContainer.innerHTML = '<div class="text-center text-gray-400 mt-10">清單是空的，點擊 + 新增</div>'; 
-                    return; 
-                }
-
-                const allEntries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
-                
-                const categories = new Set();
-                const stores = new Set();
-                allEntries.forEach(([_, item]) => {
-                    if(item.category) categories.add(item.category);
-                    if(item.store) stores.add(item.store);
-                });
-
-                const catOptions = Array.from(categories).map(c => `<option value="${c}" ${currentCategoryFilter===c?'selected':''}>${c}</option>`).join('');
-                const storeOptions = Array.from(stores).map(s => `<option value="${s}" ${currentStoreFilter===s?'selected':''}>${s}</option>`).join('');
-
-                controlsContainer.style.display = 'block';
-                controlsContainer.innerHTML = `
-                    <div class="filter-row">
-                        <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-                            <select class="filter-select" onchange="updateFilter('category', this.value)">
-                                <option value="all">全部種類</option>
-                                ${catOptions}
-                            </select>
-                            <select class="filter-select" onchange="updateFilter('store', this.value)">
-                                <option value="all">全部店舖</option>
-                                ${storeOptions}
-                            </select>
-                        </div>
-                        <div class="rate-badge"><i class="fa-solid fa-calculator mr-1"></i>匯率 ${JPY_RATE}</div>
-                    </div>`;
-
-                const filteredEntries = allEntries.filter(([_, item]) => {
-                    const catMatch = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
-                    const storeMatch = currentStoreFilter === 'all' || item.store === currentStoreFilter;
-                    return catMatch && storeMatch;
-                });
-
-                if (filteredEntries.length === 0) {
-                    listContainer.innerHTML = '<div class="text-center text-gray-400 py-8">沒有符合篩選條件的商品</div>';
-                    return;
-                }
-                
-                let itemsHtml = '';
-                filteredEntries.reverse().forEach(([key, item]) => {
-                    let savingsInfo = '';
-                    let twdEstimate = 0;
-                    if (item.priceJp) { 
-                        twdEstimate = Math.round(parseInt(item.priceJp) * JPY_RATE); 
-                        if (item.priceTw) { 
-                            const priceTw = parseInt(item.priceTw); 
-                            const diff = priceTw - twdEstimate;
-                            if (diff > 0) savingsInfo = `<span class="ml-2 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">省 $${diff}</span>`; 
-                            else if (diff < 0) savingsInfo = `<span class="ml-2 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">貴 $${Math.abs(diff)}</span>`;
-                        } 
-                    } 
-
-                    let imgSource = '';
-                    if (item.imgUrl) { 
-                        let rawUrl = item.imgUrl.startsWith('http') ? item.imgUrl : `./${item.imgUrl}`;
-                        imgSource = getDirectImageUrl(rawUrl); 
-                    }
-                    
-                    let imgBoxContent = '';
-                    let clickAction = '';
-                    let boxClass = 'shop-img-box';
-
-                    if (imgSource) {
-                        imgBoxContent = `<img src="${imgSource}" onerror="this.style.display='none'">`;
-                        clickAction = `onclick="openVoucherImage('${imgSource}')"`;
-                    } else {
-                        boxClass += ' no-image';
-                    }
-
-                    itemsHtml += `
-                        <div class="card p-4 flex gap-4 bg-white items-center ${item.done ? 'opacity-60' : ''}">
-                            <div>
-                                <input type="checkbox" onchange="toggleShopItem('${key}')" class="w-6 h-6 accent-blue-600 border-2 border-blue-600 rounded cursor-pointer" ${item.done ? 'checked' : ''}>
-                            </div>
-                            <div class="${boxClass}" ${clickAction}>${imgBoxContent}</div>
-                            <div class="flex-1 flex flex-col justify-between min-w-0 self-stretch">
-                                <div class="flex justify-between items-start mb-1">
-                                    <span class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded">${item.category || '未分類'}</span>
-                                    <button onclick="deleteShopItem('${key}')" class="text-gray-800 hover:text-red-500 transition"><i class="fa-solid fa-trash-can"></i></button>
-                                </div>
-                                <div class="mb-3">
-                                    <h3 class="font-bold text-gray-800 text-lg leading-snug break-words line-clamp-2">${item.item}</h3>
-                                    <div class="text-sm text-gray-500 mt-0.5">${item.store || ''}</div>
-                                </div>
-                                <div class="mt-auto">
-                                    <div class="text-gray-800 font-bold mb-2 flex items-center">台幣 : $ ${item.priceTw || '-'} ${savingsInfo}</div>
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-gray-600 font-bold">日幣</span>
-                                            <input type="number" placeholder="0" value="${item.priceJp || ''}" class="jp-price-input-clean" onchange="updateShopPrice('${key}', this.value)" onclick="event.stopPropagation()">
-                                            ${twdEstimate > 0 ? `<span class="text-xs text-gray-400">(≈$${twdEstimate})</span>` : ''}
-                                        </div>
-                                        <button onclick="openEditShopModal('${key}')" class="text-blue-600 text-lg hover:scale-110 transition px-2"><i class="fa-solid fa-pen"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                });
-                
-                listContainer.innerHTML = itemsHtml;
-            };
-
-            if(db) { 
-                db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); 
-            } else { 
-                const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || defaultShoppingList; 
-                loadData(localData); 
-            }
+        if(!data) { 
+            controlsContainer.style.display = 'none'; // 沒資料時隱藏篩選器
+            listContainer.innerHTML = '<div class="text-center text-gray-400 mt-20">清單是空的，點擊 + 新增</div>'; 
+            return; 
         }
+
+        const allEntries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
+        
+        // --- 產生篩選器選項 ---
+        const categories = new Set();
+        const stores = new Set();
+        allEntries.forEach(([_, item]) => {
+            if(item.category) categories.add(item.category);
+            if(item.store) stores.add(item.store);
+        });
+
+        const catOptions = Array.from(categories).map(c => `<option value="${c}" ${currentCategoryFilter===c?'selected':''}>${c}</option>`).join('');
+        const storeOptions = Array.from(stores).map(s => `<option value="${s}" ${currentStoreFilter===s?'selected':''}>${s}</option>`).join('');
+
+        controlsContainer.style.display = 'block';
+        controlsContainer.innerHTML = `
+            <div class="filter-row">
+                <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                    <select class="filter-select" onchange="updateFilter('category', this.value)">
+                        <option value="all">全部種類</option>
+                        ${catOptions}
+                    </select>
+                    <select class="filter-select" onchange="updateFilter('store', this.value)">
+                        <option value="all">全部店舖</option>
+                        ${storeOptions}
+                    </select>
+                </div>
+                <div class="rate-badge"><i class="fa-solid fa-calculator mr-1"></i>匯率 ${JPY_RATE}</div>
+            </div>`;
+
+        // --- 篩選邏輯 ---
+        const filteredEntries = allEntries.filter(([_, item]) => {
+            const catMatch = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
+            const storeMatch = currentStoreFilter === 'all' || item.store === currentStoreFilter;
+            return catMatch && storeMatch;
+        });
+
+        if (filteredEntries.length === 0) {
+            listContainer.innerHTML = '<div class="text-center text-gray-400 py-20">沒有符合篩選條件的商品</div>';
+            return;
+        }
+        
+        // --- 產生列表 HTML ---
+        let itemsHtml = '';
+        filteredEntries.reverse().forEach(([key, item]) => {
+            let savingsInfo = '';
+            let twdEstimate = 0;
+            if (item.priceJp) { 
+                twdEstimate = Math.round(parseInt(item.priceJp) * JPY_RATE); 
+                if (item.priceTw) { 
+                    const priceTw = parseInt(item.priceTw); 
+                    const diff = priceTw - twdEstimate;
+                    if (diff > 0) savingsInfo = `<span class="ml-2 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">省 $${diff}</span>`; 
+                    else if (diff < 0) savingsInfo = `<span class="ml-2 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">貴 $${Math.abs(diff)}</span>`;
+                } 
+            } 
+
+            let imgSource = '';
+            if (item.imgUrl) { 
+                let rawUrl = item.imgUrl.startsWith('http') ? item.imgUrl : `./${item.imgUrl}`;
+                imgSource = getDirectImageUrl(rawUrl); 
+            }
+            
+            let imgBoxContent = '';
+            let clickAction = '';
+            let boxClass = 'shop-img-box';
+
+            if (imgSource) {
+                imgBoxContent = `<img src="${imgSource}" onerror="this.style.display='none'">`;
+                clickAction = `onclick="openVoucherImage('${imgSource}')"`;
+            } else {
+                boxClass += ' no-image';
+            }
+
+            itemsHtml += `
+                <div class="card p-4 flex gap-4 bg-white items-center ${item.done ? 'opacity-60' : ''}">
+                    <div>
+                        <input type="checkbox" onchange="toggleShopItem('${key}')" class="w-6 h-6 accent-blue-600 border-2 border-blue-600 rounded cursor-pointer" ${item.done ? 'checked' : ''}>
+                    </div>
+                    <div class="${boxClass}" ${clickAction}>${imgBoxContent}</div>
+                    <div class="flex-1 flex flex-col justify-between min-w-0 self-stretch">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded">${item.category || '未分類'}</span>
+                            <button onclick="deleteShopItem('${key}')" class="text-gray-800 hover:text-red-500 transition"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <div class="mb-3">
+                            <h3 class="font-bold text-gray-800 text-lg leading-snug break-words line-clamp-2">${item.item}</h3>
+                            <div class="text-sm text-gray-500 mt-0.5">${item.store || ''}</div>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="text-gray-800 font-bold mb-2 flex items-center">台幣 : $ ${item.priceTw || '-'} ${savingsInfo}</div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-600 font-bold">日幣</span>
+                                    <input type="number" placeholder="0" value="${item.priceJp || ''}" class="jp-price-input-clean" onchange="updateShopPrice('${key}', this.value)" onclick="event.stopPropagation()">
+                                    ${twdEstimate > 0 ? `<span class="text-xs text-gray-400">(≈$${twdEstimate})</span>` : ''}
+                                </div>
+                                <button onclick="openEditShopModal('${key}')" class="text-blue-600 text-lg hover:scale-110 transition px-2"><i class="fa-solid fa-pen"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+        
+        listContainer.innerHTML = itemsHtml;
+    };
+
+    if(db) { 
+        db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); 
+    } else { 
+        const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || defaultShoppingList; 
+        loadData(localData); 
+    }
+}
 
         // --- 補上遺失的篩選功能 ---
 function updateFilter(type, value) {
@@ -2266,18 +2276,30 @@ function renderBudget() {
     document.getElementById('header-desc').innerText = "記帳本 & 分帳";
     const container = document.getElementById('app');
 
-    // 建立分頁按鈕與內容容器
+    // ★★★ 結構重構：-m-4 包裹 + 置頂分頁按鈕 ★★★
+    // 這裡我們手動建立一個 sticky header 來放按鈕
     const tabsHtml = `
-        <div class="budget-tab-container">
-            <button onclick="switchBudgetTab('details')" class="budget-tab-btn ${currentBudgetTab === 'details' ? 'active' : ''}">
-                <i class="fa-solid fa-list-ul mr-1"></i> 明細
-            </button>
-            <button onclick="switchBudgetTab('overview')" class="budget-tab-btn ${currentBudgetTab === 'overview' ? 'active' : ''}">
-                <i class="fa-solid fa-chart-pie mr-1"></i> 總覽
-            </button>
-        </div>
-        <div id="budget-content-area">
-            <div class="text-center text-gray-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
+        <div class="-m-4 relative">
+            <!-- 1. 懸浮按鈕 (FAB) - 放在這層也可以 -->
+            <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
+
+            <!-- 2. 置頂分頁選單 (Sticky) -->
+            <div class="sticky top-[80px] z-40 bg-[rgba(255,248,225,0.95)] backdrop-blur-sm px-4 py-3 shadow-[0_4px_6px_-4px_rgba(0,0,0,0.05)]">
+                <div class="budget-tab-container">
+                    <button onclick="switchBudgetTab('details')" class="budget-tab-btn ${currentBudgetTab === 'details' ? 'active' : ''}">
+                        <i class="fa-solid fa-list-ul mr-1"></i> 明細
+                    </button>
+                    <button onclick="switchBudgetTab('overview')" class="budget-tab-btn ${currentBudgetTab === 'overview' ? 'active' : ''}">
+                        <i class="fa-solid fa-chart-pie mr-1"></i> 總覽
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. 內容區塊 (Content) -->
+            <!-- 補回 px-4, py-4, 並預留底部 -->
+            <div id="budget-content-area" class="px-4 py-4 pb-30">
+                <div class="text-center text-gray-400 py-10"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
+            </div>
         </div>
     `;
     container.innerHTML = tabsHtml;
@@ -2285,24 +2307,31 @@ function renderBudget() {
     const loadData = (data) => {
         const contentArea = document.getElementById('budget-content-area');
         
-        // 初始化統計變數
-        let totalByCat = {};
+        // 1. 初始化變數
+        let catStats = {}; // 改用物件來存：{ 金額, 筆數 }
         let personalTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '姊姊': 0 };
         let expenseListHtml = '';
+        let grandTotal = 0; // 總支出金額
+        
         const hasData = !!data;
         
         if (hasData) {
             const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
             
-            // 遍歷資料進行計算
+            // 2. 遍歷資料進行計算
             entries.reverse().forEach(([key, ex]) => {
                 const amount = parseInt(ex.amount);
                 const amountTwd = ex.currency === 'TWD' ? amount : Math.round(amount * JPY_RATE);
                 
-                // 1. 累加分類統計
-                totalByCat[ex.category] = (totalByCat[ex.category] || 0) + amountTwd;
+                // ★ 新增：統計類別的金額與筆數
+                if (!catStats[ex.category]) {
+                    catStats[ex.category] = { amount: 0, count: 0 };
+                }
+                catStats[ex.category].amount += amountTwd;
+                catStats[ex.category].count += 1;
+                grandTotal += amountTwd;
 
-                // 2. 累加分帳統計
+                // 統計分帳 (保持不變)
                 if (ex.splitDetails) {
                     ex.splitDetails.forEach(detail => {
                         if(personalTotal[detail.name] !== undefined) {
@@ -2315,7 +2344,7 @@ function renderBudget() {
                     if(personalTotal[payer] !== undefined) personalTotal[payer] += amountTwd;
                 }
 
-                // 3. 準備明細列表 (僅當在明細頁時需要)
+                // 產生明細列表 HTML (保持不變)
                 if (currentBudgetTab === 'details') {
                     let icon = '💸'; 
                     if(ex.category === '食物') icon = '🍔'; if(ex.category === '購物') icon = '🛍️'; 
@@ -2358,27 +2387,19 @@ function renderBudget() {
             });
         }
 
-        // --- 根據目前分頁渲染內容 ---
+        // 3. 渲染內容區
         if (currentBudgetTab === 'details') {
-            // [明細頁]
             if (!hasData) {
-                contentArea.innerHTML = `
-                    <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
-                    <div class="text-center text-gray-400 py-10">目前沒有支出，點擊 + 記帳</div>
-                `;
+                contentArea.innerHTML = '<div class="text-center text-gray-400 py-10">目前沒有支出，點擊 + 記帳</div>';
             } else {
-                contentArea.innerHTML = `
-                    <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
-                    <div class="space-y-3 pb-24 animation-fade">
-                        ${expenseListHtml}
-                    </div>
-                `;
+                contentArea.innerHTML = `<div class="space-y-3 animation-fade">${expenseListHtml}</div>`;
             }
         } else {
-            // [總覽頁]
+            // [總覽頁] Overview
             if (!hasData) {
                 contentArea.innerHTML = '<div class="text-center text-gray-400 py-10">尚無資料可分析</div>';
             } else {
+                // A. 每人應付 (Card)
                 let personalHtml = '';
                 Object.keys(personalTotal).forEach(name => {
                     personalHtml += `
@@ -2390,14 +2411,78 @@ function renderBudget() {
                         </div>`;
                 });
 
+                // B. ★★★ 新增：類別長條圖列表 ★★★
+                
+                // 1. 定義顏色與圖示設定
+                const catConfig = {
+                    '食物': { icon: 'fa-utensils', color: 'bg-orange-400', iconBg: 'bg-orange-100', text: 'text-orange-600' },
+                    '購物': { icon: 'fa-bag-shopping', color: 'bg-pink-400', iconBg: 'bg-pink-100', text: 'text-pink-600' },
+                    '交通': { icon: 'fa-car', color: 'bg-blue-400', iconBg: 'bg-blue-100', text: 'text-blue-600' },
+                    '門票': { icon: 'fa-ticket', color: 'bg-green-400', iconBg: 'bg-green-100', text: 'text-green-600' },
+                    '其他': { icon: 'fa-shapes', color: 'bg-gray-400', iconBg: 'bg-gray-100', text: 'text-gray-600' }
+                };
+
+                // 2. 排序並產生 HTML
+                // 將 catStats 轉為陣列並依金額由大到小排序
+                const sortedCats = Object.entries(catStats).sort((a, b) => b[1].amount - a[1].amount);
+                
+                let catListHtml = `<div class="mt-6 space-y-5 px-1">`;
+                let chartDataObj = {}; // 給圓餅圖用的資料
+
+                sortedCats.forEach(([catName, stats]) => {
+                    chartDataObj[catName] = stats.amount; // 蒐集給圓餅圖
+                    
+                    const cfg = catConfig[catName] || catConfig['其他'];
+                    const percent = grandTotal > 0 ? ((stats.amount / grandTotal) * 100).toFixed(1) : 0;
+                    
+                    catListHtml += `
+                        <div class="flex items-center gap-3">
+                            <!-- 左側圖示 -->
+                            <div class="w-10 h-10 rounded-full ${cfg.iconBg} ${cfg.text} flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-solid ${cfg.icon}"></i>
+                            </div>
+                            
+                            <!-- 中間：類別、筆數、進度條 -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-end mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-700">${catName}</span>
+                                        <span class="text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">${stats.count} 筆</span>
+                                    </div>
+                                    <div class="font-bold text-gray-800">
+                                        <span class="text-xs mr-0.5">$</span>${stats.amount.toLocaleString()}
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-bold w-12 text-right shrink-0 text-gray-500">${percent}%</span>
+                                    <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full ${cfg.color} rounded-full" style="width: ${percent}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                catListHtml += `</div>`;
+
+                // C. 組合總覽頁面 HTML
                 contentArea.innerHTML = `
-                    <div class="space-y-4 pb-24 animation-fade">
-                        <div class="card p-4 bg-white">
-                            <h3 class="font-bold text-gray-700 mb-2 text-center text-sm">📊 消費分類統計 (NT$)</h3>
+                    <div class="space-y-4 animation-fade">
+                        
+                        <!-- 卡片 1: 圓餅圖 -->
+                        <div class="card p-5 bg-white">
+                            <h3 class="font-bold text-gray-700 mb-2 text-center text-sm">📊 消費佔比圓餅圖</h3>
                             <div class="chart-container">
                                 <canvas id="expenseChart"></canvas>
                             </div>
                         </div>
+
+                        <!-- 卡片 2: 類別長條圖列表 (獨立出來了！) -->
+                        <div class="card p-5 bg-white">
+                            <h3 class="font-bold text-gray-700 mb-4 text-sm border-b pb-2">支出分類詳情</h3>
+                            ${catListHtml}
+                        </div>
+
+                        <!-- 卡片 3: 每人應付 -->
                         <div class="card p-4 bg-orange-50 border-orange-200">
                             <h3 class="font-bold text-gray-700 mb-3 text-sm"><i class="fa-solid fa-users-viewfinder mr-2"></i>每人應付總額 (NT$)</h3>
                             <div class="grid grid-cols-2 gap-3">
@@ -2407,9 +2492,9 @@ function renderBudget() {
                     </div>
                 `;
                 
-                // 加上延遲確保 Canvas 已存在
+                // 延遲繪製圓餅圖
                 setTimeout(() => {
-                    renderChart(totalByCat);
+                    renderChart(chartDataObj);
                 }, 50);
             }
         }
@@ -2420,44 +2505,6 @@ function renderBudget() {
     } else { 
         const localData = JSON.parse(localStorage.getItem(EXPENSE_KEY)) || []; 
         loadData(localData); 
-    }
-}
-
-// 4. 圖表繪製函式
-function renderChart(dataObj) {
-    const ctx = document.getElementById('expenseChart');
-    if (!ctx) return;
-    
-    if (budgetChart) { 
-        try { budgetChart.destroy(); } catch(e) { console.log(e); }
-    }
-
-    const labels = Object.keys(dataObj);
-    const data = Object.values(dataObj);
-    const colors = ['#FFAB91', '#FFCC80', '#B2EBF2', '#E1BEE7', '#DCEDC8', '#F8BBD0', '#90CAF9'];
-
-    try {
-        budgetChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colors,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'right', labels: { font: { family: "'M PLUS Rounded 1c'" }, boxWidth: 12 } }
-                }
-            }
-        });
-    } catch (e) {
-        console.error("圖表繪製失敗:", e);
-        ctx.parentNode.innerHTML = '<div class="text-red-400 text-xs text-center py-4">圖表載入失敗，請重新整理</div>';
     }
 }
 
@@ -2508,17 +2555,22 @@ function renderChart(dataObj) {
 // --- 建立行程卡片 HTML (修復 prep 卡片崩潰問題) ---
 function createEventCard(event, dayIdx, evtIdx) {
     
-    // 共用邏輯：生成時間與離開時間 HTML
-    let timeHtml = `<div class="font-bold text-xl text-gray-700 leading-none">${event.time}</div>`;
+    // 1. 時間顯示處理
+    let timeHtml = `<div class="font-bold text-xl text-gray-700 leading-none tracking-tight">${event.time}</div>`;
     if (event.leaveTime) {
-        timeHtml += `<div class="text-[10px] text-red-500 font-bold mt-1 border border-red-200 px-1 rounded bg-red-50 whitespace-nowrap">~${event.leaveTime}</div>`;
+        timeHtml += `<div class="text-[10px] text-red-400 font-bold mt-0.5 whitespace-nowrap">~${event.leaveTime}</div>`;
     }
 
-    // ★ 關鍵修正：準備事項 (prep) 卡片邏輯
+    // 2. 準備標籤樣式 (移到前面定義)
+    // 預設樣式
+    let tagClass = event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans';
+    let tagName = event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通';
+
+    // 3. 特殊卡片處理
+    
+    // Type A: 準備事項 (Prep) - 維持原樣，因為結構特殊
     if (event.type === 'prep') {
         let rightSideHtml = '';
-        
-        // 情況 A: 有出發時間 (例如: 早餐)
         if (event.departureTime) {
             rightSideHtml = `
                 <div class="text-right shrink-0 ml-2">
@@ -2526,16 +2578,13 @@ function createEventCard(event, dayIdx, evtIdx) {
                     <div class="text-2xl font-bold text-purple-900">${event.departureTime.split(' ')[0]}</div>
                     <div class="text-xs text-purple-700">準時出發 🚗</div>
                 </div>`;
-        } 
-        // 情況 B: 有 APP 下載連結 (例如: 蝦蝦飯)
-        else if (event.appLink) {
+        } else if (event.appLink) {
             rightSideHtml = `
                 <a href="${event.appLink.url}" target="_blank" class="shrink-0 ml-2 flex flex-col items-center text-purple-600 bg-white px-3 py-2 rounded-lg shadow-sm border border-purple-100 active:scale-95 transition">
                     <i class="${event.appLink.icon} text-xl mb-1"></i>
                     <span class="text-[10px] font-bold">${event.appLink.text}</span>
                 </a>`;
         }
-
         return `
             <div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center">
                 <div class="flex-1">
@@ -2547,21 +2596,18 @@ function createEventCard(event, dayIdx, evtIdx) {
             </div>`;
     }
 
-    // 1. 左右滑動選擇 (例如：晚餐二選一)
+    // Type B: 二選一 (Choice) - 維持滑動結構
     if (event.type === 'choice') {
         const choicesHtml = event.choices.map((c, cIdx) => {
             const targetUrl = c.navLink || c.link || `https://www.google.com/maps/search/?api=1&query=${c.title}+沖繩`;
-            
             let travelTimeHtml = '';
             if (c.travelTime) {
                 const icon = (c.travelTime.includes('步') || c.travelTime.includes('走')) ? 'fa-person-walking' : 'fa-car';
                 travelTimeHtml = `<span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-full border border-gray-200 shrink-0 flex items-center gap-1"><i class="fa-solid ${icon}"></i> ${c.travelTime}</span>`;
             }
-
-            // ★★★ 修改重點：動態判斷標籤顏色與文字 ★★★
+            // 動態標籤
             const choiceTagClass = c.type === 'spot' ? 'tag-spot' : 'tag-eat';
             const choiceTagName = c.type === 'spot' ? '景點' : '美食';
-            // ★★★ 結束 ★★★
 
             return `
             <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm relative flex flex-col" 
@@ -2570,7 +2616,6 @@ function createEventCard(event, dayIdx, evtIdx) {
                     <h4 class="font-bold text-lg text-gray-800 line-clamp-1">${c.title}</h4>
                     <div class="flex gap-1 shrink-0">
                         ${travelTimeHtml}
-                        <!-- 這裡使用變數，不再寫死 -->
                         <span class="text-xs px-2 py-1 rounded-full ${choiceTagClass} flex items-center">${choiceTagName}</span>
                     </div>
                 </div>
@@ -2585,7 +2630,7 @@ function createEventCard(event, dayIdx, evtIdx) {
         return `
             <div class="overflow-hidden">
                 <div class="flex items-start gap-3 mb-2 px-1">
-                    <div class="min-w-[55px] flex flex-col items-center pt-1">${timeHtml}</div>
+                    <div class="min-w-[60px] flex flex-col items-center pt-1">${timeHtml}</div>
                     <h3 class="font-bold text-lg text-gray-800 pt-0.5">${event.title}</h3>
                 </div>
                 <div class="flex gap-4 overflow-x-auto snap-x-mandatory hide-scrollbar pb-4 px-1">
@@ -2594,11 +2639,16 @@ function createEventCard(event, dayIdx, evtIdx) {
             </div>`;
     }
 
-    // 3. 一般行程
+    // Type C: 一般行程 (Normal) - ★★★ 這裡大改版 ★★★
+    
+    // 產生預覽內容 (Preview Content)
     let previewContent = '';
-    if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
+    
+    // 角色專屬資訊
+    if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block text-gray-600"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
     if (currentRole === 'admin' && event.bookingInfo) previewContent = `<div class="mt-2 text-xs text-red-500 font-bold"><i class="fa-solid fa-ticket mr-1"></i> ${event.bookingInfo.note}</div>`;
     
+    // 班次資訊
     if (event.frequency) {
         let timeLinkHtml = '';
         if (event.timetableUrl) {
@@ -2610,12 +2660,20 @@ function createEventCard(event, dayIdx, evtIdx) {
         }
         previewContent += `<div class="mt-2 text-xs text-blue-600 font-bold"><i class="fa-solid fa-clock"></i> ${event.frequency} ${timeLinkHtml}</div>`;
     }
+
+    // 說明文字 (Guide) - 現在會佔滿寬度
+    if (event.guide) {
+        previewContent += `
+            <div class="mt-2 text-sm text-gray-600 flex items-start leading-snug">
+                <i class="fa-solid fa-circle-info text-orange-400 mr-1.5 mt-0.5 shrink-0 text-xs"></i>
+                <span>${event.guide}</span>
+            </div>`;
+    }
     
-    let clickAction = (event.type === 'eat' || event.type === 'spot') ? `onclick="openDetailModal(${dayIdx}, ${evtIdx})"` : `onclick="toggleCard(this)"`;
-    
+    // 憑證按鈕
     let voucherBtn = '';
     if (event.bookingInfo) {
-        const btnClass = "mt-2 w-full text-center bg-red-50 text-red-600 py-1.5 rounded-lg text-xs font-bold border border-red-100 hover:bg-red-100 transition pointer-events-auto flex items-center justify-center gap-1 shadow-sm";
+        const btnClass = "mt-3 w-full text-center bg-red-50 text-red-600 py-2 rounded-lg text-xs font-bold border border-red-100 hover:bg-red-100 transition pointer-events-auto flex items-center justify-center gap-1 shadow-sm";
         if (event.bookingInfo.driveLink) {
             voucherBtn = `<button onclick="openVoucherImage('${event.bookingInfo.driveLink}'); event.stopPropagation();" class="${btnClass}"><i class="fa-solid fa-file-pdf"></i> 預覽憑證 (PDF)</button>`;
         } else if (event.bookingInfo.voucherImg) {
@@ -2625,31 +2683,51 @@ function createEventCard(event, dayIdx, evtIdx) {
         }
     }
 
+    // 導航按鈕
     let navIconBtn = '';
     if (['spot', 'hotel', 'eat'].includes(event.type)) {
         const targetUrl = event.navLink ? event.navLink : `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`;
-        navIconBtn = `<a href="${targetUrl}" target="_blank" class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0 ml-2" onclick="event.stopPropagation()"><i class="fa-solid fa-location-arrow text-sm"></i></a>`;
+        navIconBtn = `<a href="${targetUrl}" target="_blank" class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0" onclick="event.stopPropagation()"><i class="fa-solid fa-location-arrow text-sm"></i></a>`;
     }
 
-    const tagClass = event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans';
-    const tagName = event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通';
+    // 點擊行為
+    let clickAction = (event.type === 'eat' || event.type === 'spot') ? `onclick="openDetailModal(${dayIdx}, ${evtIdx})"` : `onclick="toggleCard(this)"`;
 
+    // ★★★ 組合 HTML (新版排版) ★★★
     return `
-        <div class="card p-5" ${clickAction}>
+        <div class="card p-4" ${clickAction}>
             <div class="flex items-start gap-3 pointer-events-none">
-                <div class="min-w-[55px] flex flex-col items-center pt-1">
+                
+                <!-- 左側：時間 + 標籤 -->
+                <div class="flex flex-col items-center min-w-[60px] pt-1 shrink-0">
                     ${timeHtml}
+                    <!-- 標籤移到這裡 -->
+                    <span class="text-[10px] px-2 py-0.5 rounded-full ${tagClass} mt-2 w-full text-center truncate">${tagName}</span>
                 </div>
+
+                <!-- 右側：主要內容區 -->
                 <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-lg text-gray-800 leading-tight">${event.title}</h3>
-                    ${event.appLink ? `<a href="${event.appLink.url}" class="mt-2 inline-block bg-black text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}
-                    <span class="text-xs px-2 py-1 rounded-full ${tagClass} block w-fit mt-1">${tagName}</span>
-                    ${previewContent}
-                    ${voucherBtn}
+                    
+                    <!-- 上層：標題 + 導航按鈕 -->
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="min-w-0">
+                            <h3 class="font-bold text-lg text-gray-800 leading-tight">${event.title}</h3>
+                            ${event.appLink ? `<a href="${event.appLink.url}" class="mt-1 inline-block bg-black text-white px-2 py-1 rounded text-xs font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}
+                        </div>
+                        ${navIconBtn}
+                    </div>
+
+                    <!-- 下層：內容 (滿版寬度) -->
+                    <!-- 這裡的內容現在會出現在標題下方，寬度不受導航按鈕限制 -->
+                    <!-- mt-1 = 4px, mt-2 = 8px, mt-3 = 12px, mt-4 = 16px -->
+                    <div class="mt-3">
+                        ${previewContent}
+                        ${voucherBtn}
+                    </div>
                 </div>
-                ${navIconBtn}
             </div>
 
+            <!-- 詳細內容 (隱藏區塊) -->
             <div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">
                 ${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}
                 ${event.bookingInfo ? `<div class="ticket-box"><div class="text-sm opacity-70">預約憑證 / 訂單號</div><div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div><div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div></div>` : ''}
