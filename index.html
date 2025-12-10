@@ -662,10 +662,11 @@ function getPrepListHTML() {
                     code: "5892799 / 5892800", 
                     note: "會員卡 Check-in (現場付)",
                     driveLink: "https://drive.google.com/file/d/1LxppScaTh2hwfZVWykidQtgDm9UagXeQ/view?usp=drive_link"
-                } 
+                },
+                travel: { mode: 'walk', time: '10分' }, 
             },
             { 
-                time: "22:30", title: "晚餐二選一", type: "choice", 
+                time: "22:30", leaveTime:"23:30", title: "晚餐二選一", type: "choice", 
                 choices: [ 
                     { 
                         title: "蝦湯拉麵", 
@@ -788,13 +789,16 @@ function getPrepListHTML() {
                                 {n:"經典原味舒芙蕾", j:"クラシックパンケーキ", p:"¥1,000"},
                                 {n:"沖繩紫薯舒芙蕾", j:"紅芋パンケーキ", p:"¥1,500"},
                                 {n:"義式冰淇淋", j:"ジェラートダブル", p:"¥700"}
-                            ] 
-                        } 
-                    }  
-                ] 
-            }
-            
-        ]
+                            ], 
+                        }, 
+                    },  
+                ],
+                travel: { mode: 'walk', time: '15分' },  
+            },
+            { 
+                time: "00:00", title: "東橫INN 美榮橋", type: "hotel", guide:"早點休息，明天也要早起。",
+            },
+        ],
     },
     {
         date: "12/26", fullDate: "2025/12/26", day: "週五", weather: "☀️ 21°C",
@@ -1004,9 +1008,9 @@ function getPrepListHTML() {
                             ],
                             
                             menu: [
-                                {n: "海膽焗烤龍蝦(半隻)", p: "¥2,800~"}, 
-                                {n: "海膽焗烤龍蝦(整隻)", p: "¥5,000~"},
-                                {n: "炸魚/花枝天婦羅", p: "¥100~"}
+                                {n: "海膽焗烤龍蝦(半隻)", j:"シナモンロール", p: "¥2,800~"}, 
+                                {n: "海膽焗烤龍蝦(整隻)", j:"シナモンロール", p: "¥5,000~"},
+                                {n: "炸魚/花枝天婦羅", j:"シナモンロール", p: "¥100~"}
                             ]
                         }
                     },
@@ -1036,9 +1040,9 @@ function getPrepListHTML() {
                             ],
                             
                             menu: [
-                                {n: "IKINARI STEAK", p: "秤重計價"},
-                                {n: "現烤冰淇淋菠蘿麵包", p: "¥450"},
-                                {n: "Blue Seal 冰淇淋", p: "¥350"}
+                                {n: "IKINARI STEAK", j:"シナモンロール", p: "秤重計價"},
+                                {n: "現烤冰淇淋菠蘿麵包", j:"シナモンロール", p: "¥450"},
+                                {n: "Blue Seal 冰淇淋", j:"シナモンロール", p: "¥350"}
                             ]
                         }
                     }
@@ -1076,9 +1080,9 @@ function getPrepListHTML() {
                         "🥢 加點：海葡萄、炸紅芋天婦羅"
                     ],
                     menu: [
-                        {n: "阿古豬涮涮鍋", p: "¥3,500~"}, 
-                        {n: "阿古豬蒸籠料理", p: "¥3,500~"},
-                        {n: "海葡萄", p: "¥600"}
+                        {n: "阿古豬涮涮鍋", j:"シナモンロール", p: "¥3,500~"}, 
+                        {n: "阿古豬蒸籠料理", j:"シナモンロール", p: "¥3,500~"},
+                        {n: "海葡萄", j:"シナモンロール", p: "¥600"}
                     ] 
                 }, 
                 
@@ -1125,9 +1129,9 @@ function getPrepListHTML() {
                     ],
                     
                     menu: [
-                        {n: "Blue Seal 冰淇淋", p: "¥350"},
-                        {n: "PoKe's 豬肉蛋飯糰", p: "¥400"},
-                        {n: "Benson's 熱狗", p: "¥500"}
+                        {n: "Blue Seal 冰淇淋", j:"シナモンロール", p: "¥350"},
+                        {n: "PoKe's 豬肉蛋飯糰", j:"シナモンロール", p: "¥400"},
+                        {n: "Benson's 熱狗", j:"シナモンロール", p: "¥500"}
                     ]
                 },
                 travel: { mode: 'walk', time: '5分' }
@@ -1206,10 +1210,10 @@ function getPrepListHTML() {
                     ],
                     
                     menu: [
-                        {n: "美麗海門票(大人)", p: "¥1,850"},
-                        {n: "10円饅頭(10個)", p: "¥200~"},
-                        {n: "黃金球(開口笑)", p: "¥100"},
-                        {n: "Oppa牛奶冰淇淋", p: "¥100"}
+                        {n: "美麗海門票(大人)", j:"シナモンロール", p: "¥1,850"},
+                        {n: "10円饅頭(10個)", j:"シナモンロール", p: "¥200~"},
+                        {n: "黃金球(開口笑)", j:"シナモンロール", p: "¥100"},
+                        {n: "Oppa牛奶冰淇淋",j:"シナモンロール",  p: "¥100"}
                     ]
                 }, 
                 
@@ -1245,16 +1249,17 @@ function getPrepListHTML() {
                     ],
                     
                     menu: [
-                        {n: "蘑菇麵包", p: "¥200~"},
-                        {n: "咖哩麵包", p: "¥220~"},
-                        {n: "明太子法國", p: "¥280"}
+                        {n: "蘑菇麵包", j:"シナモンロール", p: "¥200~"},
+                        {n: "咖哩麵包", j:"シナモンロール", p: "¥220~"},
+                        {n: "明太子法國", j:"シナモンロール", p: "¥280"}
                     ]
                 }, 
                 
                 travel: { mode: 'drive', time: '30分' } 
             },
             { 
-                time: "11:00", 
+                time: "10:45",
+                leaveTime:"12:15", 
                 title: "午餐：古宇利蝦蝦飯", 
                 type: "eat", 
                 
@@ -1297,20 +1302,80 @@ function getPrepListHTML() {
                 leaveTime: "13:00",
                 title: "Shinmei Coffee", 
                 type: "eat", 
-                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/85555/640x640_rect_85555287.jpg",
+                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/304219/640x640_rect_bab2204cdff954349db6e87565d0e183.jpg",
                 guide: "隱身綠意中的紅瓦古民家咖啡，享受寧靜時光。", 
                 navLink: "https://maps.app.goo.gl/8a8a8a8a8a8a", // 請替換為正確連結
                 reviewLink: "https://maps.app.goo.gl/8a8a8a8a8a8a",
                 link: "https://tabelog.com/okinawa/A4702/A470202/47018681/",
                 detailInfo: { 
-                    desc: "這是一間非常有氣氛的沖繩古民家咖啡館，庭院充滿綠意。適合在去水族館前，來這裡喝杯咖啡、吃個甜點，稍微讓心靈沉澱一下。", 
-                    tags: ["古民家", "咖啡", "庭園", "放鬆"], 
-                    highlights: ["☕ 招牌：黑糖拿鐵", "🍰 甜點：自家製蛋糕", "🏡 環境：傳統紅瓦屋"], 
-                    menu: [{n: "黑糖拿鐵", p: "¥600"}, {n: "今日蛋糕", p: "¥500"}] 
+                    desc: "這主打以純沖繩生黑糖製作的黑糖飲品，手工現刨的黑糖拿鐵更是其中的人氣經典，去之前在社群上看到整個心花怒放，香甜可口又迷人，好拍之餘也相當的好喝。", 
+                    tags: ["小木屋", "黑糖拿鐵", "庭園", "放鬆"], 
+                    highlights: ["☕ 招牌：黑糖拿鐵", "🍰 甜點：冰淇淋可朗芙"], 
+                    menu: [
+                        {n: "生黑糖拿鐵", j:"", p: "¥850"}, 
+                        {n: "生黑糖珍珠奶茶", j:"", p: "¥850"},
+                        {n: "冰淇淋", j:"", p: "¥500"},
+                        {n: "可朗芙", j:"", p: "¥500"}] 
                 }, 
-                travel: { mode: 'drive', time: '25分' } 
+                travel: { mode: 'drive', time: '20分' } 
             },
-            { time: "13:20", title: "美麗海水族館", type: "spot", mapCode: "553 075 797*77", detailInfo: { desc: "亞洲最大水族館之一，黑潮之海必看。", tags: ["鯨鯊", "海豚秀"], highlights: ["黑潮之海", "戶外海豚劇場"] }, travel: { mode: 'drive', time: '50分' } },
+            { 
+                time: "13:20", 
+                leaveTime: "15:55",
+                title: "美麗海水族館", 
+                type: "spot", 
+                
+                // 封面圖：鯨鯊直立餵食的震撼畫面
+                imgUrl: "https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1295,h_862/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/qb7m4vacsvuz5zoedkse/%E5%86%B2%E7%BB%B3%E7%BE%8E%E4%B8%BD%E6%B5%B7%E6%B0%B4%E6%97%8F%E9%A6%86%E9%97%A8%E7%A5%A8.jpg",
+                
+                guide: "必看15:00鯨鯊垂直餵食秀！戶外可親手餵海豚。", 
+                
+                mapCode: "553 075 797*77", 
+                
+                // 導航與連結
+                navLink: "https://maps.app.goo.gl/ChuraumiMapLink", 
+                reviewLink: "https://maps.app.goo.gl/ChuraumiReviewLink",
+                link: "https://churaumi.okinawa/tc/",
+                
+                detailInfo: { 
+                    desc: `
+                        <b>🐋 2.5小時精華戰略 (13:20-16:00)</b><br>
+                        目標是<b>「鯨鯊視覺震撼」+「海豚親密接觸」</b><br><br>
+
+                        <b>🗺️ 完美動線攻略：</b><br>
+                        <b>13:30 入場 (3F/4F)</b>：先衝觸摸池摸海星(洗手台在旁邊)。<br>
+                        <b>14:45 卡位 (2F)</b>：抵達「黑潮之海」大水槽前。<br>
+                        <span class="text-red-600 font-bold">🔥 15:00 鯨鯊餵食秀 (必看!)</span>：鯨鯊垂直立起大口吸食，震撼度破表！<br>
+                        <b>15:15 往戶外衝</b>：看完立刻移動到戶外海邊。<br>
+                        <b>15:30 海豚餵食 (海豚潟湖)</b>：趕上餵食時段，親手餵海豚吃魚，還能超近合照！<br><br>
+                        <b>🐬 海豚秀</b><br>
+                           地點： 戶外的「海豚劇場 (Okichan Theater)」<br>
+                           時間： 10:30 / 11:30 / 13:00 / 15:00 / 17:00 (每場約 20 分鐘)。<br>
+                           小撇步： 背景就是大海，拍照超美。建議提早 15-20 分鐘去佔位子，不然只能站著看。<br><br>
+
+                        <b>🕵️ 隱藏版：黑潮探險</b><br>
+                        如果不累，可以搭專用電梯到水槽正上方，腳踩透明玻璃看鯨鯊從腳下游過！(開放至11:00或17:30後，中間休息)<br><br>
+
+                        <b>⚠️ 沖繩超人小撇步：</b><br>
+                        <b>停車</b>：停在 <b>P7 立體停車場</b> 離入口最近。<br>
+                    `, 
+                    
+                    tags: ["鯨鯊餵食", "海豚互動", "黑潮之海", "雨天備案"], 
+                    
+                    highlights: [
+                        "🔥 15:00：鯨鯊垂直餵食秀 (放棄海豚秀也值得)",
+                        "🐬 15:30：親手餵海豚體驗 (Dolphin Lagoon)",
+                        "🕵️ 秘境：黑潮探險 (水槽正上方俯瞰)",
+                        "👐 體驗：觸摸池 (海星/海參)"
+                    ],
+                    
+                    menu: [
+                        {n: "海豚餵食體驗", j:"シナモンロール", p: "¥500"},
+                        {n: "海龜餵食體驗", j:"シナモンロール", p: "¥500"},
+                    ]
+                }, 
+                travel: { mode: 'drive', time: '50分' } 
+            },
 { 
                 time: "17:00", 
                 leaveTime: "18:00",
@@ -1350,8 +1415,8 @@ function getPrepListHTML() {
                     
                     menu: [
                         {n: "Obaa no Ya 套餐", p: "¥3,500~"},
-                        {n: "阿古豬拼盤", p: "¥2,800~"},
-                        {n: "上等牛五花", p: "¥1,800"}
+                        {n: "阿古豬拼盤", j:"シナモンロール", p: "¥2,800~"},
+                        {n: "上等牛五花", j:"シナモンロール", p: "¥1,800"}
                     ] 
                 }, 
                 
@@ -1363,7 +1428,7 @@ function getPrepListHTML() {
                 type: "spot", 
                 
                 // 封面圖：美麗的煙火
-                imgUrl: "https://www.okinawa-americanvillage.com/wp/wp-content/uploads/2021/11/fireworks_01.jpg",
+                imgUrl: "https://visitokinawajapan.com/wp-content/uploads/2021/10/ev195_01_chura-umi-fireworks.jpg",
                 
                 guide: "週六限定 3分鐘煙火！(⚠️18:30 必須從燒肉店離開)",
                 
@@ -1400,9 +1465,34 @@ function getPrepListHTML() {
                         "🛣️ 路線：許田 IC ⮕ 沖繩南 IC (走高速!)",
                         "🅿️ 停車：北谷公園駐車場 (避開塞車黑洞)",
                         "🎆 備案：來不及就在 58號公路上看"
-                    ],
-                }
-            }
+                    ],   
+                },
+                travel: { mode: 'walk', time: '10分' } 
+            },
+            {
+                time: "21:00",
+                leaveTime:"22:00", 
+                title: "AEON 北谷店", 
+                type: "spot", 
+                imgUrl: "https://world.aeon-ryukyu.jp/wp-content/uploads/2019/06/ae99205041fa68889b7e95f1a7c4ab70.jpg", 
+                guide: "就在美國村旁邊，買宵夜、水果、伴手禮。", 
+                navLink: "https://maps.app.goo.gl/P6P6P6P6P6P6P6P6", 
+                reviewLink:"https://maps.app.goo.gl/4jveh6ibcN4ccyst8",
+                detailInfo: { 
+                    desc: "這家 AEON 超市就在美國村旁邊，非常大間且營業到很晚。回飯店前一定要來這裡買<b>草莓、飲料、泡麵</b>當宵夜！熟食區晚上會有特價貼紙。", 
+                    tags: ["超市", "宵夜", "水果", "伴手禮"], 
+                    highlights: ["🍓 必買：日本草莓/麝香葡萄", "🍱 必搶：晚間特價熟食", "🍺 必喝：Orion 啤酒", "🐱 必買：貓條", "🍳 必買：隔天早餐"]
+                },
+                travel: { mode: 'walk', time: '10分' } 
+            },
+            { 
+                time: "22:10",  
+                title: "美濱日落度假飯店", 
+                type: "hotel", 
+                guide:"好好休息，明天也要早起。",
+                navLink:"https://maps.app.goo.gl/L5yYrNiG5n3MxPyt9",
+            },
+            
         ]
     },
     {
@@ -1510,10 +1600,10 @@ function getPrepListHTML() {
                             
                             // 把御守當作 Menu 顯示
                             menu: [
-                                {n: "達摩御守", p: "¥500~"},
-                                {n: "許願小達摩", p: "¥500"},
-                                {n: "寫硃印", p: "¥300"},
-                                {n: "參觀費", p: "¥0 (免費)"}
+                                {n: "達摩御守", j:"シナモンロール", p: "¥500~"},
+                                {n: "許願小達摩", j:"シナモンロール", p: "¥500"},
+                                {n: "寫硃印", j:"シナモンロール", p: "¥300"},
+                                {n: "參觀費", j:"シナモンロール", p: "¥0 (免費)"}
                             ]
                         }
                     }
@@ -1567,10 +1657,10 @@ function getPrepListHTML() {
                     ],
                     
                     menu: [
-                        {n: "幸福鬆餅", p: "¥1,100~"},
-                        {n: "泛濫漢堡", p: "¥1,200~"},
-                        {n: "龍神之湯(平日)", p: "¥1,500"},
-                        {n: "芒果冰沙", p: "¥800"}
+                        {n: "幸福鬆餅", j:"シナモンロール", p: "¥1,100~"},
+                        {n: "泛濫漢堡", j:"シナモンロール", p: "¥1,200~"},
+                        {n: "龍神之湯(平日)", j:"シナモンロール", p: "¥1,500"},
+                        {n: "芒果冰沙", j:"シナモンロール", p: "¥800"}
                     ]
                 }, 
                 travel: { mode: 'drive', time: '30分' } 
@@ -1673,9 +1763,9 @@ function getPrepListHTML() {
                             ],
                             
                             menu:[
-                                {n:"午餐義大利麵套餐", p:"¥1,400~"},
-                                {n:"經典提拉米蘇", p:"¥600"},
-                                {n:"冰咖啡", p:"¥450"}
+                                {n:"午餐義大利麵套餐", j:"シナモンロール", p:"¥1,400~"},
+                                {n:"經典提拉米蘇", j:"シナモンロール", p:"¥600"},
+                                {n:"冰咖啡", j:"シナモンロール", p:"¥450"}
                             ] 
                         } 
                     }  
@@ -1734,9 +1824,9 @@ function getPrepListHTML() {
                     ],
                     
                     menu: [
-                        {n: "35 Coffee (珊瑚咖啡)", p: "¥500"},
-                        {n: "扶桑花蘇打", p: "¥500"},
-                        {n: "導覽費用(已預約)", p: "¥2,500"}
+                        {n: "35 Coffee (珊瑚咖啡)", j:"シナモンロール", p: "¥500"},
+                        {n: "扶桑花蘇打", j:"シナモンロール", p: "¥500"},
+                        {n: "導覽費用(已預約)", j:"シナモンロール", p: "¥2,500"}
                     ]
                 }, 
                 travel: { mode: 'drive', time: '20分' } 
@@ -1784,10 +1874,10 @@ function getPrepListHTML() {
                     ],
                     
                     menu: [
-                        {n: "炸魚天婦羅", p: "¥100"},
-                        {n: "炸花枝天婦羅", p: "¥100"},
-                        {n: "炸紅芋天婦羅", p: "¥100"},
-                        {n: "炸水雲天婦羅", p: "¥100"}
+                        {n: "炸魚天婦羅", j:"シナモンロール", p: "¥100"},
+                        {n: "炸花枝天婦羅", j:"シナモンロール", p: "¥100"},
+                        {n: "炸紅芋天婦羅", j:"シナモンロール", p: "¥100"},
+                        {n: "炸水雲天婦羅", j:"シナモンロール", p: "¥100"}
                     ]
                 }, 
                 travel: { mode: 'drive', time: '60分' } 
@@ -1833,7 +1923,7 @@ function getPrepListHTML() {
                         每桌都有平板，支援<b>繁體中文</b>，圖片大又清楚，不用跟店員講日文，社恐友善！
                     `, 
                     
-                    tags: ["全品項¥370", "中文平板", "無限續高麗菜", "MEGA杯"], 
+                    tags: ["全品項¥370", "中文平板", "無限高麗菜"], 
                     
                     highlights: [
                         "🔥 必點：貴族燒 (巨無霸雞串/醬燒)",
@@ -1843,16 +1933,16 @@ function getPrepListHTML() {
                     ],
                     
                     menu: [
-                        {n: "名物貴族燒(2串)", p: "¥370"},
-                        {n: "雞湯釜飯", p: "¥370"},
-                        {n: "高麗菜(無限續)", p: "¥370"},
-                        {n: "Mega金麥啤酒", p: "¥370"}
+                        {n: "名物貴族燒(2串)", j:"シナモンロール", p: "¥370"},
+                        {n: "雞湯釜飯", j:"シナモンロール", p: "¥370"},
+                        {n: "高麗菜(無限續)", j:"シナモンロール", p: "¥370"},
+                        {n: "Mega金麥啤酒", j:"シナモンロール", p: "¥370"}
                     ]
                 }, 
                 travel: { mode: 'walk', time: '5分' } 
             },
             { time: "21:10",leaveTime:"23:30", title: "國際通", type: "spot", guide: "購物。", travel: { mode: 'drive', time: '8分' } },
-            { time: "24:00", title: "東橫INN 那霸旭橋", type: "hotel", }, 
+            { time: "24:00", title: "東橫INN 那霸旭橋", type: "hotel", guide:"早點休息。"}, 
         ]
     },
     {
@@ -2552,7 +2642,7 @@ function renderChart(dataObj) {
     }
 }
 
-// --- 建立行程卡片 HTML (修復 prep 卡片崩潰問題) ---
+// --- 建立行程卡片 HTML (智慧展開版) ---
 function createEventCard(event, dayIdx, evtIdx) {
     
     // 1. 時間顯示處理
@@ -2561,14 +2651,11 @@ function createEventCard(event, dayIdx, evtIdx) {
         timeHtml += `<div class="text-[10px] text-red-400 font-bold mt-0.5 whitespace-nowrap">~${event.leaveTime}</div>`;
     }
 
-    // 2. 準備標籤樣式 (移到前面定義)
-    // 預設樣式
+    // 2. 準備標籤樣式
     let tagClass = event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans';
     let tagName = event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通';
 
-    // 3. 特殊卡片處理
-    
-    // Type A: 準備事項 (Prep) - 維持原樣，因為結構特殊
+    // 3. 特殊卡片處理: 準備事項 (Prep) - 維持原樣
     if (event.type === 'prep') {
         let rightSideHtml = '';
         if (event.departureTime) {
@@ -2585,6 +2672,7 @@ function createEventCard(event, dayIdx, evtIdx) {
                     <span class="text-[10px] font-bold">${event.appLink.text}</span>
                 </a>`;
         }
+        // Prep 卡片通常只有外顯資訊，不需要展開功能
         return `
             <div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center">
                 <div class="flex-1">
@@ -2596,7 +2684,7 @@ function createEventCard(event, dayIdx, evtIdx) {
             </div>`;
     }
 
-    // Type B: 二選一 (Choice) - 維持滑動結構
+    // 4. 特殊卡片處理: 二選一 (Choice) - 必為 Modal，維持原樣
     if (event.type === 'choice') {
         const choicesHtml = event.choices.map((c, cIdx) => {
             const targetUrl = c.navLink || c.link || `https://www.google.com/maps/search/?api=1&query=${c.title}+沖繩`;
@@ -2605,12 +2693,21 @@ function createEventCard(event, dayIdx, evtIdx) {
                 const icon = (c.travelTime.includes('步') || c.travelTime.includes('走')) ? 'fa-person-walking' : 'fa-car';
                 travelTimeHtml = `<span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-full border border-gray-200 shrink-0 flex items-center gap-1"><i class="fa-solid ${icon}"></i> ${c.travelTime}</span>`;
             }
-            // 動態標籤
             const choiceTagClass = c.type === 'spot' ? 'tag-spot' : 'tag-eat';
             const choiceTagName = c.type === 'spot' ? '景點' : '美食';
 
+            let parkingBtn = '';
+            if (['copilot', 'driver'].includes(currentRole)) {
+                const parkingQuery = `parking near ${c.title} Okinawa`;
+                const parkingUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parkingQuery)}`;
+                parkingBtn = `
+                    <a href="${parkingUrl}" target="_blank" class="absolute bottom-3 right-14 w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center shadow-md active:scale-95 transition" onclick="event.stopPropagation()">
+                        <i class="fa-solid fa-square-parking text-xl"></i>
+                    </a>`;
+            }
+
             return `
-            <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm relative flex flex-col" 
+            <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm relative flex flex-col cursor-pointer active:scale-[0.98] transition" 
                  onclick="openDetailModal(${dayIdx}, ${evtIdx}, ${cIdx})">
                 <div class="flex justify-between items-start mb-2 gap-2">
                     <h4 class="font-bold text-lg text-gray-800 line-clamp-1">${c.title}</h4>
@@ -2622,6 +2719,7 @@ function createEventCard(event, dayIdx, evtIdx) {
                 <p class="text-sm text-gray-600 mb-8 line-clamp-2">${c.guide}</p>
                 <div class="mt-auto flex justify-between items-center">
                     <button class="text-blue-600 text-sm font-bold bg-blue-50 px-3 py-1.5 rounded-lg w-full text-left">查看詳情</button>
+                    ${parkingBtn}
                     <a href="${targetUrl}" target="_blank" class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md active:scale-95 transition" onclick="event.stopPropagation()"><i class="fa-solid fa-location-arrow text-sm"></i></a>
                 </div>
             </div>`;
@@ -2639,16 +2737,13 @@ function createEventCard(event, dayIdx, evtIdx) {
             </div>`;
     }
 
-    // Type C: 一般行程 (Normal) - ★★★ 這裡大改版 ★★★
+    // 5. 一般行程 (Normal)
     
-    // 產生預覽內容 (Preview Content)
+    // 預覽內容
     let previewContent = '';
-    
-    // 角色專屬資訊
     if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block text-gray-600"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
     if (currentRole === 'admin' && event.bookingInfo) previewContent = `<div class="mt-2 text-xs text-red-500 font-bold"><i class="fa-solid fa-ticket mr-1"></i> ${event.bookingInfo.note}</div>`;
     
-    // 班次資訊
     if (event.frequency) {
         let timeLinkHtml = '';
         if (event.timetableUrl) {
@@ -2661,7 +2756,7 @@ function createEventCard(event, dayIdx, evtIdx) {
         previewContent += `<div class="mt-2 text-xs text-blue-600 font-bold"><i class="fa-solid fa-clock"></i> ${event.frequency} ${timeLinkHtml}</div>`;
     }
 
-    // 說明文字 (Guide) - 現在會佔滿寬度
+    // Guide 顯示在外層
     if (event.guide) {
         previewContent += `
             <div class="mt-2 text-sm text-gray-600 flex items-start leading-snug">
@@ -2683,6 +2778,18 @@ function createEventCard(event, dayIdx, evtIdx) {
         }
     }
 
+    // 找停車按鈕
+    let parkingBtn = '';
+    if (['spot', 'eat', 'hotel'].includes(event.type) && ['copilot', 'driver'].includes(currentRole)) {
+        const searchName = event.title_detail || event.title;
+        const parkingQuery = `parking near ${searchName} Okinawa`;
+        const parkingUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parkingQuery)}`;
+        parkingBtn = `
+            <a href="${parkingUrl}" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-square-parking text-xl"></i>
+            </a>`;
+    }
+
     // 導航按鈕
     let navIconBtn = '';
     if (['spot', 'hotel', 'eat'].includes(event.type)) {
@@ -2690,36 +2797,51 @@ function createEventCard(event, dayIdx, evtIdx) {
         navIconBtn = `<a href="${targetUrl}" target="_blank" class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0" onclick="event.stopPropagation()"><i class="fa-solid fa-location-arrow text-sm"></i></a>`;
     }
 
-    // 點擊行為
-    let clickAction = (event.type === 'eat' || event.type === 'spot') ? `onclick="openDetailModal(${dayIdx}, ${evtIdx})"` : `onclick="toggleCard(this)"`;
+    // ★★★ 關鍵修改：判斷是否需要展開 (Toggle) ★★★
+    
+    // 1. 檢查是否有隱藏的詳細資訊
+    const hasHiddenDetails = event.title_detail || event.bookingInfo || event.multiMaps || event.mapCode || event.adminNote;
+    
+    // 2. 決定點擊行為
+    let clickAction = '';
+    let cursorClass = ''; // 控制滑鼠游標
+    
+    if (['eat', 'spot'].includes(event.type)) {
+        // 美食/景點：總是開啟 Modal
+        clickAction = `onclick="openDetailModal(${dayIdx}, ${evtIdx})"`;
+        cursorClass = 'cursor-pointer active:scale-[0.99] transition'; // 加入點擊回饋
+    } else if (hasHiddenDetails) {
+        // 其他類型：只有當有隱藏資訊時，才允許展開 (Toggle)
+        clickAction = `onclick="toggleCard(this)"`;
+        cursorClass = 'cursor-pointer active:scale-[0.99] transition';
+    } else {
+        // 沒有隱藏資訊：不可點擊 (純展示)
+        clickAction = '';
+        cursorClass = ''; 
+    }
 
-    // ★★★ 組合 HTML (新版排版) ★★★
+    // ★★★ 組合 HTML ★★★
     return `
-        <div class="card p-4" ${clickAction}>
+        <div class="card p-4 ${cursorClass}" ${clickAction}>
             <div class="flex items-start gap-3 pointer-events-none">
                 
-                <!-- 左側：時間 + 標籤 -->
                 <div class="flex flex-col items-center min-w-[60px] pt-1 shrink-0">
                     ${timeHtml}
-                    <!-- 標籤移到這裡 -->
                     <span class="text-[10px] px-2 py-0.5 rounded-full ${tagClass} mt-2 w-full text-center truncate">${tagName}</span>
                 </div>
 
-                <!-- 右側：主要內容區 -->
                 <div class="flex-1 min-w-0">
-                    
-                    <!-- 上層：標題 + 導航按鈕 -->
                     <div class="flex justify-between items-start gap-2">
                         <div class="min-w-0">
                             <h3 class="font-bold text-lg text-gray-800 leading-tight">${event.title}</h3>
                             ${event.appLink ? `<a href="${event.appLink.url}" class="mt-1 inline-block bg-black text-white px-2 py-1 rounded text-xs font-bold shadow active:scale-95 transition pointer-events-auto" onclick="event.stopPropagation()"><i class="${event.appLink.icon} mr-1"></i> ${event.appLink.text}</a>` : ''}
                         </div>
-                        ${navIconBtn}
+                        <div class="flex gap-2 shrink-0">
+                            ${parkingBtn}
+                            ${navIconBtn}
+                        </div>
                     </div>
 
-                    <!-- 下層：內容 (滿版寬度) -->
-                    <!-- 這裡的內容現在會出現在標題下方，寬度不受導航按鈕限制 -->
-                    <!-- mt-1 = 4px, mt-2 = 8px, mt-3 = 12px, mt-4 = 16px -->
                     <div class="mt-3">
                         ${previewContent}
                         ${voucherBtn}
@@ -2727,15 +2849,19 @@ function createEventCard(event, dayIdx, evtIdx) {
                 </div>
             </div>
 
-            <!-- 詳細內容 (隱藏區塊) -->
+            <!-- ★ 只有當有隱藏資訊時，才渲染這個區塊 -->
+            ${hasHiddenDetails ? `
             <div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">
                 ${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}
+                
                 ${event.bookingInfo ? `<div class="ticket-box"><div class="text-sm opacity-70">預約憑證 / 訂單號</div><div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div><div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div></div>` : ''}
+                
                 ${event.multiMaps ? `<div class="grid grid-cols-2 gap-3">${event.multiMaps.map(m => `<a href="https://www.google.com/maps/search/?api=1&query=${m.query}" target="_blank" class="bg-blue-50 text-blue-600 py-3 rounded-xl text-center font-bold shadow-sm border border-blue-100 active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> ${m.name}</a>`).join('')}</div>` : ''}
+                
                 ${event.mapCode ? `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center"><span class="text-sm font-bold text-gray-600">MapCode</span><div class="flex items-center gap-2"><span class="font-mono text-xl font-bold">${event.mapCode}</span><button onclick="copyText('${event.mapCode}', event)" class="text-orange-500"><i class="fa-regular fa-copy"></i></button></div></div>${event.parking ? `<div class="mt-2 text-xs text-gray-500"><i class="fa-solid fa-square-parking"></i> ${event.parking.info}</div>` : ''}</div>` : ''}
-                ${event.guide ? `<div class="text-sm text-gray-700 leading-relaxed"><i class="fa-solid fa-circle-info text-orange-400 mr-1"></i> ${event.guide}</div>` : ''}
+                
                 ${event.adminNote ? `<div class="text-sm text-gray-600 bg-yellow-50 p-2 rounded border border-yellow-100"><i class="fa-solid fa-pen mr-1"></i> 筆記: ${event.adminNote}</div>` : ''}
-            </div>
+            </div>` : ''}
         </div>`;
 }
 
@@ -3198,7 +3324,12 @@ function adjustQty(delta) {
                     ${tagsHtml}
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800 mb-3">${event.title}</h2>
-                <p class="text-gray-600 text-sm leading-relaxed">${detail.desc || event.guide || '暫無詳細介紹'}</p>
+                
+                <!-- ★★★ 修改這裡：只顯示詳細介紹 (detail.desc)，不再顯示 guide ★★★ -->
+                <!-- 原本是：<p ...>${detail.desc || event.guide || '暫無詳細介紹'}</p> -->
+                <!-- 現在改成：如果有詳細介紹才顯示，否則留空 -->
+                ${detail.desc ? `<p class="text-gray-600 text-sm leading-relaxed">${detail.desc}</p>` : ''}
+                
                 ${highlightHtml}
                 ${menuHtml}
             </div>
