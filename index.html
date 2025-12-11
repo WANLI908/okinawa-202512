@@ -630,7 +630,7 @@ function getPrepListHTML() {
             { time: "14:50", title: "Uber 出發北車", type: "trans", guide: "護照、手機、錢包帶了嗎？", appLink: { url: "https://m.uber.com/ul", text: "開啟 Uber", icon: "fa-brands fa-uber" }, travel: { mode: 'train', time: '40分' } },
             { 
                 time: "15:20", title: "機捷往機場 (直達車)", type: "trans", guide: "A1 台北車站 -> A13 第一航廈", frequency: "約 15 分鐘一班", 
-                timetableUrl: "https://drive.google.com/file/d/16MInONdMqG5ZsAsTRm5-S3Tymmrf2EOb/view?usp=drive_link" 
+                timetableUrl: "https://drive.google.com/file/d/1bjilGkFMFByfquV08NsIrChKnPxn572e/view?usp=drive_link" 
             },
             { 
                 time: "16:30", title: "機場 Check-in", type: "trans", title_detail: "樂桃 MM930", 
@@ -820,6 +820,7 @@ function getPrepListHTML() {
                 type: "eat", 
                 imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/262352/640x640_rect_b36a9b4580015fb4deb55dafe1237997.jpg", // 示意圖
                 guide: "傳說中的肉桂捲名店，建議買了車上吃。", 
+                parkingLink:"https://maps.app.goo.gl/DNT6uo8DPSfSNEwU8",
                 
                 // 1. 卡片右上角小圓鈕 (導航用)
                 navLink: "https://maps.app.goo.gl/JRaZSCn2YMe5Grri7", 
@@ -839,9 +840,11 @@ function getPrepListHTML() {
                         "適合當作開車途中的點心"
                     ],
                     menu: [
-                        {n: "經典肉桂捲", j:"シナモンロール", p: "¥450"}, 
-                        {n: "黑糖核桃肉桂捲", j:"黒糖くるみシナモンロール", p: "¥480"}, 
-                        {n: "冰拿鐵", j:"アイスラテ", p: "¥550"}
+                        {n: "沖繩肉桂捲", j:"おきなわシナモンロール", p: "¥500"},  
+                        {n: "自家烘焙咖啡", j:"自家焙煎ホットコーヒー", p: "¥500"},
+                        {n: "冰美式", j:"アイスアメリカーノ", p: "¥500"},
+                        {n: "冷萃咖啡", j:"水出しアイスコーヒー", p: "¥500"},
+                        {n: "冰拿鐵", j:"カフェラテ (ホット/アイス)", p: "¥500"},
                     ]
                 },
                 
@@ -852,6 +855,8 @@ function getPrepListHTML() {
                 leaveTime: "12:00", 
                 title: "港川外人住宅街", 
                 type: "spot", 
+                parkingLink:"https://maps.app.goo.gl/mAvCnvyugs5og3kP8",
+
                 // 封面圖：選用最具代表性的 oHacorte 小木屋與粉藍色建築
                 imgUrl: "https://b-cat.tw/wp-content/uploads/2019/06/47991552012_1537f2e673_o-1024x682.jpg",
                 
@@ -863,26 +868,26 @@ function getPrepListHTML() {
                 // 2. 評論：這裡設定為 Google Maps 的評論頁面
                 reviewLink: "https://maps.app.goo.gl/dzMhn2MomSrYvRkh8",
                 
-                // 3. 官網：港川外人住宅官方網站
-                link: "http://minatogawa-shop.r-cms.jp/", 
+                // 3. 官網：港川外人住宅部落客介紹
+                link: "https://bobbyfun.tw/2024-01-07-2690/", 
                 
                 detailInfo: { 
-                    desc: `這裡以前是美軍眷屬宿舍，現在是超好拍的文青聚落。每棟平房都漆成可愛的馬卡龍色，路名也是用美國州名命名（如 Nevada St.），充滿異國風情。<br><br><b>🚗 停車攻略 (重要！)：</b><br>這裡是「自駕小魔王關卡」，<b>路非常窄，會車困難！</b>且店家專屬車位極少。<br>💡 <b>強烈建議：</b>直接停在入口處或中間的<b>「投幣式停車場 (Coin Parking)」</b>再走進去逛，最輕鬆省事。`, 
+                    desc: `這裡以前是美軍眷屬宿舍，現在是超好拍的文青聚落。每棟平房都漆成可愛的馬卡龍色，路名也是用美國州名命名（如 Nevada St.），充滿異國風情。<br><br><b>🚗 停車攻略 (重要！)：</b><br>這裡是「自駕小魔王關卡」，<b>路非常窄，會車困難！</b>且店家專屬車位極少。<br>💡 <b>強烈建議：</b>直接停在入口處或中間的<b>「投幣式停車場 (Coin Parking)」</b>再走進去逛，最輕鬆省事。<br><br><b>📸 必拍地圖參考：</b><br>
+                        <img src="https://lh3.googleusercontent.com/d/1qFmufquzGGsg4mmMSadmLlZKJW4bXMC-" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
                     
-                    tags: ["文青", "甜點", "拍照聖地", "馬卡龍色"], 
+                    tags: ["文青", "甜點", "拍照聖地"], 
                     
                     highlights: [
                         "⚡️ 1小時快閃：11:00 拍照 -> 11:30 買甜點 -> 12:00 離開",
                         "🛍️ 必買：ほうき星 (黑糖可麗露) - 25號",
                         "🍰 必吃：oHacorte (水果塔) - 18號 (門口必拍!)",
-                        "⚠️ 注意：ippe coppe 麵包店 12:30 才開，可能會來不及"
                     ],
                     
                     // 把店家當作 Menu 顯示，方便查看
                     menu: [
-                        {n: "[25號] ほうき星", j:"黒糖カヌレ", p: "黑糖可麗露"}, 
-                        {n: "[18號] oHacorte", j:"フルーツタルト", p: "珠寶盒水果塔"}, 
-                        {n: "[26號] ippe coppe", j:"天然酵母食パン", p: "天然酵母麵包"}
+                        {n: "[25號] ほうき星 可麗露", j:"カヌレ", p: "¥880"}, 
+                        {n: "[18號] oHacorte 水果塔", j:"フルーツタルト", p: "¥734"}, 
+                        {n: "[28號] Okinawa Cerrado Coffee", j:"coffee", p: "¥570"}
                     ]
                 }, 
                 
@@ -896,16 +901,17 @@ function getPrepListHTML() {
                 imgUrl: "https://cdn.zekkei-japan.jp/datas/images/2024/04/30/c03f51ed4ebc5e578df0cbe7501f1a9ee742df4e.jpg",
                 guide: "宜野灣最強能量景點，本殿後方藏著神秘鐘乳石洞 (⚠️需登記/禁拍照)。", 
                 mapCode: "33 438 616*33", 
+                parkingLink:"https://maps.app.goo.gl/Y6VC5UpqyQQwdehdA",
                 // ★ 導航連結 (卡片右上角)
                 navLink: "https://maps.app.goo.gl/S4KiRAgGtwoxpJ9dA", 
                 // ★ 評論連結 (詳細視窗右下角)
                 reviewLink: "https://maps.app.goo.gl/7QfHwUZj3ymJeTFm8",
                 // ★ tabelog、IG、官網、介紹
-                link: "http://futenmagu.or.jp/", 
+                link: "https://fgblog.fashionguide.com.tw/9283/posts/449985", 
                 
                 detailInfo: { 
                     desc: `<b>⛩️ 兩大看點：</b><br>1. <b>地底神秘世界</b>：本殿後方藏著全長 280公尺的鐘乳石洞，氣氛莊嚴肅穆，供奉著「普天滿女神」。<br>2. <b>結緣與求子</b>：在地人心中求「良緣 (En-musubi)」和「安產」非常靈驗。<br><br><b>⚠️ 進洞穴攻略 (必看！)：</b><br>洞穴<b>不是自由進出</b>的！抵達後請先去<b>「授予所 (賣御守櫃台)」</b>填寫申請單登記。巫女會安排梯次（約20-30分一梯），在旁邊休息室等待引導。<br><br><b>🚫 嚴禁拍照：</b>洞穴內現在<b>「全面禁止攝影」</b>，請務必遵守規定，用心感受即可。<br><br><b>🚗 停車：</b>有免費停車場，就在鳥居旁。`, 
-                    tags: ["鐘乳石洞", "結緣", "能量景點", "免費參觀"], 
+                    tags: ["鐘乳石洞", "結緣", "能量景點"], 
                     highlights: [
                         "✨ 必看：本殿後方的神秘地底洞穴",
                         "📝 流程：先去櫃台登記 -> 等待叫號",
@@ -931,7 +937,7 @@ function getPrepListHTML() {
                 mapCode: "33 531 366*44", 
                 navLink: "https://maps.app.goo.gl/RV1UCj2pNZPbucAx6",
                 reviewLink: "https://maps.app.goo.gl/mhKCecLYWQ96HRCk8",
-                link: "https://tabelog.com/tw/okinawa/A4703/A470301/47005461/",
+                link: "https://www.ringring.com.tw/ringring4029/",
                 
                 detailInfo: { 
                     desc: `
@@ -965,12 +971,6 @@ function getPrepListHTML() {
                         "🍤 特色：炸魚天婦羅 (厚麵衣)",
                         "💡 提醒：進店先抽號碼牌"
                     ],
-                    
-                    menu:[
-                                {n:"沖繩魚三味 (縣產魚/縣產花枝/縣產鮪魚)", j:"No.95 沖縄ざんまい (沖繩三味)", p:"¥520"},
-                                {n:"炙燒石垣牛握壽司", j:"No.87 紅芋パンケーキ", p:"¥460"},
-                                {n:"生鮪魚中腹握壽司", j:"No.71 ジェラートダブル", p:"¥320"}
-                        ] 
                 }, 
                 
                 travel: { mode: 'drive', time: '10分' } 
@@ -987,16 +987,16 @@ function getPrepListHTML() {
                         type: "eat",
                         // 封面圖：海膽焗烤龍蝦
                         imgUrl: "https://tc.tabirai.net/sightseeing/article/img/0001484/kiji1Img.jpg", 
-                        
                         guide: "在地最強「海膽焗烤龍蝦」，CP值高。",
                         travelTime: "開車 5分",
                         
                         navLink: "https://maps.app.goo.gl/ECF35foo4PgHGe1p8", 
                         reviewLink: "https://maps.app.goo.gl/whLeWZmtP8V5eXga7", 
-                        link: "https://tabelog.com/okinawa/A4703/A470301/47001361/", 
+                        link: "https://mimigo.tw/fish-market-payao/", 
                         
                         detailInfo: {
-                            desc: `<b>🦞 在地全名：泡瀨帕亞歐直売店</b><br>這是一個充滿在地活力的海鮮食堂！不是吃氣氛的，是吃 <b>CP 值和新鮮度</b>的。大家坐在半戶外位子大口吃海鮮，非常有台灣熱炒店的親切感。<br><br><b>🔥 必吃重點：</b><br>1. <b>海膽醬烤龍蝦 (必點)</b>：半隻或整隻龍蝦鋪滿特製「海膽美乃滋醬」烤到金黃，奶香爆炸，超級罪惡！<br>2. <b>炸天婦羅</b>：沖繩式厚麵衣，軟Q口感，適合當點心。<br><br><b>⚠️ 重要提醒：</b>食堂通常 <b>17:30 最後點餐</b>，時間剛好壓線，請務必注意！`,
+                            desc: `<b>🦞 在地全名：泡瀨帕亞歐直売店</b><br>這是一個充滿在地活力的海鮮食堂！不是吃氣氛的，是吃 <b>CP 值和新鮮度</b>的。大家坐在半戶外位子大口吃海鮮，非常有台灣熱炒店的親切感。<br><br><b>🔥 必吃重點：</b><br>1. <b>海膽醬烤龍蝦 (必點)</b>：半隻或整隻龍蝦鋪滿特製「海膽美乃滋醬」烤到金黃，奶香爆炸，超級罪惡！<br>2. <b>炸天婦羅</b>：沖繩式厚麵衣，軟Q口感，適合當點心。<br><br><b>⚠️ 重要提醒：</b>食堂營業時間 <b>11:00 - 17:30</b>，請務必注意！<br><br><b>📜 食堂菜單參考 (點圖放大)：</b><br>
+                                <img src="https://mimigo.tw/wp-content/uploads/20170810214130_79.jpg" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`,
                             
                             tags: ["海膽龍蝦", "在地食堂", "高CP值", "半戶外"],
                             
@@ -1008,23 +1008,22 @@ function getPrepListHTML() {
                             ],
                             
                             menu: [
-                                {n: "海膽焗烤龍蝦(半隻)", j:"シナモンロール", p: "¥2,800~"}, 
-                                {n: "海膽焗烤龍蝦(整隻)", j:"シナモンロール", p: "¥5,000~"},
-                                {n: "炸魚/花枝天婦羅", j:"シナモンロール", p: "¥100~"}
-                            ]
-                        }
+                                {n: "海膽焗烤龍蝦(半隻)定食", j:"シナモンロール", p: "¥2,700"}, 
+                                {n: "海膽焗烤龍蝦(整隻)定食", j:"シナモンロール", p: "¥5,500"},
+                            ],
+                        },
                     },
                     {
                         title: "AEON Mall 永旺夢樂城",
                         type: "spot",
-                        // 封面圖：AEON Rycom 水族箱
-                        imgUrl: "https://www.welcome-aeon.com/tw/uploads/2018/09/rycom_main.jpg", 
+                        // 封面圖
+                        imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcwegcPAi6bnlHBiVlQ7wd92lJIVGsYx5DMA&s", 
                         
                         guide: "沖繩最大購物中心，有巨大水族箱與寶可夢中心。",
                         travelTime: "開車 10分",
                         
-                        navLink: "https://maps.app.goo.gl/j6Z9P5yQx2x2x2x2", 
-                        reviewLink: "https://maps.app.goo.gl/j6Z9P5yQx2x2x2x2", 
+                        navLink: "https://maps.app.goo.gl/rKuSJm8HYjJYPn7E7", 
+                        reviewLink: "https://maps.app.goo.gl/Qyg8KUK3iyjd2GkF6", 
                         link: "https://okinawarycom-aeonmall.com/", 
                         
                         detailInfo: {
@@ -1038,14 +1037,8 @@ function getPrepListHTML() {
                                 "🎬 4F：橡子共和國 (吉卜力)",
                                 "🥩 美食：IKINARI 立食牛排 / 菠蘿麵包"
                             ],
-                            
-                            menu: [
-                                {n: "IKINARI STEAK", j:"シナモンロール", p: "秤重計價"},
-                                {n: "現烤冰淇淋菠蘿麵包", j:"シナモンロール", p: "¥450"},
-                                {n: "Blue Seal 冰淇淋", j:"シナモンロール", p: "¥350"}
-                            ]
-                        }
-                    }
+                        },
+                    },
                 ],
                 travel: { mode: 'drive', time: '10分' } 
             },
@@ -1055,6 +1048,7 @@ function getPrepListHTML() {
                 title: "晚餐：阿古豬鍋", 
                 type: "eat", 
                 title_detail: "Chatan Dining Chaabu", 
+                parkingLink:"https://maps.app.goo.gl/WoxXZ6aPqCVvp8hn8",
                 
                 imgUrl: "https://image.kkday.com/v2/image/get/s1.kkday.com/product_213611/20240924093422_j80Uu/png",
                 
@@ -1071,18 +1065,16 @@ function getPrepListHTML() {
                 }, 
                 
                 detailInfo: { 
-                    desc: `<b>🐷 在地私房名單：</b><br>比起觀光排隊名店，這家更溫馨！主打阿古豬的極致享受，脂肪看起來肥但吃起來是<b>脆口且帶有濃濃甜味</b>，完全不膩。<br><br><b>🍲 必點招牌：阿古豬涮涮鍋</b><br>湯頭是簡單的昆布/鰹魚清湯，因為肉質夠好！<br><b>💡 內行吃法：</b>肉片粉紅色時下鍋，<b>涮 3-5 秒</b>變白就好，沾特製的<b>「Shikuwasa (沖繩香檸) 醋醬」</b>，酸甜果香配上油脂甜味，超級搭！<br><br><b>♨️ 清爽選擇：蒸籠阿古豬</b><br>怕熱可以點這個！肉鋪在蔬菜上蒸，油脂滴入蔬菜，清爽健康。<br><br><b>🏠 氛圍：</b>溫馨日式家庭風，有<b>「堀式暖桌」</b>(腳可以伸直的榻榻米)，很放鬆。`, 
+                    desc: `<b>🐷 在地私房名單：</b><br>比起觀光排隊名店，這家更溫馨！主打阿古豬的極致享受，脂肪看起來肥但吃起來是<b>脆口且帶有濃濃甜味</b>，完全不膩。<br><br><b>🍲 必點招牌：阿古豬涮涮鍋</b><br>湯頭是簡單的昆布/鰹魚清湯，因為肉質夠好！<br><b>💡 內行吃法：</b>肉片粉紅色時下鍋，<b>涮 3-5 秒</b>變白就好，沾特製的<b>「Shikuwasa (沖繩香檸) 醋醬」</b>，酸甜果香配上油脂甜味，超級搭！<br><br><b>🏠 氛圍：</b>溫馨日式家庭風，有<b>「堀式暖桌」</b>(腳可以伸直的榻榻米)，很放鬆。`, 
                     tags: ["阿古豬", "涮涮鍋", "在地私房", "堀式暖桌"], 
                     highlights: [
                         "👑 必吃：阿古豬涮涮鍋 (涮3-5秒!)",
                         "🍋 靈魂：特製香檸醋醬 (解膩神器)",
-                        "♨️ 推薦：蒸籠阿古豬 (Seiro-mushi)",
                         "🥢 加點：海葡萄、炸紅芋天婦羅"
                     ],
                     menu: [
-                        {n: "阿古豬涮涮鍋", j:"シナモンロール", p: "¥3,500~"}, 
-                        {n: "阿古豬蒸籠料理", j:"シナモンロール", p: "¥3,500~"},
-                        {n: "海葡萄", j:"シナモンロール", p: "¥600"}
+                        {n: "阿古豬涮涮鍋(含帶皮豬五花)", j:"シナモンロール", p: "¥3,980"}, 
+                        {n: "阿古豬涮涮鍋(含帶皮豬五花)", j:"シナモンロール", p: "¥2,980"},
                     ] 
                 }, 
                 
@@ -1104,8 +1096,9 @@ function getPrepListHTML() {
                 title: "美國村", 
                 type: "spot", 
                 mapCode: "33 526 450*63", 
+                parkingLink:"https://maps.app.goo.gl/HXg3HkHtTyqidARU6",
                 // 封面圖：美國村夜景
-                imgUrl: "https://www.okinawastory.jp/feature/illumination/images/spot02_img01.jpg",
+                imgUrl: "https://resize-image.vocus.cc/resize?norotation=true&quality=80&url=https%3A%2F%2Fimages.vocus.cc%2F9076798c-babf-4aa8-a88f-8927b928d9ca.jpg&width=740&sign=_ooLnoqECQhIsOPDKAv4ZkXydOnaMowoba4cUMhMQiI",
                 
                 guide: "摩天輪拍照、藥妝店補貨、聖誕燈飾。", 
                 
@@ -1113,7 +1106,7 @@ function getPrepListHTML() {
                 navLink: "https://maps.app.goo.gl/3J3J3J3J3J3J3J3J", 
                 // google評論
                 reviewLink: "https://maps.app.goo.gl/nfRWvwG4nLVuNUhC6",
-                // 官網或介紹 (連結到 Depot Island)
+                // 官網或介紹
                 link: "https://www.depot-island.co.jp/",
                 
                 detailInfo: {
@@ -1128,11 +1121,6 @@ function getPrepListHTML() {
                         "🍦 必吃：Blue Seal 冰淇淋"
                     ],
                     
-                    menu: [
-                        {n: "Blue Seal 冰淇淋", j:"シナモンロール", p: "¥350"},
-                        {n: "PoKe's 豬肉蛋飯糰", j:"シナモンロール", p: "¥400"},
-                        {n: "Benson's 熱狗", j:"シナモンロール", p: "¥500"}
-                    ]
                 },
                 travel: { mode: 'walk', time: '5分' }
             },
@@ -1141,6 +1129,7 @@ function getPrepListHTML() {
                 leaveTime:"22:00", 
                 title: "AEON 北谷店", 
                 type: "spot", 
+                parkingLink:"https://maps.app.goo.gl/HXg3HkHtTyqidARU6",
                 imgUrl: "https://world.aeon-ryukyu.jp/wp-content/uploads/2019/06/ae99205041fa68889b7e95f1a7c4ab70.jpg", 
                 guide: "就在美國村旁邊，買宵夜、水果、伴手禮。", 
                 navLink: "https://maps.app.goo.gl/P6P6P6P6P6P6P6P6", 
@@ -1183,6 +1172,7 @@ function getPrepListHTML() {
                 leaveTime: "09:30",
                 title: "許田休息站", 
                 type: "spot", 
+                parkingLink:"https://maps.app.goo.gl/5Xy34d2gowvcfwb57",
                 
                 // 封面圖
                 imgUrl: "https://i0.wp.com/roundtripjp.com/wp-content/uploads/2023/03/P1040445.jpg?fit=1598%2C1200&ssl=1",
@@ -1226,20 +1216,19 @@ function getPrepListHTML() {
                 type: "eat", 
                 
                 // 封面圖：可愛的店鋪外觀
-                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/160864/640x640_rect_160864994.jpg",
-                
+                imgUrl: "https://pingu.blog/wp-content/uploads/20240729234159_0_33a2c8.jpg",
                 guide: "像吉卜力電影的童話小屋，必買蘑菇麵包 (⚠️路邊停車小心)。", 
                 
                 // ★ 連結
                 mapCode: "206 598 724*06", 
-                navLink: "https://maps.app.goo.gl/h7qQ5s1s1s1s1", // (示意連結，實際會搜尋)
-                reviewLink: "https://maps.app.goo.gl/h7qQ5s1s1s1s1",
-                link: "https://tabelog.com/okinawa/A4702/A470201/47002506/", 
+                navLink: "hhttps://maps.app.goo.gl/Eu2Uym1Aj1TrwTB67",
+                reviewLink: "https://maps.app.goo.gl/GBdpNjWFR12oH4vk9",
+                link: "https://www.ningl.tw/panchori-na/", 
                 
                 detailInfo: { 
-                    desc: `<b>🍞 森林裡的童話小屋：</b><br>位於58號公路旁的小山坡，被綠意包圍。店內空間極小（借物少女艾莉緹感），充滿奶油香與宮崎駿公仔。<br><br><b>🥖 必買麵包 (Must Buy)：</b><br>1. <b>🍄 蘑菇造型麵包</b>：IG 打卡神器！超療癒。<br>2. <b>🍛 咖哩麵包</b>：在地人推，外酥內濃。<br>3. <b>🌭 明太子法國</b>：越嚼越香的硬式麵包。<br><br><b>☕ 小確幸：</b>門口有保溫壺提供<b>免費咖啡</b>，買完在門口板凳吃超 Chill。<br><br><b>⚠️ 停車陷阱 (駕駛注意)：</b><br>停車場在地勢略斜的店門口，進出 58 號公路車速快，<b>請務必小心駕駛！</b>店內狹窄，包包請背前面。`, 
+                    desc: `<b>🍞 森林裡的童話小屋：</b><br>位於58號公路旁的小山坡，被綠意包圍。店內空間極小（借物少女艾莉緹感），充滿奶油香與宮崎駿公仔。<br><br><b>🥖 必買麵包：</b><br>1. <b>🍄 蘑菇造型麵包</b>：IG 打卡神器！超療癒。<br>2. <b>🍛 咖哩麵包</b>：在地人推，外酥內濃。<br>3. <b>🌭 明太子法國</b>：越嚼越香的硬式麵包。<br><br><b>☕ 小確幸：</b>門口有保溫壺提供<b>免費咖啡</b>，買完在門口板凳吃超 Chill。<br><br><b>⚠️ 停車陷阱 (駕駛注意)：</b><br>停車場在地勢略斜的店門口，進出 58 號公路車速快，<b>請務必小心駕駛！</b>店內狹窄，包包請背前面。`, 
                     
-                    tags: ["吉卜力風", "童話麵包", "免費咖啡", "IG打卡"], 
+                    tags: ["吉卜力風", "童話麵包", "免費咖啡"], 
                     
                     highlights: [
                         "🍄 必買：蘑菇造型麵包 (超可愛)",
@@ -1247,12 +1236,6 @@ function getPrepListHTML() {
                         "☕ 福利：門口提供免費熱/冰咖啡",
                         "🚗 注意：停車場在路邊斜坡，進出小心"
                     ],
-                    
-                    menu: [
-                        {n: "蘑菇麵包", j:"シナモンロール", p: "¥200~"},
-                        {n: "咖哩麵包", j:"シナモンロール", p: "¥220~"},
-                        {n: "明太子法國", j:"シナモンロール", p: "¥280"}
-                    ]
                 }, 
                 
                 travel: { mode: 'drive', time: '30分' } 
@@ -1262,24 +1245,20 @@ function getPrepListHTML() {
                 leaveTime:"12:15", 
                 title: "午餐：古宇利蝦蝦飯", 
                 type: "eat", 
-                
                 // ★ 封面圖：招牌蝦蝦飯
-                imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/110595/640x640_rect_110595333.jpg",
-                
+                imgUrl: "https://kafu.tw/wp-content/uploads/2025/04/20%E5%8F%A4%E5%AE%87%E5%88%A9%E5%B3%B6%E8%9D%A6%E8%9D%A6%E9%A3%AF.jpg",
                 guide: "古宇利島必吃大魔王，大蒜奶油蝦配無敵海景。", 
-                
                 mapCode: "485 692 167*55", 
-                
-                // ★ 正確的 Google Maps 連結
-                navLink: "https://maps.app.goo.gl/8y8y8y8y8y8y8y8", // (請確認連結有效，或讓系統自動搜尋)
-                reviewLink: "https://maps.app.goo.gl/2Q2Q2Q2Q2Q2Q2Q2",
-                
+                // ★ Google Maps
+                navLink: "https://maps.app.goo.gl/V8AyNJUwt6LuoD359",
+                reviewLink: "https://maps.app.goo.gl/eQr3Hez91ta9MR9C6",
                 link: "https://kouri-shrimp.com/",
                 
                 detailInfo: { 
-                    desc: `<b>🍤 沖繩必吃大魔王：</b><br>源自夏威夷的經典美食！用大量<b>大蒜奶油</b>爆炒鮮蝦，香氣極度濃郁（吃完不能約會XD）。蝦子已貼心去背去腸，殼炸得酥脆。<br><br><b>🏠 粉紅建築 x 古宇利藍：</b><br>從餐車進化成粉紅建築！一樓點餐機點餐（有中文），二樓/三樓半戶外區可眺望古宇利大橋美景。<br><br><b>🦸‍♂️ 沖繩超人攻略：</b><br>1. <b>避開尖峰</b>：建議 11:00 開門就去，或 15:00 後當下午茶。<br>2. <b>停車</b>：停在店旁的<b>專屬停車場</b>，不要亂停路邊。<br>3. <b>必拍</b>：門口的經典餐車記得合照！`, 
+                    desc: `<b>🍤 沖繩必吃大魔王：</b><br>源自夏威夷的經典美食！用大量<b>大蒜奶油</b>爆炒鮮蝦，香氣極度濃郁。蝦子已貼心去背去腸，殼炸得酥脆。<br><br><b>🏠 粉紅建築 x 古宇利藍：</b><br>從餐車進化成粉紅建築！一樓點餐機點餐（有中文），二樓/三樓半戶外區可眺望古宇利大橋美景。<br><br><b>🦸‍♂️ 沖繩超人攻略：</b><br>1. <b>避開尖峰</b>：建議 11:00 開門就去，或 15:00 後當下午茶。<br>2. <b>停車</b>：停在店旁的<b>專屬停車場</b>，不要亂停路邊。<br>3. <b>必拍</b>：門口的經典餐車記得合照！<br><br><b>📜 完整菜單 (點圖放大)：</b><br>
+                        <img src="https://lh3.googleusercontent.com/d/1hAtzfM4CwZSfHQlxafMoynPKrtovh85S" class="w-full rounded-lg shadow-md mt-2 cursor-pointer hover:opacity-90 transition" onclick="openVoucherImage(this.src)" loading="lazy">`, 
                     
-                    tags: ["古宇利島", "海景", "蝦飯", "排隊美食", "中文點餐機"], 
+                    tags: ["古宇利島", "海景", "蝦蝦飯", "中文點餐機"], 
                     
                     highlights: [
                         "🍤 經典：原味蒜香 (奶油蒜味平衡)",
@@ -1288,10 +1267,10 @@ function getPrepListHTML() {
                         "📸 景色：二樓看海座位 & 門口餐車"
                     ], 
                     menu: [
-                        {n:"原味大蒜蝦飯", j:"オリジナルガーリックシュリンプ", p:"¥1,400"},
-                        {n:"辣味大蒜蝦飯", j:"スパイシーガーリックシュリンプ", p:"¥1,500"},
-                        {n:"檸檬奶油蝦飯", j:"バターレモンガーリックシュリンプ", p:"¥1,500"},
-                        {n:"蝦牛雙拼組合", j:"シュリンプ＆ビーフ", p:"¥2,000"}
+                        {n:"原味大蒜蝦飯", j:"オリジナルガーリックシュリンプ", p:"¥1,380"},
+                        {n:"辣味大蒜蝦飯", j:"スパイシーガーリックシュリンプ", p:"¥1,480"},
+                        {n:"原味蝦牛雙拼組合", j:"シュリンプ＆ビーフ", p:"¥2,060"},
+                        {n:"辣味蝦牛雙拼組合", j:"シュリンプ＆ビーフ", p:"¥2,160"},
                     ] 
                 }, 
                 
@@ -1303,17 +1282,36 @@ function getPrepListHTML() {
                 title: "Shinmei Coffee", 
                 type: "eat", 
                 imgUrl: "https://tblg.k-img.com/restaurant/images/Rvw/304219/640x640_rect_bab2204cdff954349db6e87565d0e183.jpg",
-                guide: "隱身綠意中的紅瓦古民家咖啡，享受寧靜時光。", 
+                guide: "隱藏版貨櫃屋！必點「現刨生黑糖拿鐵」，獨特大鐵鍋烘豆。", 
                 navLink: "https://maps.app.goo.gl/8a8a8a8a8a8a", // 請替換為正確連結
                 reviewLink: "https://maps.app.goo.gl/8a8a8a8a8a8a",
                 link: "https://tabelog.com/okinawa/A4702/A470202/47018681/",
                 detailInfo: { 
-                    desc: "這主打以純沖繩生黑糖製作的黑糖飲品，手工現刨的黑糖拿鐵更是其中的人氣經典，去之前在社群上看到整個心花怒放，香甜可口又迷人，好拍之餘也相當的好喝。", 
-                    tags: ["小木屋", "黑糖拿鐵", "庭園", "放鬆"], 
-                    highlights: ["☕ 招牌：黑糖拿鐵", "🍰 甜點：冰淇淋可朗芙"], 
+                    desc: `
+                        <b>🥤 IG爆紅：現刨生黑糖拿鐵 (Nama Brown Sugar Latte)</b><br>
+                        這杯是鎮店之寶！老闆會拿出一塊磚頭般的<b>「沖繩純黑糖」</b>，直接在你面前<b>「刷刷刷」現刨</b>！黑糖粉像下雪一樣堆成一座小山，光看就療癒。<br><br>
+
+                        💡 <b>內行喝法：</b>先別攪拌！第一口直接喝，感受上層脆脆的黑糖粒與綿密奶泡，之後再攪拌融入咖啡。<br><br>
+
+                        <b>☕ 獨門絕技：山羊湯大鍋烘豆？！</b><br>
+                        店名 "Shinmei" 來自沖繩方言的「大鐵鍋」。老闆不用機器，而是用煮山羊湯的巨大鐵鍋<b>直火手網煎焙</b>，讓咖啡豆帶有一種獨特的焦香與厚實感。<br><br>
+
+                        <b>🏚️ 氛圍：</b><br>
+                        位於今歸仁村鄉間的黑色貨櫃屋，周圍種滿植物，很有文青感。適合在去水族館前停下來充電！
+                    `, 
+                    
+                    tags: ["現刨黑糖", "鐵鍋烘豆", "貨櫃屋", "IG打卡"], 
+                    
+                    highlights: [
+                        "🥤 必喝：生黑糖拿鐵 (脆脆顆粒感)",
+                        "🍦 推薦：香草生黑糖拿鐵 (加冰淇淋)",
+                        "🔥 特色：使用巨大鐵鍋直火烘焙",
+                        "📸 畫面：老闆現刨黑糖的瞬間"], 
                     menu: [
-                        {n: "生黑糖拿鐵", j:"", p: "¥850"}, 
+                        {n: "生黑糖拿鐵", j:"生黒糖ラテ", p: "¥850"}, 
+                        {n: "香草生黑糖拿鐵", j:"バニラテ生黒糖", p: "¥750"},
                         {n: "生黑糖珍珠奶茶", j:"", p: "¥850"},
+                        {n: "手沖黑咖啡", j:"ハンドドリップ", p: "¥750"},
                         {n: "冰淇淋", j:"", p: "¥500"},
                         {n: "可朗芙", j:"", p: "¥500"}] 
                 }, 
@@ -2218,210 +2216,36 @@ function renderVouchers() {
         </div>`;
 
     const loadData = (data) => {
-        const listContainer = document.getElementById('shopping-list-container');
-        const controlsContainer = document.getElementById('shopping-controls');
-
-        if(!data) { 
-            controlsContainer.style.display = 'none'; // 沒資料時隱藏篩選器
-            listContainer.innerHTML = '<div class="text-center text-gray-400 mt-20">清單是空的，點擊 + 新增</div>'; 
-            return; 
-        }
-
-        const allEntries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
-        
-        // --- 產生篩選器選項 ---
-        const categories = new Set();
-        const stores = new Set();
-        allEntries.forEach(([_, item]) => {
-            if(item.category) categories.add(item.category);
-            if(item.store) stores.add(item.store);
-        });
-
-        const catOptions = Array.from(categories).map(c => `<option value="${c}" ${currentCategoryFilter===c?'selected':''}>${c}</option>`).join('');
-        const storeOptions = Array.from(stores).map(s => `<option value="${s}" ${currentStoreFilter===s?'selected':''}>${s}</option>`).join('');
-
-        controlsContainer.style.display = 'block';
-        controlsContainer.innerHTML = `
-            <div class="filter-row">
-                <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-                    <select class="filter-select" onchange="updateFilter('category', this.value)">
-                        <option value="all">全部種類</option>
-                        ${catOptions}
-                    </select>
-                    <select class="filter-select" onchange="updateFilter('store', this.value)">
-                        <option value="all">全部店舖</option>
-                        ${storeOptions}
-                    </select>
-                </div>
-                <div class="rate-badge"><i class="fa-solid fa-calculator mr-1"></i>匯率 ${JPY_RATE}</div>
-            </div>`;
-
-        // --- 篩選邏輯 ---
-        const filteredEntries = allEntries.filter(([_, item]) => {
-            const catMatch = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
-            const storeMatch = currentStoreFilter === 'all' || item.store === currentStoreFilter;
-            return catMatch && storeMatch;
-        });
-
-        if (filteredEntries.length === 0) {
-            listContainer.innerHTML = '<div class="text-center text-gray-400 py-20">沒有符合篩選條件的商品</div>';
-            return;
-        }
-        
-        // --- 產生列表 HTML ---
-        let itemsHtml = '';
-        filteredEntries.reverse().forEach(([key, item]) => {
-            let savingsInfo = '';
-            let twdEstimate = 0;
-            if (item.priceJp) { 
-                twdEstimate = Math.round(parseInt(item.priceJp) * JPY_RATE); 
-                if (item.priceTw) { 
-                    const priceTw = parseInt(item.priceTw); 
-                    const diff = priceTw - twdEstimate;
-                    if (diff > 0) savingsInfo = `<span class="ml-2 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">省 $${diff}</span>`; 
-                    else if (diff < 0) savingsInfo = `<span class="ml-2 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">貴 $${Math.abs(diff)}</span>`;
-                } 
-            } 
-
-            let imgSource = '';
-            if (item.imgUrl) { 
-                let rawUrl = item.imgUrl.startsWith('http') ? item.imgUrl : `./${item.imgUrl}`;
-                imgSource = getDirectImageUrl(rawUrl); 
-            }
-            
-            let imgBoxContent = '';
-            let clickAction = '';
-            let boxClass = 'shop-img-box';
-
-            if (imgSource) {
-                imgBoxContent = `<img src="${imgSource}" onerror="this.style.display='none'">`;
-                clickAction = `onclick="openVoucherImage('${imgSource}')"`;
-            } else {
-                boxClass += ' no-image';
-            }
-
-            itemsHtml += `
-                <div class="card p-4 flex gap-4 bg-white items-center ${item.done ? 'opacity-60' : ''}">
-                    <div>
-                        <input type="checkbox" onchange="toggleShopItem('${key}')" class="w-6 h-6 accent-blue-600 border-2 border-blue-600 rounded cursor-pointer" ${item.done ? 'checked' : ''}>
-                    </div>
-                    <div class="${boxClass}" ${clickAction}>${imgBoxContent}</div>
-                    <div class="flex-1 flex flex-col justify-between min-w-0 self-stretch">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded">${item.category || '未分類'}</span>
-                            <button onclick="deleteShopItem('${key}')" class="text-gray-800 hover:text-red-500 transition"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                        <div class="mb-3">
-                            <h3 class="font-bold text-gray-800 text-lg leading-snug break-words line-clamp-2">${item.item}</h3>
-                            <div class="text-sm text-gray-500 mt-0.5">${item.store || ''}</div>
-                        </div>
-                        <div class="mt-auto">
-                            <div class="text-gray-800 font-bold mb-2 flex items-center">台幣 : $ ${item.priceTw || '-'} ${savingsInfo}</div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-gray-600 font-bold">日幣</span>
-                                    <input type="number" placeholder="0" value="${item.priceJp || ''}" class="jp-price-input-clean" onchange="updateShopPrice('${key}', this.value)" onclick="event.stopPropagation()">
-                                    ${twdEstimate > 0 ? `<span class="text-xs text-gray-400">(≈$${twdEstimate})</span>` : ''}
-                                </div>
-                                <button onclick="openEditShopModal('${key}')" class="text-blue-600 text-lg hover:scale-110 transition px-2"><i class="fa-solid fa-pen"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-        });
-        
-        listContainer.innerHTML = itemsHtml;
-    };
-
-    if(db) { 
-        db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); 
-    } else { 
-        const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || defaultShoppingList; 
-        loadData(localData); 
-    }
-}
-
-        // --- 補上遺失的篩選功能 ---
-function updateFilter(type, value) {
-    // 1. 更新全域變數
-    if (type === 'category') {
-        currentCategoryFilter = value;
-    } else if (type === 'store') {
-        currentStoreFilter = value;
-    }
-    
-    // 2. 重新渲染購物清單 (這時候 renderShopping 會去讀取更新後的變數)
-    renderShopping();
-}
-
-        // 2. 切換分頁函式 (這就是按鈕點擊後要執行的功能)
-function switchBudgetTab(tab) {
-    currentBudgetTab = tab;
-    renderBudget(); // 切換後重新渲染畫面
-}
-
-
-// 3. 記帳主渲染函式
-function renderBudget() {
-    document.getElementById('header-desc').innerText = "記帳本 & 分帳";
-    const container = document.getElementById('app');
-
-    // ★★★ 結構重構：-m-4 包裹 + 置頂分頁按鈕 ★★★
-    // 這裡我們手動建立一個 sticky header 來放按鈕
-    const tabsHtml = `
-        <div class="-m-4 relative">
-            <!-- 1. 懸浮按鈕 (FAB) - 放在這層也可以 -->
-            <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
-
-            <!-- 2. 置頂分頁選單 (Sticky) -->
-            <div class="sticky top-[80px] z-40 bg-[rgba(255,248,225,0.95)] backdrop-blur-sm px-4 py-3 shadow-[0_4px_6px_-4px_rgba(0,0,0,0.05)]">
-                <div class="budget-tab-container">
-                    <button onclick="switchBudgetTab('details')" class="budget-tab-btn ${currentBudgetTab === 'details' ? 'active' : ''}">
-                        <i class="fa-solid fa-list-ul mr-1"></i> 明細
-                    </button>
-                    <button onclick="switchBudgetTab('overview')" class="budget-tab-btn ${currentBudgetTab === 'overview' ? 'active' : ''}">
-                        <i class="fa-solid fa-chart-pie mr-1"></i> 總覽
-                    </button>
-                </div>
-            </div>
-
-            <!-- 3. 內容區塊 (Content) -->
-            <!-- 補回 px-4, py-4, 並預留底部 -->
-            <div id="budget-content-area" class="px-4 py-4 pb-30">
-                <div class="text-center text-gray-400 py-10"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
-            </div>
-        </div>
-    `;
-    container.innerHTML = tabsHtml;
-
-    const loadData = (data) => {
         const contentArea = document.getElementById('budget-content-area');
         
         // 1. 初始化變數
-        let catStats = {}; // 改用物件來存：{ 金額, 筆數 }
-        let personalTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '姊姊': 0 };
+        let catStats = {}; 
+        let personalTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '姊姊': 0 }; // 應付 (消費)
+        let paidTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '姊姊': 0 };     // 實付 (墊錢)
         let expenseListHtml = '';
-        let grandTotal = 0; // 總支出金額
+        let grandTotal = 0; 
         
         const hasData = !!data;
         
         if (hasData) {
             const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
             
-            // 2. 遍歷資料進行計算
+            // 2. 遍歷資料
             entries.reverse().forEach(([key, ex]) => {
                 const amount = parseInt(ex.amount);
                 const amountTwd = ex.currency === 'TWD' ? amount : Math.round(amount * JPY_RATE);
                 
-                // ★ 新增：統計類別的金額與筆數
-                if (!catStats[ex.category]) {
-                    catStats[ex.category] = { amount: 0, count: 0 };
-                }
+                // 統計類別
+                if (!catStats[ex.category]) catStats[ex.category] = { amount: 0, count: 0 };
                 catStats[ex.category].amount += amountTwd;
                 catStats[ex.category].count += 1;
                 grandTotal += amountTwd;
 
-                // 統計分帳 (保持不變)
+                // ★ 統計墊款人 (Who Paid)
+                const payer = ex.payer || '姊姊';
+                if (paidTotal[payer] !== undefined) paidTotal[payer] += amountTwd;
+
+                // 統計分帳人 (Who Should Pay)
                 if (ex.splitDetails) {
                     ex.splitDetails.forEach(detail => {
                         if(personalTotal[detail.name] !== undefined) {
@@ -2430,11 +2254,10 @@ function renderBudget() {
                         }
                     });
                 } else {
-                    const payer = ex.payer || '姊姊'; 
                     if(personalTotal[payer] !== undefined) personalTotal[payer] += amountTwd;
                 }
 
-                // 產生明細列表 HTML (保持不變)
+                // 產生明細列表 (保持不變)
                 if (currentBudgetTab === 'details') {
                     let icon = '💸'; 
                     if(ex.category === '食物') icon = '🍔'; if(ex.category === '購物') icon = '🛍️'; 
@@ -2485,11 +2308,10 @@ function renderBudget() {
                 contentArea.innerHTML = `<div class="space-y-3 animation-fade">${expenseListHtml}</div>`;
             }
         } else {
-            // [總覽頁] Overview
             if (!hasData) {
                 contentArea.innerHTML = '<div class="text-center text-gray-400 py-10">尚無資料可分析</div>';
             } else {
-                // A. 每人應付 (Card)
+                // A. 每人應付 (卡片)
                 let personalHtml = '';
                 Object.keys(personalTotal).forEach(name => {
                     personalHtml += `
@@ -2501,9 +2323,312 @@ function renderBudget() {
                         </div>`;
                 });
 
-                // B. ★★★ 新增：類別長條圖列表 ★★★
+                // B. 類別長條圖 (HTML)
+                const catConfig = {
+                    '食物': { icon: 'fa-utensils', color: 'bg-orange-400', iconBg: 'bg-orange-100', text: 'text-orange-600' },
+                    '購物': { icon: 'fa-bag-shopping', color: 'bg-pink-400', iconBg: 'bg-pink-100', text: 'text-pink-600' },
+                    '交通': { icon: 'fa-car', color: 'bg-blue-400', iconBg: 'bg-blue-100', text: 'text-blue-600' },
+                    '門票': { icon: 'fa-ticket', color: 'bg-green-400', iconBg: 'bg-green-100', text: 'text-green-600' },
+                    '其他': { icon: 'fa-shapes', color: 'bg-gray-400', iconBg: 'bg-gray-100', text: 'text-gray-600' }
+                };
+                const sortedCats = Object.entries(catStats).sort((a, b) => b[1].amount - a[1].amount);
+                let catListHtml = `<div class="mt-6 space-y-5 px-1">`;
+                let chartDataObj = {}; 
+                sortedCats.forEach(([catName, stats]) => {
+                    chartDataObj[catName] = stats.amount;
+                    const cfg = catConfig[catName] || catConfig['其他'];
+                    const percent = grandTotal > 0 ? ((stats.amount / grandTotal) * 100).toFixed(1) : 0;
+                    catListHtml += `
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full ${cfg.iconBg} ${cfg.text} flex items-center justify-center text-lg shrink-0"><i class="fa-solid ${cfg.icon}"></i></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-end mb-1">
+                                    <div class="flex items-center gap-2"><span class="font-bold text-gray-700">${catName}</span><span class="text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">${stats.count} 筆</span></div>
+                                    <div class="font-bold text-gray-800"><span class="text-xs mr-0.5">$</span>${stats.amount.toLocaleString()}</div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-bold w-12 text-right shrink-0 text-gray-500">${percent}%</span>
+                                    <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full ${cfg.color} rounded-full" style="width: ${percent}%"></div></div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                catListHtml += `</div>`;
+
+                // ★★★ C. 最終結算演算法 (誰給誰錢) ★★★
+                let debtHtml = '';
+                let debtors = [];
+                let creditors = [];
+
+                // 1. 計算淨額 (正=收錢, 負=付錢)
+                Object.keys(personalTotal).forEach(name => {
+                    const balance = paidTotal[name] - personalTotal[name];
+                    if (balance < -1) debtors.push({ name, amount: balance }); // 欠錢
+                    else if (balance > 1) creditors.push({ name, amount: balance }); // 收錢
+                });
+
+                // 2. 排序 (金額大到小)
+                debtors.sort((a, b) => a.amount - b.amount); // 負越多久越前面
+                creditors.sort((a, b) => b.amount - a.amount); // 正越多越前面
+
+                // 3. 配對結算
+                let transactions = [];
+                let dIndex = 0, cIndex = 0;
                 
-                // 1. 定義顏色與圖示設定
+                while (dIndex < debtors.length && cIndex < creditors.length) {
+                    let debtor = debtors[dIndex];
+                    let creditor = creditors[cIndex];
+                    
+                    // 找出交易金額 (取兩者絕對值較小者)
+                    let amount = Math.min(Math.abs(debtor.amount), creditor.amount);
+                    
+                    if (amount > 0) {
+                        transactions.push({ from: debtor.name, to: creditor.name, money: Math.round(amount) });
+                    }
+
+                    // 調整餘額
+                    debtor.amount += amount;
+                    creditor.amount -= amount;
+
+                    // 如果某方結清，移動指標
+                    if (Math.abs(debtor.amount) < 1) dIndex++;
+                    if (creditor.amount < 1) cIndex++;
+                }
+
+                // 4. 產生 HTML
+                if (transactions.length === 0) {
+                    debtHtml = `<div class="text-center text-gray-500 text-sm py-2">目前沒有需要結算的款項 🎉</div>`;
+                } else {
+                    debtHtml = transactions.map(t => `
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-green-200 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-gray-700 bg-gray-100 px-2 py-1 rounded">${t.from}</span>
+                                <i class="fa-solid fa-arrow-right text-gray-400 text-xs"></i>
+                                <span class="font-bold text-gray-700 bg-gray-100 px-2 py-1 rounded">${t.to}</span>
+                            </div>
+                            <div class="font-bold text-green-600 text-lg">
+                                <span class="text-xs mr-0.5">$</span>${t.money.toLocaleString()}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // D. 組合 HTML (新增結算卡片在最下方)
+                contentArea.innerHTML = `
+                    <div class="space-y-4 animation-fade">
+                        <!-- 圓餅圖 -->
+                        <div class="card p-5 bg-white">
+                            <h3 class="font-bold text-gray-700 mb-2 text-center text-sm">📊 消費佔比圓餅圖</h3>
+                            <div class="chart-container">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 類別長條圖 -->
+                        <div class="card p-5 bg-white">
+                            <h3 class="font-bold text-gray-700 mb-4 text-sm border-b pb-2">支出分類詳情</h3>
+                            ${catListHtml}
+                        </div>
+
+                        <!-- 每人應付 -->
+                        <div class="card p-4 bg-orange-50 border-orange-200">
+                            <h3 class="font-bold text-gray-700 mb-3 text-sm"><i class="fa-solid fa-users-viewfinder mr-2"></i>每人應付總額 (NT$)</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                ${personalHtml}
+                            </div>
+                        </div>
+
+                        <!-- ★ 最終結算建議卡片 -->
+                        <div class="card p-5 bg-green-50 border border-green-200">
+                            <h3 class="font-bold text-green-700 mb-4 text-sm flex items-center">
+                                <i class="fa-solid fa-money-bill-transfer mr-2"></i>最終結算建議
+                            </h3>
+                            <div class="space-y-2">
+                                ${debtHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                setTimeout(() => { renderChart(chartDataObj); }, 50);
+            }
+        }
+    };
+
+    if(db) { 
+        db.ref('shoppingList').once('value').then(snapshot => loadData(snapshot.val())); 
+    } else { 
+        const localData = JSON.parse(localStorage.getItem(SHOPPING_KEY)) || defaultShoppingList; 
+        loadData(localData); 
+    }
+}
+
+        // --- 補上遺失的篩選功能 ---
+function updateFilter(type, value) {
+    // 1. 更新全域變數
+    if (type === 'category') {
+        currentCategoryFilter = value;
+    } else if (type === 'store') {
+        currentStoreFilter = value;
+    }
+    
+    // 2. 重新渲染購物清單 (這時候 renderShopping 會去讀取更新後的變數)
+    renderShopping();
+}
+
+        // 2. 切換分頁函式 (這就是按鈕點擊後要執行的功能)
+function switchBudgetTab(tab) {
+    currentBudgetTab = tab;
+    renderBudget(); // 切換後重新渲染畫面
+}
+
+
+// 3. 記帳主渲染函式
+function renderBudget() {
+    document.getElementById('header-desc').innerText = "記帳本 & 分帳";
+    const container = document.getElementById('app');
+
+    // ★★★ 介面結構：置頂分頁 + 內容區 ★★★
+    const tabsHtml = `
+        <div class="-m-4 relative">
+            <button onclick="openBudgetModal()" class="fab-btn"><i class="fa-solid fa-plus"></i></button>
+
+            <!-- Sticky Header -->
+            <div class="sticky top-[80px] z-40 bg-[rgba(255,248,225,0.95)] backdrop-blur-sm px-4 py-3 shadow-[0_4px_6px_-4px_rgba(0,0,0,0.05)]">
+                <div class="budget-tab-container">
+                    <button onclick="switchBudgetTab('details')" class="budget-tab-btn ${currentBudgetTab === 'details' ? 'active' : ''}">
+                        <i class="fa-solid fa-list-ul mr-1"></i> 明細
+                    </button>
+                    <button onclick="switchBudgetTab('overview')" class="budget-tab-btn ${currentBudgetTab === 'overview' ? 'active' : ''}">
+                        <i class="fa-solid fa-chart-pie mr-1"></i> 總覽
+                    </button>
+                </div>
+            </div>
+
+            <!-- 內容區 -->
+            <div id="budget-content-area" class="px-4 py-4 pb-30">
+                <div class="text-center text-gray-400 py-10"><i class="fa-solid fa-spinner fa-spin"></i> 載入中...</div>
+            </div>
+        </div>
+    `;
+    container.innerHTML = tabsHtml;
+
+    const loadData = (data) => {
+        const contentArea = document.getElementById('budget-content-area');
+        
+        // 1. 初始化變數
+        let catStats = {}; 
+        // 應付 (消費)：大家花了多少錢
+        let personalTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '姊姊': 0 }; 
+        // ★ 實付 (墊錢)：誰先拿錢出來
+        let paidTotal = { '妹妹': 0, '爸爸': 0, '媽媽': 0, '姊姊': 0 };     
+        
+        let expenseListHtml = '';
+        let grandTotal = 0; 
+        
+        const hasData = !!data;
+        
+        if (hasData) {
+            const entries = Array.isArray(data) ? data.map((item, i) => [`local_${i}`, item]) : Object.entries(data);
+            
+            // 2. 遍歷資料進行計算
+            entries.reverse().forEach(([key, ex]) => {
+                const amount = parseInt(ex.amount);
+                const amountTwd = ex.currency === 'TWD' ? amount : Math.round(amount * JPY_RATE);
+                
+                // 統計類別
+                if (!catStats[ex.category]) {
+                    catStats[ex.category] = { amount: 0, count: 0 };
+                }
+                catStats[ex.category].amount += amountTwd;
+                catStats[ex.category].count += 1;
+                grandTotal += amountTwd;
+
+                // ★ 統計墊款人 (Who Paid) - 這是結算的關鍵！
+                const payer = ex.payer || '姊姊';
+                if (paidTotal[payer] !== undefined) paidTotal[payer] += amountTwd;
+
+                // 統計分帳人 (Who Should Pay)
+                if (ex.splitDetails) {
+                    ex.splitDetails.forEach(detail => {
+                        if(personalTotal[detail.name] !== undefined) {
+                            const splitAmountTwd = ex.currency === 'TWD' ? detail.amount : Math.round(detail.amount * JPY_RATE);
+                            personalTotal[detail.name] += splitAmountTwd;
+                        }
+                    });
+                } else {
+                    if(personalTotal[payer] !== undefined) personalTotal[payer] += amountTwd;
+                }
+
+                // 產生明細列表 HTML (僅在明細頁籤使用)
+                if (currentBudgetTab === 'details') {
+                    let icon = '💸'; 
+                    if(ex.category === '食物') icon = '🍔'; if(ex.category === '購物') icon = '🛍️'; 
+                    if(ex.category === '交通') icon = '🚗'; if(ex.category === '門票') icon = '🎫';
+                    
+                    const priceDisplay = ex.currency === 'TWD' ? `NT$${amount.toLocaleString()}` : `¥${amount.toLocaleString()}`;
+                    const subDisplay = ex.currency === 'TWD' ? '' : `<div class="text-[10px] text-gray-400">≈ NT$${amountTwd.toLocaleString()}</div>`;
+                    
+                    const isDrive = ex.receiptUrl && ex.receiptUrl.includes('drive.google.com');
+                    const iconClass = isDrive ? 'fa-file-contract' : 'fa-receipt';
+                    const receiptIcon = ex.receiptUrl 
+                        ? `<button onclick="openVoucherImage('${ex.receiptUrl}')" class="text-blue-500 hover:bg-blue-50 p-1 rounded"><i class="fa-solid ${iconClass}"></i></button>` 
+                        : '';
+
+                    expenseListHtml += `
+                        <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center relative overflow-hidden">
+                            <div class="w-1 bg-orange-400 absolute left-0 top-0 bottom-0"></div>
+                            <div class="flex-1 ml-2">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-lg">${icon}</span>
+                                    <span class="font-bold text-gray-700 text-sm line-clamp-1">${ex.item}</span>
+                                    <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">${ex.payer || '未知'}</span>
+                                </div>
+                                <div class="text-xs text-gray-400 flex items-center gap-2">
+                                    <span>${ex.fullTime ? ex.fullTime.slice(5, 16).replace('T', ' ') : ex.date}</span>
+                                    <span>• ${ex.payment || '現金'}</span>
+                                </div>
+                            </div>
+                            <div class="text-right flex flex-col items-end mr-3 min-w-[70px]">
+                                <div class="font-bold text-orange-600">${priceDisplay}</div>
+                                ${subDisplay}
+                            </div>
+                            <div class="flex gap-2 pl-2 border-l border-gray-100">
+                                ${receiptIcon}
+                                <button onclick="openBudgetModal('${key}')" class="text-gray-400 hover:text-blue-500 p-1"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteExpense('${key}')" class="text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                }
+            });
+        }
+
+        // 3. 渲染內容區
+        if (currentBudgetTab === 'details') {
+            // [明細頁]
+            if (!hasData) {
+                contentArea.innerHTML = '<div class="text-center text-gray-400 py-10">目前沒有支出，點擊 + 記帳</div>';
+            } else {
+                contentArea.innerHTML = `<div class="space-y-3 animation-fade">${expenseListHtml}</div>`;
+            }
+        } else {
+            // [總覽頁] Overview
+            if (!hasData) {
+                contentArea.innerHTML = '<div class="text-center text-gray-400 py-10">尚無資料可分析</div>';
+            } else {
+                // A. 每人應付 (卡片)
+                let personalHtml = '';
+                Object.keys(personalTotal).forEach(name => {
+                    personalHtml += `
+                        <div class="person-card">
+                            <div class="text-xs text-gray-500 font-bold mb-1">${name}</div>
+                            <div class="text-xl font-bold text-gray-800">
+                                <span class="text-xs mr-0.5">$</span>${personalTotal[name].toLocaleString()}
+                            </div>
+                        </div>`;
+                });
+
+                // B. 類別長條圖 (HTML)
                 const catConfig = {
                     '食物': { icon: 'fa-utensils', color: 'bg-orange-400', iconBg: 'bg-orange-100', text: 'text-orange-600' },
                     '購物': { icon: 'fa-bag-shopping', color: 'bg-pink-400', iconBg: 'bg-pink-100', text: 'text-pink-600' },
@@ -2512,27 +2637,20 @@ function renderBudget() {
                     '其他': { icon: 'fa-shapes', color: 'bg-gray-400', iconBg: 'bg-gray-100', text: 'text-gray-600' }
                 };
 
-                // 2. 排序並產生 HTML
-                // 將 catStats 轉為陣列並依金額由大到小排序
                 const sortedCats = Object.entries(catStats).sort((a, b) => b[1].amount - a[1].amount);
-                
                 let catListHtml = `<div class="mt-6 space-y-5 px-1">`;
-                let chartDataObj = {}; // 給圓餅圖用的資料
+                let chartDataObj = {}; 
 
                 sortedCats.forEach(([catName, stats]) => {
-                    chartDataObj[catName] = stats.amount; // 蒐集給圓餅圖
-                    
+                    chartDataObj[catName] = stats.amount;
                     const cfg = catConfig[catName] || catConfig['其他'];
                     const percent = grandTotal > 0 ? ((stats.amount / grandTotal) * 100).toFixed(1) : 0;
                     
                     catListHtml += `
                         <div class="flex items-center gap-3">
-                            <!-- 左側圖示 -->
                             <div class="w-10 h-10 rounded-full ${cfg.iconBg} ${cfg.text} flex items-center justify-center text-lg shrink-0">
                                 <i class="fa-solid ${cfg.icon}"></i>
                             </div>
-                            
-                            <!-- 中間：類別、筆數、進度條 -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between items-end mb-1">
                                     <div class="flex items-center gap-2">
@@ -2554,10 +2672,68 @@ function renderBudget() {
                 });
                 catListHtml += `</div>`;
 
-                // C. 組合總覽頁面 HTML
+                // ★★★ C. 最終結算演算法 (誰給誰錢) ★★★
+                let debtHtml = '';
+                let debtors = [];
+                let creditors = [];
+
+                // 1. 計算淨額 (正=收錢, 負=付錢)
+                Object.keys(personalTotal).forEach(name => {
+                    // Balance = 墊的錢 - 該付的錢
+                    const balance = paidTotal[name] - personalTotal[name];
+                    if (balance < -1) debtors.push({ name, amount: balance }); // 負數代表要拿錢出來
+                    else if (balance > 1) creditors.push({ name, amount: balance }); // 正數代表要收錢
+                });
+
+                // 2. 排序
+                debtors.sort((a, b) => a.amount - b.amount); // 負越多久越前面 (欠最多)
+                creditors.sort((a, b) => b.amount - a.amount); // 正越多越前面 (收最多)
+
+                // 3. 配對結算
+                let transactions = [];
+                let dIndex = 0, cIndex = 0;
+                
+                while (dIndex < debtors.length && cIndex < creditors.length) {
+                    let debtor = debtors[dIndex];
+                    let creditor = creditors[cIndex];
+                    
+                    // 找出交易金額 (取絕對值較小者)
+                    let amount = Math.min(Math.abs(debtor.amount), creditor.amount);
+                    
+                    if (amount > 0) {
+                        transactions.push({ from: debtor.name, to: creditor.name, money: Math.round(amount) });
+                    }
+
+                    // 調整餘額
+                    debtor.amount += amount;
+                    creditor.amount -= amount;
+
+                    // 如果某方結清，移動指標
+                    if (Math.abs(debtor.amount) < 1) dIndex++;
+                    if (creditor.amount < 1) cIndex++;
+                }
+
+                // 4. 產生 HTML
+                if (transactions.length === 0) {
+                    debtHtml = `<div class="text-center text-gray-500 text-sm py-2">目前收支平衡，不需要結算 🎉</div>`;
+                } else {
+                    debtHtml = transactions.map(t => `
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-green-200 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-gray-700 bg-gray-100 px-2 py-1 rounded">${t.from}</span>
+                                <i class="fa-solid fa-arrow-right text-gray-400 text-xs"></i>
+                                <span class="font-bold text-gray-700 bg-gray-100 px-2 py-1 rounded">${t.to}</span>
+                            </div>
+                            <div class="font-bold text-green-600 text-lg">
+                                <span class="text-xs mr-0.5">$</span>${t.money.toLocaleString()}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // D. 組合 HTML (四張卡片)
                 contentArea.innerHTML = `
                     <div class="space-y-4 animation-fade">
-                        
                         <!-- 卡片 1: 圓餅圖 -->
                         <div class="card p-5 bg-white">
                             <h3 class="font-bold text-gray-700 mb-2 text-center text-sm">📊 消費佔比圓餅圖</h3>
@@ -2566,7 +2742,7 @@ function renderBudget() {
                             </div>
                         </div>
 
-                        <!-- 卡片 2: 類別長條圖列表 (獨立出來了！) -->
+                        <!-- 卡片 2: 類別長條圖 -->
                         <div class="card p-5 bg-white">
                             <h3 class="font-bold text-gray-700 mb-4 text-sm border-b pb-2">支出分類詳情</h3>
                             ${catListHtml}
@@ -2579,13 +2755,23 @@ function renderBudget() {
                                 ${personalHtml}
                             </div>
                         </div>
+
+                        <!-- ★★★ 卡片 4: 最終結算建議 (新增的) ★★★ -->
+                        <div class="card p-5 bg-green-50 border border-green-200">
+                            <h3 class="font-bold text-green-700 mb-4 text-sm flex items-center">
+                                <i class="fa-solid fa-money-bill-transfer mr-2"></i>最終結算建議
+                            </h3>
+                            <div class="space-y-2">
+                                ${debtHtml}
+                            </div>
+                            <div class="text-[10px] text-green-600 mt-2 text-center opacity-70">
+                                系統自動計算最佳轉帳路徑
+                            </div>
+                        </div>
                     </div>
                 `;
                 
-                // 延遲繪製圓餅圖
-                setTimeout(() => {
-                    renderChart(chartDataObj);
-                }, 50);
+                setTimeout(() => { renderChart(chartDataObj); }, 50);
             }
         }
     };
@@ -2642,7 +2828,7 @@ function renderChart(dataObj) {
     }
 }
 
-// --- 建立行程卡片 HTML (智慧展開版) ---
+// --- 建立行程卡片 HTML (支援自訂停車連結版) ---
 function createEventCard(event, dayIdx, evtIdx) {
     
     // 1. 時間顯示處理
@@ -2655,7 +2841,7 @@ function createEventCard(event, dayIdx, evtIdx) {
     let tagClass = event.type === 'eat' ? 'tag-eat' : event.type === 'spot' ? 'tag-spot' : event.type === 'hotel' ? 'tag-hotel' : 'tag-trans';
     let tagName = event.type === 'eat' ? '美食' : event.type === 'spot' ? '景點' : event.type === 'hotel' ? '住宿' : '交通';
 
-    // 3. 特殊卡片處理: 準備事項 (Prep) - 維持原樣
+    // 3. 特殊卡片: 準備事項 (Prep)
     if (event.type === 'prep') {
         let rightSideHtml = '';
         if (event.departureTime) {
@@ -2672,7 +2858,6 @@ function createEventCard(event, dayIdx, evtIdx) {
                     <span class="text-[10px] font-bold">${event.appLink.text}</span>
                 </a>`;
         }
-        // Prep 卡片通常只有外顯資訊，不需要展開功能
         return `
             <div class="card p-4 border-l-4 border-purple-400 bg-purple-50 flex justify-between items-center">
                 <div class="flex-1">
@@ -2684,10 +2869,11 @@ function createEventCard(event, dayIdx, evtIdx) {
             </div>`;
     }
 
-    // 4. 特殊卡片處理: 二選一 (Choice) - 必為 Modal，維持原樣
+    // 4. 特殊卡片: 二選一 (Choice)
     if (event.type === 'choice') {
         const choicesHtml = event.choices.map((c, cIdx) => {
             const targetUrl = c.navLink || c.link || `https://www.google.com/maps/search/?api=1&query=${c.title}+沖繩`;
+            
             let travelTimeHtml = '';
             if (c.travelTime) {
                 const icon = (c.travelTime.includes('步') || c.travelTime.includes('走')) ? 'fa-person-walking' : 'fa-car';
@@ -2696,15 +2882,16 @@ function createEventCard(event, dayIdx, evtIdx) {
             const choiceTagClass = c.type === 'spot' ? 'tag-spot' : 'tag-eat';
             const choiceTagName = c.type === 'spot' ? '景點' : '美食';
 
+            // ★★★ 修改：只有當資料有 parkingLink 時才顯示，否則隱藏 ★★★
             let parkingBtn = '';
-            if (['copilot', 'driver'].includes(currentRole)) {
-                const parkingQuery = `parking near ${c.title} Okinawa`;
-                const parkingUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parkingQuery)}`;
+            // 加入 c.parkingLink 的判斷
+            if (['copilot', 'driver'].includes(currentRole) && c.parkingLink) {
                 parkingBtn = `
-                    <a href="${parkingUrl}" target="_blank" class="absolute bottom-3 right-14 w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center shadow-md active:scale-95 transition" onclick="event.stopPropagation()">
+                    <a href="${c.parkingLink}" target="_blank" class="absolute bottom-3 right-14 w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center shadow-md active:scale-95 transition" onclick="event.stopPropagation()">
                         <i class="fa-solid fa-square-parking text-xl"></i>
                     </a>`;
             }
+            // ★★★ 結束 ★★★
 
             return `
             <div class="bg-white border-2 border-orange-100 rounded-xl p-4 min-w-[85%] snap-center shadow-sm relative flex flex-col cursor-pointer active:scale-[0.98] transition" 
@@ -2739,7 +2926,6 @@ function createEventCard(event, dayIdx, evtIdx) {
 
     // 5. 一般行程 (Normal)
     
-    // 預覽內容
     let previewContent = '';
     if (currentRole === 'driver' && event.mapCode) previewContent = `<div class="mt-2 text-sm font-mono bg-gray-100 p-1 px-2 rounded inline-block text-gray-600"><i class="fa-solid fa-map-location-dot mr-1"></i> ${event.mapCode}</div>`;
     if (currentRole === 'admin' && event.bookingInfo) previewContent = `<div class="mt-2 text-xs text-red-500 font-bold"><i class="fa-solid fa-ticket mr-1"></i> ${event.bookingInfo.note}</div>`;
@@ -2756,7 +2942,6 @@ function createEventCard(event, dayIdx, evtIdx) {
         previewContent += `<div class="mt-2 text-xs text-blue-600 font-bold"><i class="fa-solid fa-clock"></i> ${event.frequency} ${timeLinkHtml}</div>`;
     }
 
-    // Guide 顯示在外層
     if (event.guide) {
         previewContent += `
             <div class="mt-2 text-sm text-gray-600 flex items-start leading-snug">
@@ -2765,7 +2950,6 @@ function createEventCard(event, dayIdx, evtIdx) {
             </div>`;
     }
     
-    // 憑證按鈕
     let voucherBtn = '';
     if (event.bookingInfo) {
         const btnClass = "mt-3 w-full text-center bg-red-50 text-red-600 py-2 rounded-lg text-xs font-bold border border-red-100 hover:bg-red-100 transition pointer-events-auto flex items-center justify-center gap-1 shadow-sm";
@@ -2778,58 +2962,44 @@ function createEventCard(event, dayIdx, evtIdx) {
         }
     }
 
-    // 找停車按鈕
+    // ★★★ 修改：只有當資料有 parkingLink 時才顯示，否則隱藏 ★★★
     let parkingBtn = '';
-    if (['spot', 'eat', 'hotel'].includes(event.type) && ['copilot', 'driver'].includes(currentRole)) {
-        const searchName = event.title_detail || event.title;
-        const parkingQuery = `parking near ${searchName} Okinawa`;
-        const parkingUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parkingQuery)}`;
+    // 加入 event.parkingLink 的判斷
+    if (['spot', 'eat', 'hotel'].includes(event.type) && ['copilot', 'driver'].includes(currentRole) && event.parkingLink) {
+        
         parkingBtn = `
-            <a href="${parkingUrl}" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0" onclick="event.stopPropagation()">
+            <a href="${event.parkingLink}" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0" onclick="event.stopPropagation()">
                 <i class="fa-solid fa-square-parking text-xl"></i>
             </a>`;
     }
+    // ★★★ 結束 ★★★
 
-    // 導航按鈕
     let navIconBtn = '';
     if (['spot', 'hotel', 'eat'].includes(event.type)) {
         const targetUrl = event.navLink ? event.navLink : `https://www.google.com/maps/search/?api=1&query=${event.title}+沖繩`;
         navIconBtn = `<a href="${targetUrl}" target="_blank" class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm active:scale-95 transition pointer-events-auto shrink-0" onclick="event.stopPropagation()"><i class="fa-solid fa-location-arrow text-sm"></i></a>`;
     }
 
-    // ★★★ 關鍵修改：判斷是否需要展開 (Toggle) ★★★
-    
-    // 1. 檢查是否有隱藏的詳細資訊
     const hasHiddenDetails = event.title_detail || event.bookingInfo || event.multiMaps || event.mapCode || event.adminNote;
     
-    // 2. 決定點擊行為
     let clickAction = '';
-    let cursorClass = ''; // 控制滑鼠游標
+    let cursorClass = ''; 
     
     if (['eat', 'spot'].includes(event.type)) {
-        // 美食/景點：總是開啟 Modal
         clickAction = `onclick="openDetailModal(${dayIdx}, ${evtIdx})"`;
-        cursorClass = 'cursor-pointer active:scale-[0.99] transition'; // 加入點擊回饋
+        cursorClass = 'cursor-pointer active:scale-[0.99] transition';
     } else if (hasHiddenDetails) {
-        // 其他類型：只有當有隱藏資訊時，才允許展開 (Toggle)
         clickAction = `onclick="toggleCard(this)"`;
         cursorClass = 'cursor-pointer active:scale-[0.99] transition';
-    } else {
-        // 沒有隱藏資訊：不可點擊 (純展示)
-        clickAction = '';
-        cursorClass = ''; 
     }
 
-    // ★★★ 組合 HTML ★★★
     return `
         <div class="card p-4 ${cursorClass}" ${clickAction}>
             <div class="flex items-start gap-3 pointer-events-none">
-                
                 <div class="flex flex-col items-center min-w-[60px] pt-1 shrink-0">
                     ${timeHtml}
                     <span class="text-[10px] px-2 py-0.5 rounded-full ${tagClass} mt-2 w-full text-center truncate">${tagName}</span>
                 </div>
-
                 <div class="flex-1 min-w-0">
                     <div class="flex justify-between items-start gap-2">
                         <div class="min-w-0">
@@ -2841,25 +3011,18 @@ function createEventCard(event, dayIdx, evtIdx) {
                             ${navIconBtn}
                         </div>
                     </div>
-
                     <div class="mt-3">
                         ${previewContent}
                         ${voucherBtn}
                     </div>
                 </div>
             </div>
-
-            <!-- ★ 只有當有隱藏資訊時，才渲染這個區塊 -->
             ${hasHiddenDetails ? `
             <div class="details-content mt-4 pt-4 border-t border-gray-100 space-y-4">
                 ${event.title_detail ? `<h4 class="font-bold text-gray-800 text-lg">${event.title_detail}</h4>` : ''}
-                
                 ${event.bookingInfo ? `<div class="ticket-box"><div class="text-sm opacity-70">預約憑證 / 訂單號</div><div class="text-2xl font-bold font-mono my-1 select-all">${event.bookingInfo.code}</div><div class="text-sm flex justify-between"><span>${event.bookingInfo.note}</span><span>${event.bookingInfo.extra || ''}</span></div></div>` : ''}
-                
                 ${event.multiMaps ? `<div class="grid grid-cols-2 gap-3">${event.multiMaps.map(m => `<a href="https://www.google.com/maps/search/?api=1&query=${m.query}" target="_blank" class="bg-blue-50 text-blue-600 py-3 rounded-xl text-center font-bold shadow-sm border border-blue-100 active:scale-95 transition"><i class="fa-solid fa-location-arrow mr-1"></i> ${m.name}</a>`).join('')}</div>` : ''}
-                
                 ${event.mapCode ? `<div class="bg-gray-50 p-3 rounded-lg"><div class="flex justify-between items-center"><span class="text-sm font-bold text-gray-600">MapCode</span><div class="flex items-center gap-2"><span class="font-mono text-xl font-bold">${event.mapCode}</span><button onclick="copyText('${event.mapCode}', event)" class="text-orange-500"><i class="fa-regular fa-copy"></i></button></div></div>${event.parking ? `<div class="mt-2 text-xs text-gray-500"><i class="fa-solid fa-square-parking"></i> ${event.parking.info}</div>` : ''}</div>` : ''}
-                
                 ${event.adminNote ? `<div class="text-sm text-gray-600 bg-yellow-50 p-2 rounded border border-yellow-100"><i class="fa-solid fa-pen mr-1"></i> 筆記: ${event.adminNote}</div>` : ''}
             </div>` : ''}
         </div>`;
