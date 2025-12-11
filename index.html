@@ -15,6 +15,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- ★★★ 新增這行：Panzoom (圖片縮放工具) ★★★ -->
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
@@ -3264,7 +3266,8 @@ function adjustQty(delta) {
         function closeDetailModal() { document.getElementById('modal-detail').classList.remove('open'); }
         
         // --- 憑證預覽 (三層不重疊版) ---
-        function openVoucherImage(imgSrc) {
+        // --- 圖片預覽 (支援雙指縮放 & 拖拉) ---
+function openVoucherImage(imgSrc) {
     const modal = document.getElementById('modal-pdf');
     const body = document.getElementById('pdf-content');
     
@@ -3275,55 +3278,60 @@ function adjustQty(delta) {
     const isGoogleDrive = imgSrc.includes('drive.google.com');
     let innerContent = '';
     let footerContent = '';
-    
-    // 取得原始連結 (用於新分頁開啟)
-    let openUrl = imgSrc;
+    let panzoomInstance = null; // 宣告變數
+
+    // 定義底部控制列 HTML (共用)
+    // 包含：重置、縮小、放大、開啟原檔(或關閉)
+    const getControlsHtml = (originalUrl) => `
+        <div class="p-3 bg-white border-t border-gray-200 safe-area-bottom grid grid-cols-5 gap-2">
+            <button id="btn-reset" class="bg-gray-100 text-gray-600 py-3 rounded-xl font-bold shadow-sm active:bg-gray-200"><i class="fa-solid fa-compress"></i></button>
+            <button id="btn-zoom-out" class="bg-gray-100 text-gray-600 py-3 rounded-xl font-bold shadow-sm active:bg-gray-200"><i class="fa-solid fa-minus"></i></button>
+            <button id="btn-zoom-in" class="bg-gray-100 text-gray-600 py-3 rounded-xl font-bold shadow-sm active:bg-gray-200"><i class="fa-solid fa-plus"></i></button>
+            
+            <!-- 開啟原檔按鈕 (佔 2 格) -->
+            <a href="${originalUrl}" target="_blank" class="col-span-2 block w-full text-center bg-blue-600 text-white py-3 rounded-xl text-sm font-bold shadow hover:bg-blue-700 transition flex items-center justify-center gap-1">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> 原檔
+            </a>
+        </div>`;
 
     if (isGoogleDrive) {
+        // --- Google Drive PDF ---
         const previewUrl = getDrivePreviewUrl(imgSrc);
         const fallbackUrl = previewUrl.replace('/preview', '/view');
-        openUrl = fallbackUrl;
         
-        // Google Drive 檔案：顯示 iframe
-        innerContent = `<iframe src="${previewUrl}" class="w-full h-full border-0 bg-gray-100" allow="autoplay" referrerpolicy="no-referrer"></iframe>`;
-        
-        // 底部按鈕：開啟原始檔案
-        footerContent = `
-            <div class="p-3 bg-white border-t border-gray-200 safe-area-bottom">
-                <a href="${fallbackUrl}" target="_blank" class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl text-sm font-bold shadow hover:bg-blue-700 transition">
-                    <i class="fa-solid fa-external-link-alt mr-1"></i> 開啟原始檔案
-                </a>
+        // 關鍵修改：給 iframe 一個 id="panzoom-element" 的容器，並加上 pointer-events-none
+        // pointer-events-none 是為了讓手指滑動時是「拖曳圖片」而不是「捲動PDF內頁」
+        // (缺點是 PDF 內部連結會無法點擊，但在預覽模式下通常沒關係)
+        innerContent = `
+            <div class="w-full h-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                <div id="panzoom-element" class="w-full h-full">
+                    <iframe src="${previewUrl}" class="w-full h-full border-0 pointer-events-none"></iframe>
+                </div>
             </div>`;
+        
+        footerContent = getControlsHtml(fallbackUrl);
+
     } else {
+        // --- 一般圖片 ---
         const finalSrc = imgSrc.startsWith('http') ? imgSrc : `./${imgSrc}`;
         
-        // 一般圖片：允許捲動 (overflow-auto)
-        // 圖片設為 w-full 但高度 auto，這樣長圖可以往下滑
         innerContent = `
-            <div class="w-full h-full overflow-auto bg-black flex flex-col items-center justify-center p-2">
-                <img src="${finalSrc}" class="w-full h-auto object-contain" style="max-height: none;">
+            <div class="w-full h-full bg-black flex items-center justify-center overflow-hidden">
+                <img id="panzoom-element" src="${finalSrc}" class="max-w-full max-h-full object-contain" style="touch-action: none;">
             </div>`;
             
-        // 底部按鈕：開啟原圖 (方便縮放)
-        footerContent = `
-            <div class="p-3 bg-white border-t border-gray-200 safe-area-bottom flex gap-2">
-                <a href="${finalSrc}" target="_blank" class="flex-1 text-center bg-gray-100 text-gray-700 py-3 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-200 transition">
-                    <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> 開啟原圖縮放
-                </a>
-                <button onclick="closePdfModal()" class="flex-1 text-center bg-blue-600 text-white py-3 rounded-xl text-sm font-bold shadow hover:bg-blue-700 transition">
-                    關閉
-                </button>
-            </div>`;
+        footerContent = getControlsHtml(finalSrc);
     }
 
+    // 組合 Modal HTML
     const finalHtml = `
-        <div class="h-[50px] bg-white border-b border-gray-200 flex justify-between items-center px-4 shrink-0">
-            <span class="font-bold text-gray-700">預覽</span>
+        <div class="h-[50px] bg-white border-b border-gray-200 flex justify-between items-center px-4 shrink-0 z-50">
+            <span class="font-bold text-gray-700">預覽 (可雙指縮放)</span>
             <button onclick="closePdfModal()" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
-        <div class="flex-1 relative overflow-hidden flex flex-col">
+        <div class="flex-1 relative overflow-hidden flex flex-col bg-gray-50">
             ${innerContent}
         </div>
         ${footerContent}`;
@@ -3334,7 +3342,51 @@ function adjustQty(delta) {
     body.style.display = 'flex';
     body.style.flexDirection = 'column';
     body.innerHTML = finalHtml;
+    
     modal.classList.add('open');
+
+    // ★★★ 統一啟動 Panzoom (圖片與 PDF 皆適用) ★★★
+    setTimeout(() => {
+        const elem = document.getElementById('panzoom-element');
+        const btnIn = document.getElementById('btn-zoom-in');
+        const btnOut = document.getElementById('btn-zoom-out');
+        const btnReset = document.getElementById('btn-reset');
+
+        if (elem && typeof Panzoom !== 'undefined') {
+            panzoomInstance = Panzoom(elem, {
+                maxScale: 5,
+                minScale: 1,
+                contain: 'outside',
+                startScale: 1,
+                // PDF iframe 需要這個設定才能在手機上順暢拖曳
+                touchAction: 'none' 
+            });
+
+            btnIn.addEventListener('click', panzoomInstance.zoomIn);
+            btnOut.addEventListener('click', panzoomInstance.zoomOut);
+            btnReset.addEventListener('click', panzoomInstance.reset);
+            
+            // 啟用滑鼠滾輪 (電腦版)
+            elem.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
+
+            // ★ 雙擊縮放功能 (手動實作)
+            let lastTap = 0;
+            elem.addEventListener('touchend', function(e) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 500 && tapLength > 0) {
+                    // 偵測到雙擊：切換放大/重置
+                    if(panzoomInstance.getScale() > 1) {
+                        panzoomInstance.reset();
+                    } else {
+                        panzoomInstance.zoomTo(e.changedTouches[0].clientX, e.changedTouches[0].clientY, 2.5);
+                    }
+                    e.preventDefault();
+                }
+                lastTap = currentTime;
+            });
+        }
+    }, 100);
 }
 
         function openDetailModal(dayIdx, eventIdx, choiceIdx = null) {
