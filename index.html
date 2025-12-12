@@ -3288,60 +3288,83 @@ function openVoucherImage(imgSrc) {
     const modal = document.getElementById('modal-pdf');
     const body = document.getElementById('pdf-content');
     
-    // 清除舊按鈕
+    // 清空舊按鈕
     const oldBtn = document.querySelector('#modal-pdf .pdf-sheet > button');
     if (oldBtn) oldBtn.remove(); 
 
     const isGoogleDrive = imgSrc.includes('drive.google.com');
-    let contentHtml = '';
+    let innerContent = '';
+    let footerContent = '';
     let panzoomInstance = null; 
 
     if (isGoogleDrive) {
-        // --- A. Google Drive (PDF) ---
+        // --- 情況 A: Google Drive (PDF) ---
         const previewUrl = getDrivePreviewUrl(imgSrc);
-        // PDF 直接用 iframe 填滿，加上原檔連結在 Header 旁邊(選用)
-        contentHtml = `
-            <div style="flex: 1; width: 100%; height: 100%; background: #f3f4f6; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+        const fallbackUrl = previewUrl.replace('/preview', '/view');
+        
+        innerContent = `
+            <div style="width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #f3f4f6;">
                 <iframe src="${previewUrl}" style="width: 100%; height: 100%; border: none;"></iframe>
             </div>`;
+        
+        footerContent = `
+            <div class="p-3 bg-white border-t border-gray-200 safe-area-bottom flex gap-2 shrink-0 z-50">
+                <a href="${fallbackUrl}" target="_blank" class="flex-1 block text-center bg-blue-600 text-white py-3 rounded-xl text-sm font-bold shadow hover:bg-blue-700 transition flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> 開啟原檔
+                </a>
+            </div>`;
+
     } else {
-        // --- B. 一般圖片 (JPG/PNG) ---
+        // --- 情況 B: 一般圖片 (JPG/PNG) ---
         const finalSrc = imgSrc.startsWith('http') ? imgSrc : `./${imgSrc}`;
         
-        // ★★★ 關鍵修正：圖片容器 ★★★
-        // 1. 外層 (黑底): flex: 1 自動填滿剩餘高度
-        // 2. 內層 (置中): display: flex, align-items: center
-        // 3. 圖片: max-width/height: 100% 確保不爆框, object-fit: contain 保持比例
-        contentHtml = `
-            <div style="flex: 1; width: 100%; height: 100%; background: black; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                <img id="panzoom-element" src="${finalSrc}" 
-                     style="display: block; max-width: 100%; max-height: 100%; object-fit: contain;">
+        // ★★★ 關鍵修正：使用絕對定位 (Absolute) 強制鎖定範圍 ★★★
+        // 1. 外層 relative: 定位基準點
+        // 2. 內層 absolute inset-0: 強制佔滿上下左右，確保有明確高度
+        // 3. 圖片 object-fit: contain: 確保圖片永遠完整顯示在框框內
+        innerContent = `
+            <div style="position: relative; width: 100%; height: 100%; background: black; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">
+
+                <div  id="panzoom-element" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <img src="${finalSrc}" 
+                         style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;">    
+                </div>
+                </div>
+            </div>`;
+            
+        // 底部按鈕
+        footerContent = `
+            <div class="p-3 bg-white border-t border-gray-200 safe-area-bottom grid grid-cols-3 gap-2 shrink-0 z-50">
+                <button id="btn-reset" class="bg-gray-100 text-gray-600 py-3 rounded-xl font-bold shadow-sm active:bg-gray-200 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-compress"></i> 重置
+                </button>
+                <button id="btn-zoom-out" class="bg-gray-100 text-gray-600 py-3 rounded-xl font-bold shadow-sm active:bg-gray-200 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+                <button id="btn-zoom-in" class="bg-gray-100 text-gray-600 py-3 rounded-xl font-bold shadow-sm active:bg-gray-200 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
             </div>`;
     }
 
-    // ★★★ 組合 HTML (只有 Header + Content) ★★★
+    // 組合 Modal HTML (Header + Flex Content + Footer)
     const finalHtml = `
-        <!-- Header (固定高度 50px) -->
-        <div style="height: 50px; background: white; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; flex-shrink: 0;">
+        <div style="height: 50px; background: white; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; flex-shrink: 0; z-index: 50;">
             <span class="font-bold text-gray-700">預覽</span>
-            
-            <!-- 如果是 Google Drive，顯示開啟原檔的小圖示 -->
-            ${isGoogleDrive ? `
-            <a href="${imgSrc.replace('/preview', '/view')}" target="_blank" class="mr-3 text-blue-600 text-sm font-bold flex items-center">
-                <i class="fa-solid fa-external-link-alt mr-1"></i> 原檔
-            </a>` : ''}
-
             <button onclick="closePdfModal()" style="width: 32px; height: 32px; background: #f3f4f6; border-radius: 50%; color: #4b5563; display: flex; align-items: center; justify-content: center;">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
         
-        <!-- Content (自動填滿剩餘空間) -->
-        <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; height: 100%;">
-            ${contentHtml}
-        </div>`;
+        <!-- 中間區塊：flex-1 自動填滿剩餘高度 -->
+        <div style="flex: 1; position: relative; overflow: hidden; width: 100%;">
+            ${innerContent}
+        </div>
+        
+        ${footerContent}`;
 
-    // 重設容器樣式 (Flex Column 佈局)
+    // 重設 Body 樣式以配合 Flex 佈局
     body.style.width = '100%';
     body.style.height = '100%';
     body.style.padding = '0';
@@ -3351,39 +3374,33 @@ function openVoucherImage(imgSrc) {
     
     modal.classList.add('open');
 
-    // ★★★ 啟動 Panzoom (圖片專用) ★★★
+    // ★★★ 啟動 Panzoom ★★★
     if (!isGoogleDrive) {
+        // 延遲執行以確保 DOM 渲染完成
         setTimeout(() => {
             const elem = document.getElementById('panzoom-element');
+            const btnIn = document.getElementById('btn-zoom-in');
+            const btnOut = document.getElementById('btn-zoom-out');
+            const btnReset = document.getElementById('btn-reset');
+
             if (elem && typeof Panzoom !== 'undefined') {
                 panzoomInstance = Panzoom(elem, {
-                    maxScale: 4,      // 最大放大倍率
-                    minScale: 1,      // 最小
-                    contain: 'inside', // ★ 改成 inside，確保圖片初始一定在框內
-                    startScale: 1
+                    maxScale: 5,
+                    minScale: 1,
+                    startScale: 1,
                 });
+
+                // 綁定按鈕
+                btnIn.addEventListener('click', panzoomInstance.zoomIn);
+                btnOut.addEventListener('click', panzoomInstance.zoomOut);
+                btnReset.addEventListener('click', panzoomInstance.reset);
                 
-                // 支援滾輪縮放
+                // 滾輪縮放 (電腦版)
                 elem.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
-                
-                // 雙擊縮放 (簡化版)
-                let lastTap = 0;
-                elem.parentElement.addEventListener('touchend', function(e) {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTap;
-                    if (tapLength < 500 && tapLength > 0) {
-                        if(panzoomInstance.getScale() > 1) {
-                            panzoomInstance.reset();
-                        } else {
-                            // 放大至 2.5 倍
-                            panzoomInstance.zoomTo(0, 0, 2.5); 
-                        }
-                        e.preventDefault();
-                    }
-                    lastTap = currentTime;
-                });
+
+                 
             }
-        }, 200);
+        }, 300); // 增加延遲時間，確保手機瀏覽器有時間計算高度
     }
 }
 
